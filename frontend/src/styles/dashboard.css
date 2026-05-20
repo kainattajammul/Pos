@@ -1,0 +1,12 @@
+.dashboard-surface {
+  background: linear-gradient(180deg, rgb(244 246 249) 0%, rgb(248 250 252) 100%);
+}
+
+.dark .dashboard-surface {
+  background: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted) / 0.35) 100%);
+}
+
+.glass-card {
+  background: color-mix(in oklab, var(--card) 88%, transparent);
+  backdrop-filter: blur(12px);
+}

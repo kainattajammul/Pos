@@ -1,0 +1,28 @@
+// Prisma schema — Supabase PostgreSQL (project: POS, host: db.alrmshmfmkqetlgypoma.supabase.co)
+// Docs: https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Users table — authentication and staff accounts
+model User {
+  id           Int       @id @default(autoincrement())
+  fullName     String    @map("full_name")
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  phone        String?
+  roleId       Int?      @map("role_id")
+  shopId       Int?      @map("shop_id")
+  status       String    @default("active")
+  lastLogin    DateTime? @map("last_login")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  @@map("users")
+}

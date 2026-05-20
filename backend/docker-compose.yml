@@ -1,0 +1,10 @@
+# Runs the API only. Database is Supabase PostgreSQL (configure DATABASE_URL in .env).
+
+services:
+  api:
+    build: .
+    ports:
+      - "${PORT:-4000}:4000"
+    env_file:
+      - .env
+    restart: unless-stopped
