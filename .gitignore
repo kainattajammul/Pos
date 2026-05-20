@@ -24,7 +24,8 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 .idea/
-.vscode/
+.vscode/*
+!.vscode/settings.json
 
 # Prisma
 # (migrations are committed; generated client lives in node_modules)
