@@ -26,6 +26,18 @@ export function errorHandler(err, _req, res, _next) {
         message: "A record with this value already exists",
       });
     }
+    if (err.code === "P2025") {
+      return ApiResponse.error(res, {
+        statusCode: HTTP.NOT_FOUND,
+        message: "Record not found",
+      });
+    }
+    if (err.code === "P2003") {
+      return ApiResponse.error(res, {
+        statusCode: HTTP.CONFLICT,
+        message: "Cannot delete: related records still exist",
+      });
+    }
   }
 
   console.error(err);

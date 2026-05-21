@@ -13,8 +13,8 @@ export function Sparkline({ data, color = "#ef4444", className }: SparklineProps
   const chartData = data.map((value, index) => ({ index, value }));
 
   return (
-    <div className={cn("h-12 w-24", className)}>
-      <ResponsiveContainer width="100%" height="100%">
+    <div className={cn("h-12 w-24 shrink-0 min-w-[6rem]", className)}>
+      <ResponsiveContainer width="100%" height="100%" minWidth={0} debounce={50}>
         <AreaChart data={chartData} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id={`spark-${color}`} x1="0" y1="0" x2="0" y2="1">

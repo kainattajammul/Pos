@@ -27,11 +27,13 @@ export function createApp() {
     res.json({
       success: true,
       message: "Fone Doctors POS API",
-      data: { docs: "/api/v1/health" },
+      data: { docs: { api: "/api/v1", health: "/api/v1/health" } },
     });
   });
 
   app.use("/api/v1", routes);
+  /** Alias: POST /api/users matches POST /api/v1/users */
+  app.use("/api", routes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

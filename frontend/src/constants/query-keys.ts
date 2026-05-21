@@ -14,4 +14,14 @@ export const queryKeys = {
   auth: {
     me: ["auth", "me"] as const,
   },
+  users: {
+    all: ["users"] as const,
+    list: () => ["users", "list"] as const,
+    detail: (id: number) => ["users", "detail", id] as const,
+  },
+  roles: {
+    all: ["roles"] as const,
+    list: () => ["roles", "list"] as const,
+    detail: (id: number) => ["roles", "detail", id] as const,
+  },
 } as const;

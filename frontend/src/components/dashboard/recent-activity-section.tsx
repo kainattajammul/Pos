@@ -34,8 +34,10 @@ export function RecentActivitySection({ data, isLoading }: RecentActivitySection
           Track real-time sales, stock movements, and repair updates across your shop.
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <BarChartCard data={data} />
+      <CardContent className="min-w-0">
+        <div className="min-w-0 w-full">
+          <BarChartCard data={data} />
+        </div>
         <Link
           href="/reports"
           className="mt-6 inline-flex h-8 w-full items-center justify-center rounded-lg border border-border bg-background text-sm font-medium transition hover:bg-muted"

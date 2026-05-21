@@ -1,10 +1,7 @@
 export class ApiResponse {
   static success(res, { statusCode = 200, message, data, meta }) {
-    const body = {
-      success: true,
-      message,
-      data,
-    };
+    const body = { success: true, message };
+    if (data !== undefined) body.data = data;
     if (meta) body.meta = meta;
     return res.status(statusCode).json(body);
   }

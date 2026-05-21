@@ -12,8 +12,10 @@ export function SalesChannelsSection() {
         <CardTitle className="text-lg">Sales Channels</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-6 md:grid-cols-[1fr_auto] md:items-center">
-          <DonutChart data={mockSalesChannels} height={220} innerRadius={50} outerRadius={78} />
+        <div className="grid min-w-0 gap-6 md:grid-cols-[1fr_auto] md:items-center">
+          <div className="min-w-0 w-full">
+            <DonutChart data={mockSalesChannels} height={220} innerRadius={50} outerRadius={78} />
+          </div>
           <ChartLegend items={mockSalesChannels} />
         </div>
       </CardContent>

@@ -50,8 +50,10 @@ export function RepairReportsSection({ report, isLoading }: RepairReportsSection
         </p>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-6 md:grid-cols-[1fr_auto] md:items-center">
-          <DonutChart data={chartData} height={220} innerRadius={50} outerRadius={78} />
+        <div className="grid min-w-0 gap-6 md:grid-cols-[1fr_auto] md:items-center">
+          <div className="min-w-0 w-full">
+            <DonutChart data={chartData} height={220} innerRadius={50} outerRadius={78} />
+          </div>
           <ChartLegend items={chartData} />
         </div>
       </CardContent>

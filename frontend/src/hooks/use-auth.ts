@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -34,15 +35,27 @@ export function useAuth() {
     },
   });
 
-  const logoutMutation = useMutation({
-    mutationFn: logoutRequest,
-    onSettled: () => {
+  const [isSigningOut, setIsSigningOut] = useState(false);
+  const signingOutRef = useRef(false);
+
+  const signOut = useCallback(async () => {
+    if (signingOutRef.current) return;
+    signingOutRef.current = true;
+    setIsSigningOut(true);
+    try {
+      await logoutRequest();
+    } catch {
+      // Still sign out locally if API is down or session already expired
+    } finally {
       clearSession();
       dispatch(logoutAction());
       queryClient.clear();
+      toast.success("Signed out");
       router.push("/login");
-    },
-  });
+      signingOutRef.current = false;
+      setIsSigningOut(false);
+    }
+  }, [dispatch, queryClient, router]);
 
   return {
     user,
@@ -51,8 +64,11 @@ export function useAuth() {
     login: loginMutation.mutate,
     loginAsync: loginMutation.mutateAsync,
     isLoggingIn: loginMutation.isPending,
-    logout: () => logoutMutation.mutate(),
-    isLoggingOut: logoutMutation.isPending,
+    signOut,
+    logout: () => {
+      void signOut();
+    },
+    isLoggingOut: isSigningOut,
   };
 }
 

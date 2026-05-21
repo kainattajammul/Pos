@@ -10,6 +10,7 @@ import {
   ShoppingBag,
   ShoppingCart,
   Users,
+  Wrench,
 } from "lucide-react";
 
 export interface NavChild {
@@ -33,6 +34,11 @@ export const MAIN_NAV: NavItem[] = [
       { title: "Users", href: "/users" },
       { title: "Roles", href: "/roles" },
     ],
+  },
+  {
+    title: "Repair Management System",
+    icon: Wrench,
+    children: [{ title: "Repairs", href: "/repairs" }],
   },
   {
     title: "Contacts",

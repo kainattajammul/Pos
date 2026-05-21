@@ -1,6 +1,3 @@
-// Prisma schema — Supabase PostgreSQL (project: POS, host: db.alrmshmfmkqetlgypoma.supabase.co)
-// Docs: https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,18 +8,178 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// Users table — authentication and staff accounts
+enum MemberStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
 model User {
-  id           Int       @id @default(autoincrement())
-  fullName     String    @map("full_name")
-  email        String    @unique
-  passwordHash String    @map("password_hash")
+  id           Int      @id @default(autoincrement())
+
+  fullName     String   @map("full_name")
+  email        String   @unique
+  passwordHash String   @map("password_hash")
   phone        String?
-  roleId       Int?      @map("role_id")
-  shopId       Int?      @map("shop_id")
-  status       String    @default("active")
-  lastLogin    DateTime? @map("last_login")
-  createdAt    DateTime  @default(now()) @map("created_at")
+
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  memberships  ShopMember[]
 
   @@map("users")
+}
+
+model Shop {
+  id        Int      @id @default(autoincrement())
+
+  name      String
+  email     String?
+  phone     String?
+
+  vatNumber String?  @map("vat_number")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  branches  Branch[]
+  members   ShopMember[]
+  roles     Role[]
+
+  @@map("shops")
+}
+
+model Branch {
+  id        Int      @id @default(autoincrement())
+
+  shopId    Int      @map("shop_id")
+
+  name      String
+  address   String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  members   BranchMemberRole[]
+
+  @@unique([id, shopId])
+  @@index([shopId])
+
+  @@map("branches")
+}
+
+model ShopMember {
+  id        Int          @id @default(autoincrement())
+
+  userId    Int          @map("user_id")
+  shopId    Int          @map("shop_id")
+
+  status    MemberStatus @default(ACTIVE)
+
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shop      Shop         @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  shopRoles   ShopMemberRole[]
+  branchRoles BranchMemberRole[]
+
+  @@unique([userId, shopId])
+  @@unique([id, shopId])
+  @@index([shopId])
+  @@index([userId])
+
+  @@map("shop_members")
+}
+
+model Role {
+  id        Int      @id @default(autoincrement())
+
+  shopId    Int      @map("shop_id")
+
+  name      String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  permissions RolePermission[]
+  shopMembers ShopMemberRole[]
+  branchMembers BranchMemberRole[]
+
+  @@unique([shopId, name])
+  @@unique([id, shopId])
+  @@index([shopId])
+
+  @@map("roles")
+}
+
+model Permission {
+  id        Int      @id @default(autoincrement())
+
+  key       String   @unique
+  module    String
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  roles     RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       Int @map("role_id")
+  permissionId Int @map("permission_id")
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+
+  @@map("role_permissions")
+}
+
+model ShopMemberRole {
+  id           Int @id @default(autoincrement())
+
+  shopId       Int @map("shop_id")
+  shopMemberId Int @map("shop_member_id")
+  roleId       Int @map("role_id")
+
+  shopMember   ShopMember @relation(fields: [shopMemberId, shopId], references: [id, shopId], onDelete: Cascade)
+  role         Role       @relation(fields: [roleId, shopId], references: [id, shopId], onDelete: Cascade)
+
+  assignedAt   DateTime   @default(now()) @map("assigned_at")
+
+  @@unique([shopMemberId, roleId])
+  @@index([shopId])
+  @@index([roleId])
+
+  @@map("shop_member_roles")
+}
+
+model BranchMemberRole {
+  id           Int @id @default(autoincrement())
+
+  shopId       Int @map("shop_id")
+  branchId     Int @map("branch_id")
+  shopMemberId Int @map("shop_member_id")
+  roleId       Int @map("role_id")
+
+  shopMember   ShopMember @relation(fields: [shopMemberId, shopId], references: [id, shopId], onDelete: Cascade)
+  branch       Branch     @relation(fields: [branchId, shopId], references: [id, shopId], onDelete: Cascade)
+  role         Role       @relation(fields: [roleId, shopId], references: [id, shopId], onDelete: Cascade)
+
+  assignedAt   DateTime   @default(now()) @map("assigned_at")
+
+  @@unique([shopMemberId, branchId, roleId])
+  @@index([shopId])
+  @@index([branchId])
+  @@index([roleId])
+
+  @@map("branch_member_roles")
 }

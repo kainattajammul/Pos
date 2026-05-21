@@ -1,5 +1,16 @@
 import { roleNameFromId } from "../constants/roles.js";
 
+/** Minimal payload after user create/update (no password). */
+export function toCreatedUserResponse(user) {
+  return {
+    id: user.id,
+    fullName: user.fullName,
+    email: user.email,
+  };
+}
+
+export const toUpdatedUserResponse = toCreatedUserResponse;
+
 /** Never expose password_hash in API responses. */
 export function toPublicUser(user) {
   return {
@@ -7,11 +18,8 @@ export function toPublicUser(user) {
     fullName: user.fullName,
     email: user.email,
     phone: user.phone,
-    roleId: user.roleId,
-    shopId: user.shopId,
-    status: user.status,
-    lastLogin: user.lastLogin,
     createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
   };
 }
 

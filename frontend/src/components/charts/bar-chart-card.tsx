@@ -25,8 +25,8 @@ export function BarChartCard({ data, height = 280 }: BarChartCardProps) {
   }));
 
   return (
-    <ChartContainer height={height}>
-      <ResponsiveContainer width="100%" height="100%">
+    <ChartContainer height={height} className="min-w-0">
+      <ResponsiveContainer width="100%" height="100%" minWidth={0} debounce={50}>
         <BarChart data={chartData} barSize={22}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-border/50" />
           <XAxis

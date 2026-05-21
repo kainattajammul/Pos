@@ -53,10 +53,14 @@ cp .env.example .env
 # Edit .env with real DATABASE_URL and DIRECT_URL
 
 npx prisma generate
-npx prisma migrate dev --name init_users
-# Production deploy:
 npx prisma migrate deploy
+# Or apply pending migrations in dev:
+npx prisma migrate dev
 ```
+
+**Current schema:** multi-tenant shops, branches, `shop_members`, per-shop `roles`, `permissions`, and role assignments (`shop_member_roles`, `branch_member_roles`). The legacy `users.role_id` / `users.shop_id` columns are removed.
+
+If `migrate` fails (e.g. invalid Supabase password), run `prisma/migrations/20260520140000_shop_multitenant_rbac/migration.sql` in the Supabase SQL Editor, or use `prisma/supabase-full-schema.sql` on a fresh database.
 
 Alternative without migration history (prototyping only):
 
@@ -71,6 +75,8 @@ npm run dev
 ```
 
 API base: `http://localhost:4000/api/v1`
+
+`GET /api/v1` returns `success: true` with links to main route groups. Use `GET /api/v1/health` for a minimal health check.
 
 ## Docker (API only)
 
@@ -107,14 +113,97 @@ Uses Supabase for PostgreSQL — no local Postgres container. Ensure `.env` has 
 | POST   | /auth/logout      | Clear refresh cookie |
 | GET    | /auth/me          | Current user (JWT) |
 
-### Users (JWT required)
+### Users
 
-| Method | Path        | Description   |
-|--------|-------------|---------------|
-| GET    | /users      | All users     |
-| GET    | /users/:id  | Single user   |
-| PUT    | /users/:id  | Update user   |
-| DELETE | /users/:id  | Delete user   |
+| Method | Path        | Auth | Description   |
+|--------|-------------|------|---------------|
+| POST   | /users      | No   | Create user (links to shop; optional role) |
+| GET    | /users      | JWT  | All users     |
+| GET    | /users/:id  | JWT  | Single user   |
+| PUT    | /users/:id  | No   | Update user (partial; User fields only) |
+| DELETE | /users/:id  | No   | Delete user (+ related memberships) |
+
+Also available at `/api/v1/users` (same handlers).
+
+#### Create user
+
+```http
+POST http://localhost:4000/api/users
+Content-Type: application/json
+
+{
+  "fullName": "John Doe",
+  "email": "john@example.com",
+  "password": "12345678",
+  "phone": "03001234567",
+  "roleId": 1,
+  "shopId": 1,
+  "status": "ACTIVE"
+}
+```
+
+Response `201`:
+
+```json
+{
+  "success": true,
+  "message": "User created successfully",
+  "data": {
+    "id": 1,
+    "fullName": "John Doe",
+    "email": "john@example.com"
+  }
+}
+```
+
+Requires an existing `shops` row. If `roleId` is sent, that role must belong to the same `shopId`. Password is bcrypt-hashed; only `passwordHash` is stored.
+
+#### Update user
+
+```http
+PUT http://localhost:4000/api/users/1
+Content-Type: application/json
+
+{
+  "fullName": "Updated Name",
+  "email": "updated@example.com",
+  "password": "newpassword123",
+  "phone": "03001234567"
+}
+```
+
+All body fields are optional, but at least one must be sent. Response `200`:
+
+```json
+{
+  "success": true,
+  "message": "User updated successfully",
+  "data": {
+    "id": 1,
+    "fullName": "Updated Name",
+    "email": "updated@example.com"
+  }
+}
+```
+
+Returns `404` if the user does not exist, `409` if the email is taken by another user. Password is re-hashed with bcrypt when provided.
+
+#### Delete user
+
+```http
+DELETE http://localhost:4000/api/users/1
+```
+
+Response `200`:
+
+```json
+{
+  "success": true,
+  "message": "User deleted successfully"
+}
+```
+
+Returns `404` if the user does not exist, `400` for invalid id. Related `shop_members`, `shop_member_roles`, and `branch_member_roles` are removed in a transaction before the user row is deleted (hard delete).
 
 ### Dashboard (JWT required, **mock data only**)
 

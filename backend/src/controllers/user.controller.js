@@ -2,10 +2,34 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { HTTP } from "../constants/httpStatus.js";
 import { UserModel } from "../models/user.model.js";
-import { hashPassword } from "../utils/password.js";
-import { toPublicUser } from "../utils/userMapper.js";
+import { createUser, deleteUser, updateUser } from "../services/user.service.js";
+import {
+  toCreatedUserResponse,
+  toPublicUser,
+  toUpdatedUserResponse,
+} from "../utils/userMapper.js";
 
 export const UserController = {
+  async create(req, res) {
+    const { fullName, email, password, phone, shopId, roleId, status } = req.body;
+
+    const user = await createUser({
+      fullName,
+      email,
+      password,
+      phone: phone || null,
+      shopId,
+      roleId: roleId ?? null,
+      status,
+    });
+
+    return ApiResponse.success(res, {
+      statusCode: HTTP.CREATED,
+      message: "User created successfully",
+      data: toCreatedUserResponse(user),
+    });
+  },
+
   async getAll(_req, res) {
     const users = await UserModel.findAll();
     return ApiResponse.success(res, {
@@ -26,45 +50,25 @@ export const UserController = {
   },
 
   async update(req, res) {
-    const { fullName, email, password, phone, roleId, shopId, status } = req.body;
+    const { fullName, email, password, phone } = req.body;
 
-    const existing = await UserModel.findById(req.params.id);
-    if (!existing) {
-      throw new ApiError(HTTP.NOT_FOUND, "User not found");
-    }
+    const user = await updateUser(req.params.id, {
+      fullName,
+      email,
+      password,
+      phone,
+    });
 
-    if (email && email !== existing.email) {
-      const duplicate = await UserModel.findByEmail(email);
-      if (duplicate) {
-        throw new ApiError(HTTP.CONFLICT, "Email is already in use");
-      }
-    }
-
-    const data = {};
-    if (fullName !== undefined) data.fullName = fullName;
-    if (email !== undefined) data.email = email;
-    if (phone !== undefined) data.phone = phone;
-    if (roleId !== undefined) data.roleId = roleId;
-    if (shopId !== undefined) data.shopId = shopId;
-    if (status !== undefined) data.status = status;
-    if (password) data.passwordHash = await hashPassword(password);
-
-    const user = await UserModel.update(req.params.id, data);
     return ApiResponse.success(res, {
       message: "User updated successfully",
-      data: toPublicUser(user),
+      data: toUpdatedUserResponse(user),
     });
   },
 
   async remove(req, res) {
-    const existing = await UserModel.findById(req.params.id);
-    if (!existing) {
-      throw new ApiError(HTTP.NOT_FOUND, "User not found");
-    }
-    await UserModel.remove(req.params.id);
+    await deleteUser(req.params.id);
     return ApiResponse.success(res, {
       message: "User deleted successfully",
-      data: null,
     });
   },
 };

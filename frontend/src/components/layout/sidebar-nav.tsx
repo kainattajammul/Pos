@@ -34,7 +34,7 @@ export function SidebarNav({ collapsed, onNavigate }: SidebarNavProps) {
   };
 
   return (
-    <ScrollArea className="flex-1 px-3">
+    <ScrollArea className="min-h-0 flex-1 px-3">
       <nav className="space-y-1 pb-4">
         {MAIN_NAV.map((item) => {
           const Icon = item.icon;

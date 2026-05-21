@@ -1,3 +1,4 @@
+import "./env.js";
 import { PrismaClient } from "@prisma/client";
 
 // Single Prisma instance for the whole app (connection pooling via Supabase)

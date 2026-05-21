@@ -44,8 +44,10 @@ export function StockStatusSection({
         <CardDescription>Inventory health by quantity range</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-6 md:grid-cols-[1fr_auto] md:items-center">
-          <DonutChart data={chartData} height={240} />
+        <div className="grid min-w-0 gap-6 md:grid-cols-[1fr_auto] md:items-center">
+          <div className="min-w-0 w-full">
+            <DonutChart data={chartData} height={240} />
+          </div>
           <ChartLegend items={chartData} />
         </div>
         <Link

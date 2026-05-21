@@ -96,6 +96,20 @@
       "name": "Users",
       "item": [
         {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"12345678\",\n  \"phone\": \"03001234567\",\n  \"roleId\": 1,\n  \"shopId\": 1,\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": "{{baseUrl}}/users"
+          }
+        },
+        {
           "name": "Get All Users",
           "request": {
             "method": "GET",
@@ -120,12 +134,11 @@
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"fullName\": \"Jane Manager\",\n  \"roleId\": 2,\n  \"status\": \"active\"\n}"
+              "raw": "{\n  \"fullName\": \"Updated Name\",\n  \"email\": \"updated@example.com\",\n  \"password\": \"newpassword123\",\n  \"phone\": \"03001234567\"\n}"
             },
             "url": "{{baseUrl}}/users/{{userId}}"
           }
@@ -134,9 +147,7 @@
           "name": "Delete User",
           "request": {
             "method": "DELETE",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
-            ],
+            "header": [],
             "url": "{{baseUrl}}/users/{{userId}}"
           }
         }
