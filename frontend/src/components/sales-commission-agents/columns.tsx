@@ -80,11 +80,11 @@ export function createSalesCommissionAgentColumns(handlers: {
       },
     },
     {
-      accessorKey: "fullName",
+      accessorKey: "name",
       header: ({ column }) => <SortableHeader column={column} title="Full Name" />,
       cell: ({ row }) => (
         <span className="block max-w-[180px] truncate font-medium text-neutral-900">
-          {row.original.fullName}
+          {row.original.name}
         </span>
       ),
     },

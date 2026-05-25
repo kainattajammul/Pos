@@ -1,9 +1,6 @@
 export interface ApiSalesCommissionAgent {
   id: number;
-  prefix: string | null;
-  firstName: string;
-  lastName: string | null;
-  fullName: string;
+  name: string;
   email: string | null;
   contactNumber: string | null;
   address: string | null;
@@ -14,10 +11,7 @@ export interface ApiSalesCommissionAgent {
 
 export interface SalesCommissionAgentTableRow {
   id: number;
-  prefix: string | null;
-  firstName: string;
-  lastName: string | null;
-  fullName: string;
+  name: string;
   email: string | null;
   contactNumber: string | null;
   address: string | null;
@@ -27,9 +21,7 @@ export interface SalesCommissionAgentTableRow {
 }
 
 export interface CreateSalesCommissionAgentPayload {
-  prefix?: string;
-  firstName: string;
-  lastName?: string;
+  name: string;
   email?: string;
   contactNumber?: string;
   address?: string;
@@ -37,9 +29,7 @@ export interface CreateSalesCommissionAgentPayload {
 }
 
 export interface UpdateSalesCommissionAgentPayload {
-  prefix?: string;
-  firstName?: string;
-  lastName?: string;
+  name?: string;
   email?: string;
   contactNumber?: string;
   address?: string;
@@ -48,5 +38,5 @@ export interface UpdateSalesCommissionAgentPayload {
 
 export type SalesCommissionAgentMutationResult = Pick<
   SalesCommissionAgentTableRow,
-  "id" | "fullName" | "firstName" | "lastName" | "email"
+  "id" | "name" | "email"
 >;

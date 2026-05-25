@@ -73,7 +73,7 @@ export function useCreateSalesCommissionAgent() {
       createSalesCommissionAgent(payload),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.salesCommissionAgents.all });
-      toast.success(`Sales commission agent "${data.fullName}" created successfully`);
+      toast.success(`Sales commission agent "${data.name}" created successfully`);
     },
     onError: (error) => {
       toast.error(
@@ -96,7 +96,7 @@ export function useUpdateSalesCommissionAgent() {
     }) => updateSalesCommissionAgent(id, payload),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.salesCommissionAgents.all });
-      toast.success(`Sales commission agent "${data.fullName}" updated successfully`);
+      toast.success(`Sales commission agent "${data.name}" updated successfully`);
     },
     onError: (error) => {
       toast.error(

@@ -17,10 +17,7 @@ export function mapApiAgentToRow(
 ): SalesCommissionAgentTableRow {
   return {
     id: Number(agent.id),
-    prefix: agent.prefix ?? null,
-    firstName: agent.firstName,
-    lastName: agent.lastName ?? null,
-    fullName: agent.fullName,
+    name: agent.name,
     email: agent.email ?? null,
     contactNumber: agent.contactNumber ?? null,
     address: agent.address ?? null,

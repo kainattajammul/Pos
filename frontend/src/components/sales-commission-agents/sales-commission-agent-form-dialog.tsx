@@ -13,16 +13,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import {
-  PREFIX_OPTIONS,
   SALES_COMMISSION_AGENT_FORM_DEFAULTS,
   formValuesToPayload,
   mapAgentToFormValues,
@@ -55,15 +47,11 @@ export function SalesCommissionAgentFormDialog({
     register,
     handleSubmit,
     reset,
-    watch,
-    setValue,
     formState: { errors },
   } = useForm<SalesCommissionAgentFormValues>({
     resolver: zodResolver(salesCommissionAgentFormSchema) as Resolver<SalesCommissionAgentFormValues>,
     defaultValues: SALES_COMMISSION_AGENT_FORM_DEFAULTS,
   });
-
-  const prefix = watch("prefix");
 
   useEffect(() => {
     if (!open) return;
@@ -94,50 +82,20 @@ export function SalesCommissionAgentFormDialog({
           onSubmit={handleSubmit((values) => onSave(formValuesToPayload(values)))}
           noValidate
         >
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="space-y-2">
-              <Label htmlFor="agent-prefix">Prefix</Label>
-              <Select
-                value={prefix || "none"}
-                onValueChange={(v) => setValue("prefix", v === "none" ? "" : (v ?? ""))}
-                disabled={isSubmitting}
-              >
-                <SelectTrigger id="agent-prefix" className={cn("w-full", inputClass)}>
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">—</SelectItem>
-                  {PREFIX_OPTIONS.filter(Boolean).map((p) => (
-                    <SelectItem key={p} value={p}>
-                      {p}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="agent-firstName">
-                First Name <span className="text-primary">*</span>
-              </Label>
-              <Input
-                id="agent-firstName"
-                className={inputClass}
-                disabled={isSubmitting}
-                {...register("firstName")}
-              />
-              {errors.firstName ? (
-                <p className="text-xs text-destructive">{errors.firstName.message}</p>
-              ) : null}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="agent-lastName">Last Name</Label>
-              <Input
-                id="agent-lastName"
-                className={inputClass}
-                disabled={isSubmitting}
-                {...register("lastName")}
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="agent-name">
+              Name <span className="text-primary">*</span>
+            </Label>
+            <Input
+              id="agent-name"
+              className={inputClass}
+              disabled={isSubmitting}
+              placeholder="Full name"
+              {...register("name")}
+            />
+            {errors.name ? (
+              <p className="text-xs text-destructive">{errors.name.message}</p>
+            ) : null}
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">

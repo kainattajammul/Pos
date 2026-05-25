@@ -39,8 +39,7 @@ const globalAgentFilter: FilterFn<SalesCommissionAgentTableRow> = (
   const r = row.original;
   const haystack = [
     String(r.id),
-    r.fullName,
-    r.firstName,
+    r.name,
     r.lastName ?? "",
     r.email ?? "",
     r.contactNumber ?? "",
@@ -239,7 +238,7 @@ export function SalesCommissionAgentsManagementView() {
         }}
         agentLabel={
           deleteTarget
-            ? `${deleteTarget.fullName}${
+            ? `${deleteTarget.name}${
                 deleteTarget.email ? ` (${deleteTarget.email})` : ""
               }`
             : ""
