@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ComponentProps } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
@@ -113,7 +113,10 @@ const LOADING_CATEGORIES: RepairCategoryCard[] = [];
 const LOADING_MANUFACTURERS: RepairManufacturer[] = [
   { id: "add", name: "Add Manufacturer", isAdd: true },
 ];
-import { RepairTicketProvider } from "@/contexts/repair-ticket-context";
+import {
+  RepairTicketProvider,
+  useRepairTicket,
+} from "@/contexts/repair-ticket-context";
 
 type DeleteTarget =
   | { type: "category"; item: RepairCategoryCard }
@@ -280,8 +283,9 @@ function RepairsPosContent() {
   );
 
   const initialRepairCharges = useMemo(
-    () => getDefaultRepairCharges(selectedProblemIds, problems),
-    [selectedProblemIds, problems],
+    () =>
+      getDefaultRepairCharges(selectedProblemIds, selectedPartIds, problems, parts),
+    [selectedProblemIds, selectedPartIds, problems, parts],
   );
 
   const openAddCategory = () => {
@@ -520,11 +524,6 @@ function RepairsPosContent() {
     );
   };
 
-  const handleConfirmDetails = (values: RepairDetailsFormValues) => {
-    toast.success("Repair details confirmed", {
-      description: `Charges: $${values.repairCharges} · Assigned to ${values.assignedTo}`,
-    });
-  };
 
   const handleStepChange = (step: RepairStep) => {
     if (!canNavigateToRepairStep(step, furthestStep)) return;
@@ -603,17 +602,20 @@ function RepairsPosContent() {
 
       <RepairTicketProvider
         selectedCategoryId={selectedCategoryId}
+        selectedCategoryLabel={selectedCategory}
         selectedManufacturerId={selectedManufacturerId}
         selectedDeviceId={selectedDeviceId}
         selectedProblemIds={selectedProblemIds}
+        selectedPartIds={selectedPartIds}
         devices={devices}
         manufacturers={manufacturers}
         problems={problems}
+        parts={parts}
       >
         <div className="flex min-h-0 flex-1 overflow-hidden">
           <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden lg:flex-row">
             <RepairsCartPanel />
-            <RepairsWorkflowPanel
+            <RepairsWorkflowWithConfirm
               categories={categories}
               categoriesLoading={categoriesLoading}
               selectedCategory={selectedCategory}
@@ -654,7 +656,6 @@ function RepairsPosContent() {
               onEditPart={openEditPart}
               onDeletePart={handleDeletePart}
               initialRepairCharges={initialRepairCharges}
-              onConfirmDetails={handleConfirmDetails}
             />
           </div>
           <RepairsSideToolbar />
@@ -867,6 +868,27 @@ function RepairsPosContent() {
         onConfirm={handleConfirmDelete}
       />
     </div>
+  );
+}
+
+type RepairsWorkflowWithConfirmProps = Omit<
+  ComponentProps<typeof RepairsWorkflowPanel>,
+  "onConfirmDetails"
+>;
+
+function RepairsWorkflowWithConfirm(props: RepairsWorkflowWithConfirmProps) {
+  const { confirmTicket } = useRepairTicket();
+
+  return (
+    <RepairsWorkflowPanel
+      {...props}
+      onConfirmDetails={(values) => {
+        confirmTicket(values);
+        toast.success("Repair ticket confirmed", {
+          description: `Total $${values.repairCharges} · Assigned to ${values.assignedTo}. See the cart on the left.`,
+        });
+      }}
+    />
   );
 }
 

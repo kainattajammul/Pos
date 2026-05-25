@@ -2,6 +2,7 @@ import {
   DEFAULT_REPAIR_PROBLEMS,
   type RepairProblem,
 } from "@/lib/repairs-problems-data";
+import type { RepairPart } from "@/lib/repairs-parts-data";
 import { DEFAULT_TASK_DUE_AT } from "@/lib/repair-datetime";
 
 export type RepairDetailsSubTab = "checklist" | "condition-images";
@@ -80,17 +81,31 @@ export const DEVICE_NETWORK_OPTIONS = [
   "Other",
 ];
 
-/** Sum selected problem prices; falls back to default repair charge. */
+function formatRepairChargeAmount(total: number): string {
+  return Number.isInteger(total) ? String(total) : total.toFixed(2);
+}
+
+/** Sum selected issue and part prices; falls back to default when nothing is selected. */
 export function getDefaultRepairCharges(
   problemIds: string[],
+  partIds: string[],
   problems: RepairProblem[] = DEFAULT_REPAIR_PROBLEMS,
+  parts: RepairPart[] = [],
 ): string {
-  if (problemIds.length === 0) return REPAIR_DETAILS_DEFAULTS.repairCharges;
+  if (problemIds.length === 0 && partIds.length === 0) {
+    return REPAIR_DETAILS_DEFAULTS.repairCharges;
+  }
 
-  const total = problemIds.reduce((sum, id) => {
+  const issuesTotal = problemIds.reduce((sum, id) => {
     const problem = problems.find((p) => p.id === id && !p.isAdd);
     return sum + (problem?.price ?? 0);
   }, 0);
 
-  return total > 0 ? String(total) : REPAIR_DETAILS_DEFAULTS.repairCharges;
+  const partsTotal = partIds.reduce((sum, id) => {
+    const part = parts.find((p) => p.id === id && !p.isAdd);
+    return sum + (part?.price ?? 0);
+  }, 0);
+
+  const total = issuesTotal + partsTotal;
+  return formatRepairChargeAmount(total);
 }

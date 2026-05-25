@@ -346,7 +346,7 @@ export function RepairsDetailsStep({
 
               <DetailField label="Device Physical Location">
                 <Select
-                  value={form.devicePhysicalLocation || undefined}
+                  value={form.devicePhysicalLocation}
                   onValueChange={(v) => update("devicePhysicalLocation", v ?? "")}
                 >
                   <SelectTrigger className={selectTriggerClass}>
@@ -384,7 +384,7 @@ export function RepairsDetailsStep({
 
               <DetailField label="Device Network">
                 <Select
-                  value={form.deviceNetwork || undefined}
+                  value={form.deviceNetwork}
                   onValueChange={(v) => update("deviceNetwork", v ?? "")}
                 >
                   <SelectTrigger className={selectTriggerClass}>

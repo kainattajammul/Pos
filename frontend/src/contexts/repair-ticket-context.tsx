@@ -4,11 +4,18 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from "react";
 import { WALKIN_CUSTOMER_NAME } from "@/lib/repairs-customer-data";
+import {
+  buildRepairCartLineItems,
+  computeRepairCartTotals,
+  type RepairCartLineItem,
+  type RepairCartTotals,
+} from "@/lib/repair-cart";
 import {
   REPAIR_DETAILS_DEFAULTS,
   type RepairDetailsFormValues,
@@ -20,6 +27,7 @@ import {
 } from "@/lib/repair-ticket-snapshot";
 import type { RepairTicketPdfKind } from "@/lib/repair-ticket-pdf";
 import type { RepairProblem } from "@/lib/repairs-problems-data";
+import type { RepairPart } from "@/lib/repairs-parts-data";
 import type { RepairDevice, RepairManufacturer } from "@/lib/repairs-pos-data";
 
 interface RepairTicketContextValue {
@@ -30,6 +38,11 @@ interface RepairTicketContextValue {
   detailsForm: RepairDetailsFormValues;
   setDetailsForm: (values: RepairDetailsFormValues) => void;
   snapshot: RepairTicketSnapshot;
+  selectedCategoryLabel: string | null;
+  ticketConfirmed: boolean;
+  cartLineItems: RepairCartLineItem[];
+  cartTotals: RepairCartTotals;
+  confirmTicket: (values: RepairDetailsFormValues) => void;
   pdfDialogOpen: boolean;
   pdfKind: RepairTicketPdfKind | null;
   openPdfPreview: (kind: RepairTicketPdfKind) => void;
@@ -41,23 +54,29 @@ const RepairTicketContext = createContext<RepairTicketContextValue | null>(null)
 export interface RepairTicketProviderProps {
   children: ReactNode;
   selectedCategoryId: string | null;
+  selectedCategoryLabel: string | null;
   selectedManufacturerId: string | null;
   selectedDeviceId: string | null;
   selectedProblemIds: string[];
+  selectedPartIds: string[];
   devices?: RepairDevice[];
   manufacturers?: RepairManufacturer[];
   problems?: RepairProblem[];
+  parts?: RepairPart[];
 }
 
 export function RepairTicketProvider({
   children,
   selectedCategoryId,
+  selectedCategoryLabel,
   selectedManufacturerId,
   selectedDeviceId,
   selectedProblemIds,
+  selectedPartIds,
   devices = [],
   manufacturers = [],
   problems = [],
+  parts = [],
 }: RepairTicketProviderProps) {
   const [customerName, setCustomerName] = useState(WALKIN_CUSTOMER_NAME);
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerTableRow | null>(
@@ -65,6 +84,8 @@ export function RepairTicketProvider({
   );
   const [detailsForm, setDetailsForm] =
     useState<RepairDetailsFormValues>(REPAIR_DETAILS_DEFAULTS);
+  const [ticketConfirmed, setTicketConfirmed] = useState(false);
+  const [cartLineItems, setCartLineItems] = useState<RepairCartLineItem[]>([]);
 
   const selectCustomer = useCallback((customer: CustomerTableRow) => {
     setSelectedCustomer(customer);
@@ -74,8 +95,32 @@ export function RepairTicketProvider({
       assignedTo: customer.displayName,
     }));
   }, []);
+
   const [pdfDialogOpen, setPdfDialogOpen] = useState(false);
   const [pdfKind, setPdfKind] = useState<RepairTicketPdfKind | null>(null);
+
+  const selectionKey = useMemo(
+    () =>
+      [
+        selectedCategoryId,
+        selectedManufacturerId,
+        selectedDeviceId,
+        selectedProblemIds.join(","),
+        selectedPartIds.join(","),
+      ].join("|"),
+    [
+      selectedCategoryId,
+      selectedManufacturerId,
+      selectedDeviceId,
+      selectedProblemIds,
+      selectedPartIds,
+    ],
+  );
+
+  useEffect(() => {
+    setTicketConfirmed(false);
+    setCartLineItems([]);
+  }, [selectionKey]);
 
   const snapshot = useMemo(
     () =>
@@ -103,6 +148,27 @@ export function RepairTicketProvider({
     ],
   );
 
+  const cartTotals = useMemo(
+    () => computeRepairCartTotals(cartLineItems, detailsForm),
+    [cartLineItems, detailsForm],
+  );
+
+  const confirmTicket = useCallback(
+    (values: RepairDetailsFormValues) => {
+      setDetailsForm(values);
+      const lines = buildRepairCartLineItems({
+        selectedProblemIds,
+        selectedPartIds,
+        problems,
+        parts,
+        repairCharges: values.repairCharges,
+      });
+      setCartLineItems(lines);
+      setTicketConfirmed(true);
+    },
+    [selectedProblemIds, selectedPartIds, problems, parts],
+  );
+
   const openPdfPreview = useCallback((kind: RepairTicketPdfKind) => {
     setPdfKind(kind);
     setPdfDialogOpen(true);
@@ -122,6 +188,11 @@ export function RepairTicketProvider({
       detailsForm,
       setDetailsForm,
       snapshot,
+      selectedCategoryLabel,
+      ticketConfirmed,
+      cartLineItems,
+      cartTotals,
+      confirmTicket,
       pdfDialogOpen,
       pdfKind,
       openPdfPreview,
@@ -133,6 +204,11 @@ export function RepairTicketProvider({
       selectCustomer,
       detailsForm,
       snapshot,
+      selectedCategoryLabel,
+      ticketConfirmed,
+      cartLineItems,
+      cartTotals,
+      confirmTicket,
       pdfDialogOpen,
       pdfKind,
       openPdfPreview,
