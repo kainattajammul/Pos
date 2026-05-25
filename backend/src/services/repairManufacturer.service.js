@@ -37,8 +37,10 @@ async function seedDefaultManufacturersIfEmpty(shopId, repairCategoryId) {
 }
 
 export async function listRepairManufacturers(shopId, repairCategoryId) {
-  await ensureShopExists(shopId);
-  await ensureCategoryExists(shopId, repairCategoryId);
+  await Promise.all([
+    ensureShopExists(shopId),
+    ensureCategoryExists(shopId, repairCategoryId),
+  ]);
   await seedDefaultManufacturersIfEmpty(shopId, repairCategoryId);
   return RepairManufacturerModel.findByCategory(shopId, repairCategoryId);
 }

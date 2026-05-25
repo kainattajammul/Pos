@@ -26,18 +26,23 @@ export default function DashboardPage() {
   const { data: activities, isLoading: activitiesLoading } = useRecentActivities();
   const { data: repairReport, isLoading: repairLoading } = useRepairReports();
 
-  useEffect(() => {
-    if (!gridRef.current || summaryLoading) return;
-    gsap.from(gridRef.current.children, {
-      opacity: 0,
-      y: 18,
-      duration: 0.55,
-      stagger: 0.07,
-      ease: "power3.out",
-    });
-  }, [summaryLoading]);
+  const initialLoading =
+    summaryLoading && monthlyLoading && activitiesLoading && repairLoading;
 
-  if (summaryLoading) {
+  useEffect(() => {
+    if (!gridRef.current || initialLoading) return;
+    void import("gsap").then(({ default: gsap }) => {
+      gsap.from(gridRef.current!.children, {
+        opacity: 0,
+        y: 18,
+        duration: 0.55,
+        stagger: 0.07,
+        ease: "power3.out",
+      });
+    });
+  }, [initialLoading]);
+
+  if (initialLoading) {
     return <DashboardSkeleton />;
   }
 

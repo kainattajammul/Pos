@@ -11,10 +11,11 @@ import type { CustomerTableRow } from "@/types/customer-table";
 
 export function RepairsCustomerSearch() {
   const { selectCustomer } = useRepairTicket();
-  const { data: customers = [], isLoading } = useCustomers();
-
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+  const { data: customers = [], isLoading } = useCustomers(
+    open || query.trim().length > 0,
+  );
   const [highlightIndex, setHighlightIndex] = useState(0);
   const rootRef = useRef<HTMLDivElement>(null);
 

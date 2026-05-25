@@ -1,446 +1,446 @@
 {
   "mobile": {
     "apple": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      "iPhone 15 Pro Max",
+      "iPhone 15 Pro",
+      "iPhone 15 Plus",
+      "iPhone 15",
+      "iPhone 14 Pro Max",
+      "iPhone 14 Pro",
+      "iPhone 14 Plus",
+      "iPhone 14",
+      "iPhone 13 Pro Max",
+      "iPhone 13 Pro",
+      "iPhone 13 mini",
+      "iPhone 13",
+      "iPhone 12 Pro Max",
+      "iPhone 12 Pro",
+      "iPhone 12",
+      "iPhone 11 Pro Max",
+      "iPhone 11 Pro",
+      "iPhone 11",
+      "iPhone XS Max",
+      "iPhone SE"
     ],
     "samsung": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      "Galaxy S24 Ultra",
+      "Galaxy S24+",
+      "Galaxy S24",
+      "Galaxy S23 Ultra",
+      "Galaxy S23+",
+      "Galaxy S23",
+      "Galaxy S22 Ultra",
+      "Galaxy Z Fold6",
+      "Galaxy Z Fold5",
+      "Galaxy Z Flip6",
+      "Galaxy Z Flip5",
+      "Galaxy A55",
+      "Galaxy A54",
+      "Galaxy A35",
+      "Galaxy A34",
+      "Galaxy A15",
+      "Galaxy Note 20 Ultra",
+      "Galaxy Note 20"
     ],
     "google": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      "Pixel 9 Pro XL",
+      "Pixel 9 Pro",
+      "Pixel 9",
+      "Pixel 8 Pro",
+      "Pixel 8",
+      "Pixel 8a",
+      "Pixel 7 Pro",
+      "Pixel 7",
+      "Pixel 7a",
+      "Pixel 6 Pro",
+      "Pixel 6",
+      "Pixel 6a",
+      "Pixel Fold"
     ],
     "htc": [
-      null,
-      null,
-      null,
-      null,
-      null
+      "HTC U23 Pro",
+      "HTC U23",
+      "HTC Desire 22 Pro",
+      "HTC Desire 21 Pro",
+      "HTC Wildfire E3"
     ],
     "blackberry": [
-      null,
-      null,
-      null,
-      null
+      "BlackBerry KEY2",
+      "BlackBerry KEY2 LE",
+      "BlackBerry KEYone",
+      "BlackBerry Motion"
     ],
     "oneplus": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      "OnePlus 12",
+      "OnePlus 12R",
+      "OnePlus 11",
+      "OnePlus 10 Pro",
+      "OnePlus Nord 4",
+      "OnePlus Nord CE 4",
+      "OnePlus Open"
     ],
     "motorola": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      "Motorola Edge 50 Ultra",
+      "Motorola Edge 50 Pro",
+      "Motorola Razr 50 Ultra",
+      "Motorola Razr 40 Ultra",
+      "Moto G Power 5G",
+      "Moto G Stylus 5G",
+      "ThinkPhone 25"
     ],
     "xiaomi": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      "Xiaomi 14 Ultra",
+      "Xiaomi 14",
+      "Redmi Note 13 Pro+",
+      "Redmi Note 13 Pro",
+      "POCO X6 Pro",
+      "POCO F6 Pro"
     ],
     "lg": [
-      null,
-      null,
-      null,
-      null
+      "LG Velvet",
+      "LG Wing",
+      "LG V60 ThinQ",
+      "LG G8 ThinQ"
     ],
     "nokia": [
-      null,
-      null,
-      null,
-      null
+      "Nokia X30",
+      "Nokia G42",
+      "Nokia XR21",
+      "Nokia G22"
     ],
     "sony": [
-      null,
-      null,
-      null,
-      null
+      "Xperia 1 VI",
+      "Xperia 5 V",
+      "Xperia 10 VI",
+      "Xperia Pro-I"
     ],
     "vivo": [
-      null,
-      null,
-      null,
-      null
+      "vivo X100 Pro",
+      "vivo X100",
+      "vivo V30 Pro",
+      "iQOO 12 Pro"
     ],
     "asus": [
-      null,
-      null,
-      null,
-      null
+      "ROG Phone 8 Pro",
+      "ROG Phone 8",
+      "Zenfone 11 Ultra",
+      "Zenfone 10"
     ],
     "alcatel": [
-      null,
-      null,
-      null
+      "Alcatel 3L",
+      "Alcatel 1S",
+      "Alcatel Go Flip 4"
     ],
     "essential": [
-      null
+      "Essential PH-1"
     ],
     "huawei": [
-      null,
-      null,
-      null,
-      null
+      "Huawei P60 Pro",
+      "Huawei Mate 60 Pro",
+      "Huawei Nova 12 Pro",
+      "Huawei Mate X5"
     ],
     "kyocera": [
-      null,
-      null
+      "Kyocera DuraForce Pro 3",
+      "Kyocera Torque 5G"
     ],
     "zte": [
-      null,
-      null,
-      null
+      "ZTE Axon 60 Ultra",
+      "ZTE nubia Red Magic 9 Pro",
+      "ZTE nubia Z60 Ultra"
     ]
   },
   "tablet": {
     "apple": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      "iPad Pro 13 (M4)",
+      "iPad Pro 11 (M4)",
+      "iPad Pro 12.9",
+      "iPad Pro 11",
+      "iPad Air 13 (M2)",
+      "iPad Air 11 (M2)",
+      "iPad Air",
+      "iPad (10th gen)",
+      "iPad mini"
     ],
     "samsung": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      "Galaxy Tab S9 Ultra",
+      "Galaxy Tab S9+",
+      "Galaxy Tab S9",
+      "Galaxy Tab S8 Ultra",
+      "Galaxy Tab S8+",
+      "Galaxy Tab S8",
+      "Galaxy Tab A9+",
+      "Galaxy Tab A9",
+      "Galaxy Tab Active5"
     ],
     "google": [
-      null,
-      null
+      "Pixel Tablet",
+      "Pixel Slate"
     ],
     "huawei": [
-      null,
-      null,
-      null
+      "MatePad Pro 13.2",
+      "MatePad 11.5",
+      "MatePad SE"
     ],
     "xiaomi": [
-      null,
-      null,
-      null,
-      null
+      "Xiaomi Pad 6S Pro",
+      "Xiaomi Pad 6",
+      "Redmi Pad Pro",
+      "Redmi Pad SE"
     ],
     "oneplus": [
-      null,
-      null
+      "OnePlus Pad 2",
+      "OnePlus Pad"
     ],
     "asus": [
-      null,
-      null,
-      null
+      "ROG Flow Z13",
+      "ZenPad 10",
+      "Transformer Mini"
     ],
     "lg": [
-      null,
-      null
+      "LG G Pad 5",
+      "LG Ultra Tab"
     ],
     "nokia": [
-      null,
-      null
+      "Nokia T21",
+      "Nokia T10"
     ],
     "sony": [
-      null
+      "Xperia Tablet Z4"
     ],
     "alcatel": [
-      null,
-      null
+      "Alcatel 3T 10",
+      "Alcatel 1T 10"
     ],
     "zte": [
-      null
+      "ZTE Grand X View 4"
     ],
     "motorola": [
-      null,
-      null
+      "Moto Tab G70",
+      "Moto Tab G62"
     ],
     "htc": [
-      null
+      "HTC Nexus 9"
     ],
     "blackberry": [
-      null
+      "BlackBerry PlayBook"
     ]
   },
   "computer": {
     "apple": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      "MacBook Pro 16 (M3 Max)",
+      "MacBook Pro 14 (M3 Pro)",
+      "MacBook Air 15 (M3)",
+      "MacBook Air 13 (M3)",
+      "iMac 24 (M3)",
+      "Mac mini (M2 Pro)",
+      "Mac Studio (M2 Ultra)",
+      "Mac Pro (M2 Ultra)"
     ],
     "samsung": [
-      null,
-      null,
-      null,
-      null,
-      null
+      "Galaxy Book4 Ultra",
+      "Galaxy Book4 Pro 360",
+      "Galaxy Book4 Pro",
+      "Galaxy Book4",
+      "Galaxy Chromebook Plus"
     ],
     "google": [
-      null,
-      null
+      "Chromebook Pixel",
+      "Chromebook Plus"
     ],
     "asus": [
-      null,
-      null,
-      null,
-      null,
-      null
+      "ROG Zephyrus G16",
+      "ROG Strix Scar 18",
+      "Zenbook Pro 16",
+      "Zenbook 14",
+      "ProArt Studiobook 16"
     ],
     "lg": [
-      null,
-      null,
-      null,
-      null
+      "LG gram 17",
+      "LG gram 16",
+      "LG gram 15",
+      "LG gram Pro 16"
     ],
     "huawei": [
-      null,
-      null,
-      null,
-      null
+      "MateBook X Pro",
+      "MateBook 16",
+      "MateBook 14",
+      "MateBook D 16"
     ],
     "oneplus": [
-      null
+      "OnePlus Nord Laptop (Concept)"
     ],
     "xiaomi": [
-      null,
-      null
+      "RedmiBook Pro 15",
+      "Xiaomi Book Air 13"
     ],
     "sony": [
-      null,
-      null
+      "VAIO SX14",
+      "VAIO F16"
     ],
     "motorola": [
-      null
+      "ThinkPhone Desktop Dock"
     ],
     "zte": [
-      null
+      "ZTE Blade V Book"
     ],
     "htc": [
-      null
+      "HTC Nexus 9 Laptop Dock"
     ],
     "nokia": [
-      null
+      "Nokia Book 13"
     ],
     "alcatel": [
-      null
+      "Alcatel 1T Book"
     ],
     "blackberry": [
-      null
+      "BlackBerry KEY2 Laptop Dock"
     ],
     "kyocera": [
-      null
+      "Kyocera DuraBook"
     ],
     "essential": [
-      null
+      "Essential Laptop Dock"
     ],
     "vivo": [
-      null
+      "vivo Book Pro"
     ]
   },
   "drone": {
     "apple": [
-      null,
-      null
+      "Apple Vision Pro",
+      "Apple TV 4K Drone Controller Hub"
     ],
     "samsung": [
-      null,
-      null
+      "Samsung Galaxy SmartTag Drone Kit",
+      "Samsung Pro Repair Drone"
     ],
     "google": [
-      null
+      "Google Wing Delivery Drone (Service Unit)"
     ],
     "huawei": [
-      null
+      "Huawei HiDrone Repair Unit"
     ],
     "xiaomi": [
-      null,
-      null
+      "Xiaomi FIMI X8 Pro",
+      "Xiaomi FIMI Mini 3"
     ],
     "sony": [
-      null
+      "Sony Airpeak S1"
     ],
     "asus": [
-      null
+      "ASUS ZenDrone Pro (Service)"
     ],
     "oneplus": [
-      null
+      "OnePlus SkyLink Drone"
     ],
     "motorola": [
-      null
+      "Motorola MotoDrone Racer"
     ],
     "lg": [
-      null
+      "LG AeroView Drone"
     ],
     "nokia": [
-      null
+      "Nokia Drone Networks Repair Node"
     ],
     "zte": [
-      null
+      "ZTE SkyEye Drone"
     ],
     "htc": [
-      null
+      "HTC RE Repair Drone"
     ],
     "alcatel": [
-      null
+      "Alcatel Pocket Drone"
     ],
     "kyocera": [
-      null
+      "Kyocera Industrial Drone"
     ],
     "essential": [
-      null
+      "Essential Camera Drone"
     ],
     "blackberry": [
-      null
+      "BlackBerry Secure Drone Module"
     ],
     "vivo": [
-      null
+      "vivo Flying Camera Drone"
     ]
   },
   "jewelry": {
     "apple": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      "Apple Watch Ultra 2",
+      "Apple Watch Series 9",
+      "Apple Watch SE",
+      "Apple Watch Series 8",
+      "AirPods Pro (2nd gen)",
+      "AirPods Max"
     ],
     "samsung": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      "Galaxy Watch7",
+      "Galaxy Watch7 Classic",
+      "Galaxy Watch6",
+      "Galaxy Ring",
+      "Galaxy Buds3 Pro",
+      "Galaxy Fit3"
     ],
     "google": [
-      null,
-      null,
-      null,
-      null
+      "Pixel Watch 3",
+      "Pixel Watch 2",
+      "Pixel Buds Pro 2",
+      "Fitbit Charge 6"
     ],
     "huawei": [
-      null,
-      null,
-      null
+      "Huawei Watch GT 5 Pro",
+      "Huawei Watch Fit 3",
+      "Huawei FreeBuds Pro 3"
     ],
     "xiaomi": [
-      null,
-      null,
-      null
+      "Xiaomi Watch 2 Pro",
+      "Xiaomi Smart Band 9",
+      "Redmi Watch 4"
     ],
     "oneplus": [
-      null,
-      null
+      "OnePlus Watch 2",
+      "OnePlus Buds Pro 2"
     ],
     "motorola": [
-      null,
-      null
+      "Motorola Moto Watch 40",
+      "Motorola Buds+"
     ],
     "sony": [
-      null,
-      null
+      "Sony WH-1000XM5",
+      "Sony LinkBuds"
     ],
     "asus": [
-      null
+      "ASUS ZenWatch Repair Series"
     ],
     "lg": [
-      null,
-      null
+      "LG Tone Free",
+      "LG Watch Sport"
     ],
     "nokia": [
-      null
+      "Nokia XR20 Watch Band Kit"
     ],
     "alcatel": [
-      null
+      "Alcatel 1 Watch"
     ],
     "zte": [
-      null
+      "ZTE Watch Live"
     ],
     "htc": [
-      null
+      "HTC Vive Flow"
     ],
     "essential": [
-      null
+      "Essential Home Jewelry Hub"
     ],
     "blackberry": [
-      null
+      "BlackBerry Pearl Classic"
     ],
     "kyocera": [
-      null
+      "Kyocera DuraXV Watch"
     ],
     "vivo": [
-      null,
-      null
+      "vivo Watch 3",
+      "vivo TWS 4"
     ]
   }
 }

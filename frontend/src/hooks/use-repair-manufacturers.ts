@@ -35,6 +35,7 @@ export function useRepairManufacturers(shopId: number, repairCategoryId: number 
     queryKey: queryKeys.repairManufacturers.list(shopId, repairCategoryId ?? 0),
     queryFn: () => fetchRepairManufacturers(shopId, repairCategoryId!),
     enabled: repairCategoryId != null && repairCategoryId > 0,
+    staleTime: 10 * 60 * 1000,
   });
 }
 

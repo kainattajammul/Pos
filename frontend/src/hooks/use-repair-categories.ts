@@ -34,6 +34,7 @@ export function useRepairCategories(shopId: number) {
   return useQuery({
     queryKey: queryKeys.repairCategories.list(shopId),
     queryFn: () => fetchRepairCategories(shopId),
+    staleTime: 10 * 60 * 1000,
   });
 }
 

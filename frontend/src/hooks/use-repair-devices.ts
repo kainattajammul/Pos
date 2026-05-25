@@ -47,6 +47,7 @@ export function useRepairDevices(
       repairCategoryId > 0 &&
       repairManufacturerId != null &&
       repairManufacturerId > 0,
+    staleTime: 10 * 60 * 1000,
   });
 }
 
@@ -85,7 +86,13 @@ export function useCreateRepairDevice(
         repairManufacturerId,
       }),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.repairDevices.all });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.repairDevices.list(
+          shopId,
+          repairCategoryId,
+          repairManufacturerId,
+        ),
+      });
       toast.success(`Device "${data.name}" created successfully`);
     },
     onError: (error) => {
@@ -110,7 +117,13 @@ export function useUpdateRepairDevice(
       payload: UpdateRepairDevicePayload;
     }) => updateRepairDevice(id, payload),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.repairDevices.all });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.repairDevices.list(
+          shopId,
+          repairCategoryId,
+          repairManufacturerId,
+        ),
+      });
       toast.success(`Device "${data.name}" updated successfully`);
     },
     onError: (error) => {
@@ -129,7 +142,13 @@ export function useDeleteRepairDevice(
   return useMutation({
     mutationFn: (id: number) => deleteRepairDevice(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.repairDevices.all });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.repairDevices.list(
+          _shopId,
+          _repairCategoryId,
+          _repairManufacturerId,
+        ),
+      });
       toast.success("Device deleted successfully");
     },
     onError: (error) => {

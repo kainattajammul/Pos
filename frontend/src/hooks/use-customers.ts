@@ -15,10 +15,12 @@ import type {
   UpdateCustomerPayload,
 } from "@/types/customer-table";
 
-export function useCustomers() {
+export function useCustomers(enabled = true) {
   return useQuery({
     queryKey: queryKeys.customers.list(),
     queryFn: fetchCustomers,
+    enabled,
+    staleTime: 5 * 60 * 1000,
   });
 }
 

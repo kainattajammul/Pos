@@ -6,6 +6,33 @@ import { RepairDeviceModel } from "../models/repairDevice.model.js";
 import { ShopModel } from "../models/shop.model.js";
 import { slugify } from "../utils/slugify.js";
 import { getDefaultDeviceNames } from "../data/defaultRepairDevices.js";
+import {
+  sortOrderForDeviceName,
+  sortRepairDevices,
+} from "../utils/repairDeviceSort.js";
+
+async function syncManufacturerDeviceSortOrders(shopId, repairManufacturerId) {
+  const devices = await RepairDeviceModel.findByManufacturer(
+    shopId,
+    repairManufacturerId,
+  );
+  const sorted = sortRepairDevices(devices);
+  const { prisma } = await import("../config/database.js");
+  const updates = sorted
+    .map((device, index) =>
+      device.sortOrder !== index
+        ? prisma.repairDevice.update({
+            where: { id: device.id },
+            data: { sortOrder: index },
+          })
+        : null,
+    )
+    .filter(Boolean);
+  if (updates.length > 0) {
+    await prisma.$transaction(updates);
+  }
+  return sorted;
+}
 
 const VALID_ICON_VARIANTS = new Set([
   "mobile",
@@ -63,13 +90,14 @@ async function seedDefaultDevicesIfEmpty(
   const count = await RepairDeviceModel.countByManufacturer(shopId, repairManufacturerId);
   if (count > 0) return;
 
-  const names = getDefaultDeviceNames(categorySlug, manufacturerSlug);
+  const names = getDefaultDeviceNames(categorySlug, manufacturerSlug).filter(Boolean);
   if (names.length === 0) return;
 
   const defaultVariant = defaultIconVariantForCategory(categorySlug);
+  const sortedNames = sortRepairDevices(names.map((name) => ({ name }))).map((d) => d.name);
 
   await RepairDeviceModel.createMany(
-    names.map((name, index) => ({
+    sortedNames.map((name, index) => ({
       shopId: Number(shopId),
       repairCategoryId: Number(repairCategoryId),
       repairManufacturerId: Number(repairManufacturerId),
@@ -87,13 +115,11 @@ export async function listRepairDevices(
   repairCategoryId,
   repairManufacturerId,
 ) {
-  await ensureShopExists(shopId);
-  const category = await ensureCategoryExists(shopId, repairCategoryId);
-  const manufacturer = await ensureManufacturerExists(
-    shopId,
-    repairCategoryId,
-    repairManufacturerId,
-  );
+  const [, category, manufacturer] = await Promise.all([
+    ensureShopExists(shopId),
+    ensureCategoryExists(shopId, repairCategoryId),
+    ensureManufacturerExists(shopId, repairCategoryId, repairManufacturerId),
+  ]);
 
   await seedDefaultDevicesIfEmpty(
     shopId,
@@ -103,7 +129,11 @@ export async function listRepairDevices(
     manufacturer.slug,
   );
 
-  return RepairDeviceModel.findByManufacturer(shopId, repairManufacturerId);
+  const devices = await RepairDeviceModel.findByManufacturer(
+    shopId,
+    repairManufacturerId,
+  );
+  return sortRepairDevices(devices);
 }
 
 export async function createRepairDevice({
@@ -148,7 +178,15 @@ export async function createRepairDevice({
     resolvedVariant = defaultIconVariantForCategory(category.slug);
   }
 
-  return RepairDeviceModel.create({
+  const existing = await RepairDeviceModel.findByManufacturer(
+    shopId,
+    repairManufacturerId,
+  );
+  const resolvedSortOrder =
+    sortOrder ??
+    sortOrderForDeviceName(existing, trimmedName);
+
+  const created = await RepairDeviceModel.create({
     shopId: Number(shopId),
     repairCategoryId: Number(repairCategoryId),
     repairManufacturerId: Number(repairManufacturerId),
@@ -156,9 +194,12 @@ export async function createRepairDevice({
     slug,
     imageUrl: imageUrl ?? null,
     iconVariant: resolvedVariant,
-    sortOrder: sortOrder ?? 0,
+    sortOrder: resolvedSortOrder,
     isDefault: false,
   });
+
+  await syncManufacturerDeviceSortOrders(shopId, repairManufacturerId);
+  return RepairDeviceModel.findById(created.id);
 }
 
 export async function updateRepairDevice(id, payload) {
@@ -214,7 +255,17 @@ export async function updateRepairDevice(id, payload) {
     }
   }
 
-  return RepairDeviceModel.update(id, data);
+  const updated = await RepairDeviceModel.update(id, data);
+
+  if (data.name !== undefined) {
+    await syncManufacturerDeviceSortOrders(
+      updated.shopId,
+      updated.repairManufacturerId,
+    );
+    return RepairDeviceModel.findById(updated.id);
+  }
+
+  return updated;
 }
 
 export async function deleteRepairDevice(id) {
@@ -222,5 +273,7 @@ export async function deleteRepairDevice(id) {
   if (!device) {
     throw new ApiError(HTTP.NOT_FOUND, "Repair device not found");
   }
+  const { shopId, repairManufacturerId } = device;
   await RepairDeviceModel.delete(id);
+  await syncManufacturerDeviceSortOrders(shopId, repairManufacturerId);
 }

@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import gsap from "gsap";
+import { useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import dynamic from "next/dynamic";
 import { toast } from "sonner";
+import { queryKeys } from "@/constants/query-keys";
+import { fetchRepairManufacturers } from "@/services/repair-manufacturers.service";
 import { APP_CONFIG } from "@/constants/config";
 import {
   useCreateRepairCategory,
@@ -29,7 +32,6 @@ import type {
   RepairManufacturer,
   RepairStep,
 } from "@/lib/repairs-pos-data";
-import { REPAIR_CATEGORIES, REPAIR_MANUFACTURERS } from "@/lib/repairs-pos-data";
 import {
   getDefaultRepairCharges,
   type RepairDetailsFormValues,
@@ -44,12 +46,42 @@ import { REPAIR_DEVICES_FALLBACK } from "@/lib/repairs-devices-data";
 import { RepairsTopNav } from "@/components/repairs/repairs-top-nav";
 import { RepairsPosBar } from "@/components/repairs/repairs-pos-bar";
 import { RepairsCartPanel } from "@/components/repairs/repairs-cart-panel";
-import { RepairsWorkflowPanel } from "@/components/repairs/repairs-workflow-panel";
 import { RepairsSideToolbar } from "@/components/repairs/repairs-side-toolbar";
-import { RepairCategoryFormDialog } from "@/components/repairs/repair-category-form-dialog";
 import { DeleteUserDialog } from "@/components/users/delete-user-dialog";
-import { RepairManufacturerFormDialog } from "@/components/repairs/repair-manufacturer-form-dialog";
-import { RepairDeviceFormDialog } from "@/components/repairs/repair-device-form-dialog";
+
+const RepairsWorkflowPanel = dynamic(
+  () =>
+    import("@/components/repairs/repairs-workflow-panel").then(
+      (m) => m.RepairsWorkflowPanel,
+    ),
+  { ssr: false },
+);
+const RepairCategoryFormDialog = dynamic(
+  () =>
+    import("@/components/repairs/repair-category-form-dialog").then(
+      (m) => m.RepairCategoryFormDialog,
+    ),
+  { ssr: false },
+);
+const RepairManufacturerFormDialog = dynamic(
+  () =>
+    import("@/components/repairs/repair-manufacturer-form-dialog").then(
+      (m) => m.RepairManufacturerFormDialog,
+    ),
+  { ssr: false },
+);
+const RepairDeviceFormDialog = dynamic(
+  () =>
+    import("@/components/repairs/repair-device-form-dialog").then(
+      (m) => m.RepairDeviceFormDialog,
+    ),
+  { ssr: false },
+);
+
+const LOADING_CATEGORIES: RepairCategoryCard[] = [];
+const LOADING_MANUFACTURERS: RepairManufacturer[] = [
+  { id: "add", name: "Add Manufacturer", isAdd: true },
+];
 import { RepairTicketProvider } from "@/contexts/repair-ticket-context";
 
 type DeleteTarget =
@@ -59,8 +91,9 @@ type DeleteTarget =
 
 function RepairsPosContent() {
   const shopId = APP_CONFIG.defaultShopId;
+  const queryClient = useQueryClient();
   const {
-    data: categories = REPAIR_CATEGORIES,
+    data: categories = LOADING_CATEGORIES,
     isLoading: categoriesLoading,
     isError: categoriesError,
   } = useRepairCategories(shopId);
@@ -88,7 +121,6 @@ function RepairsPosContent() {
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
   const [selectedProblemIds, setSelectedProblemIds] = useState<string[]>([]);
   const [selectedPartIds, setSelectedPartIds] = useState<string[]>([]);
-  const mainRef = useRef<HTMLDivElement>(null);
 
   const selectedCategoryDbId = useMemo(() => {
     const match = categories.find((c) => c.id === selectedCategoryId && !c.isAdd);
@@ -96,7 +128,7 @@ function RepairsPosContent() {
   }, [categories, selectedCategoryId]);
 
   const {
-    data: manufacturers = REPAIR_MANUFACTURERS,
+    data: manufacturers = LOADING_MANUFACTURERS,
     isLoading: manufacturersLoading,
     isError: manufacturersError,
   } = useRepairManufacturers(shopId, selectedCategoryDbId);
@@ -371,33 +403,21 @@ function RepairsPosContent() {
   }, [devicesError]);
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        "[data-pos-animate]",
-        { opacity: 0, y: 10 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.45,
-          stagger: 0.06,
-          ease: "power2.out",
-        },
-      );
-    }, mainRef);
-    return () => ctx.revert();
-  }, []);
+    if (categoriesLoading || categories.length === 0) return;
+    for (const category of categories) {
+      if (category.isAdd || !category.dbId) continue;
+      void queryClient.prefetchQuery({
+        queryKey: queryKeys.repairManufacturers.list(shopId, category.dbId),
+        queryFn: () => fetchRepairManufacturers(shopId, category.dbId),
+        staleTime: 10 * 60 * 1000,
+      });
+    }
+  }, [categories, categoriesLoading, queryClient, shopId]);
 
   return (
-    <div
-      ref={mainRef}
-      className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[#F8FAFC]"
-    >
-      <div data-pos-animate>
-        <RepairsTopNav />
-      </div>
-      <div data-pos-animate>
-        <RepairsPosBar activeTab={activeTab} onTabChange={setActiveTab} />
-      </div>
+    <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[#F8FAFC]">
+      <RepairsTopNav />
+      <RepairsPosBar activeTab={activeTab} onTabChange={setActiveTab} />
 
       <RepairTicketProvider
         selectedCategoryId={selectedCategoryId}
@@ -408,10 +428,7 @@ function RepairsPosContent() {
         manufacturers={manufacturers}
       >
         <div className="flex min-h-0 flex-1 overflow-hidden">
-          <div
-            data-pos-animate
-            className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden lg:flex-row"
-          >
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden lg:flex-row">
             <RepairsCartPanel />
             <RepairsWorkflowPanel
               categories={categories}
@@ -447,9 +464,7 @@ function RepairsPosContent() {
               onConfirmDetails={handleConfirmDetails}
             />
           </div>
-          <div data-pos-animate>
-            <RepairsSideToolbar />
-          </div>
+          <RepairsSideToolbar />
         </div>
       </RepairTicketProvider>
 

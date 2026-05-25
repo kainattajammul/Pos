@@ -1,5 +1,6 @@
 import { apiClient } from "@/lib/axios";
 import type { RepairDevice } from "@/lib/repairs-devices-data";
+import { sortRepairDevices } from "@/lib/repair-device-sort";
 import type { ApiSuccessResponse } from "@/types/api";
 import type {
   ApiRepairDevice,
@@ -21,9 +22,10 @@ export function mapApiRepairDeviceToCard(device: ApiRepairDevice): RepairDevice 
 
 export function withAddDeviceCard(devices: RepairDevice[]): RepairDevice[] {
   const withoutAdd = devices.filter((d) => !d.isAdd);
+  const sorted = sortRepairDevices(withoutAdd);
   return [
     { id: "add-device", name: "Add Device", isAdd: true },
-    ...withoutAdd,
+    ...sorted,
   ];
 }
 

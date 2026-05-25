@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const src = fs.readFileSync(
-  path.join(__dirname, "../../frontend/src/lib/repairs-devices-data.ts"),
+  path.join(__dirname, "../../frontend/src/lib/repairs-devices-catalog.ts"),
   "utf8",
 );
 const match = src.match(
@@ -21,8 +21,11 @@ const catalog = eval(`(${match[1]})`);
 const out = {};
 for (const [cat, byMfr] of Object.entries(catalog)) {
   out[cat] = {};
-  for (const [mfr, devices] of Object.entries(byMfr)) {
-    out[cat][mfr] = devices.filter((d) => !d.isAdd).map((d) => d.name);
+  for (const [mfr, entries] of Object.entries(byMfr)) {
+    const names = entries
+      .map((d) => (typeof d === "string" ? d : d?.name))
+      .filter((name) => typeof name === "string" && name.length > 0);
+    out[cat][mfr] = names;
   }
 }
 const dest = path.join(__dirname, "../src/data/defaultRepairDevicesCatalog.json");

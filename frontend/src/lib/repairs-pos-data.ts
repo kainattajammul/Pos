@@ -1,10 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import { Gem, Laptop, Plus, Radio, Smartphone, Tablet } from "lucide-react";
-import type { RepairCategoryId, RepairDevice } from "@/lib/repairs-devices-data";
-import {
-  REPAIR_DEVICES_BY_CATEGORY,
-  REPAIR_DEVICES_FALLBACK,
-} from "@/lib/repairs-devices-data";
+import type { RepairDevice } from "@/lib/repairs-devices-data";
+import { REPAIR_DEVICES_FALLBACK } from "@/lib/repairs-devices-data";
 
 export type { RepairDevice } from "@/lib/repairs-devices-data";
 
@@ -136,15 +133,12 @@ export function getManufacturerById(
   return manufacturers.find((m) => m.id === id && !m.isAdd);
 }
 
+/** @deprecated Prefer API-backed device list from repairs workflow */
 export function getDevicesForCategoryAndManufacturer(
-  categoryId: string | null,
-  manufacturerId: string | null,
+  _categoryId: string | null,
+  _manufacturerId: string | null,
 ): RepairDevice[] {
-  if (!categoryId || !manufacturerId) return REPAIR_DEVICES_FALLBACK;
-  const categoryDevices =
-    REPAIR_DEVICES_BY_CATEGORY[categoryId as RepairCategoryId];
-  if (!categoryDevices) return REPAIR_DEVICES_FALLBACK;
-  return categoryDevices[manufacturerId] ?? REPAIR_DEVICES_FALLBACK;
+  return REPAIR_DEVICES_FALLBACK;
 }
 
 /** @deprecated Use getDevicesForCategoryAndManufacturer */
