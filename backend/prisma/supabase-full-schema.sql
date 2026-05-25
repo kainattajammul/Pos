@@ -152,3 +152,27 @@ EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN
   ALTER TABLE "branch_member_roles" ADD CONSTRAINT "branch_member_roles_role_id_shop_id_fkey" FOREIGN KEY ("role_id", "shop_id") REFERENCES "roles"("id", "shop_id") ON DELETE CASCADE ON UPDATE CASCADE;
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- Repair categories (per shop)
+CREATE TABLE IF NOT EXISTS "repair_categories" (
+    "id" SERIAL NOT NULL,
+    "shop_id" INTEGER NOT NULL,
+    "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "icon_key" TEXT NOT NULL DEFAULT 'wrench',
+    "image_url" TEXT,
+    "sort_order" INTEGER NOT NULL DEFAULT 0,
+    "is_default" BOOLEAN NOT NULL DEFAULT false,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "repair_categories_pkey" PRIMARY KEY ("id")
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS "repair_categories_shop_id_slug_key" ON "repair_categories"("shop_id", "slug");
+CREATE UNIQUE INDEX IF NOT EXISTS "repair_categories_shop_id_name_key" ON "repair_categories"("shop_id", "name");
+CREATE INDEX IF NOT EXISTS "repair_categories_shop_id_idx" ON "repair_categories"("shop_id");
+
+DO $$ BEGIN
+  ALTER TABLE "repair_categories" ADD CONSTRAINT "repair_categories_shop_id_fkey" FOREIGN KEY ("shop_id") REFERENCES "shops"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;

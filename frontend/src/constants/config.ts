@@ -1,6 +1,8 @@
 export const APP_CONFIG = {
   apiUrl: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api/v1",
   appName: process.env.NEXT_PUBLIC_APP_NAME ?? "Fone Doctors POS",
+  /** Shop used by repair POS until auth provides shop context */
+  defaultShopId: Number(process.env.NEXT_PUBLIC_DEFAULT_SHOP_ID ?? "1"),
   defaultPageSize: 10,
   sidebarWidth: 280,
   /** Collapsed strip — toggle only (logo hidden) */

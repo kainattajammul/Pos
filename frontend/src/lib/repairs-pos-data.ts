@@ -75,6 +75,10 @@ export interface RepairManufacturer {
   isAdd?: boolean;
   /** simple-icons slug for CDN logo (https://simpleicons.org) */
   logoSlug?: string;
+  iconKey?: string;
+  imageUrl?: string;
+  dbId?: number;
+  isDefault?: boolean;
 }
 
 export const REPAIR_MANUFACTURERS: RepairManufacturer[] = [
@@ -100,10 +104,18 @@ export const REPAIR_MANUFACTURERS: RepairManufacturer[] = [
 ];
 
 export interface RepairCategoryCard {
+  /** Workflow id — slug from API for persisted categories */
   id: string;
   label: string;
   icon: LucideIcon;
   isAdd?: boolean;
+  /** Database primary key when loaded from API */
+  dbId?: number;
+  isDefault?: boolean;
+  /** Lucide icon key from API (used when re-opening edit flows) */
+  iconKey?: string;
+  /** Supabase public URL when category uses a custom image */
+  imageUrl?: string;
 }
 
 /** Steps shown in breadcrumb after the manufacturer name. */
@@ -116,9 +128,12 @@ export const REPAIR_POST_MANUFACTURER_STEPS = [
 
 export type RepairPostManufacturerStep = (typeof REPAIR_POST_MANUFACTURER_STEPS)[number];
 
-export function getManufacturerById(id: string | null): RepairManufacturer | undefined {
+export function getManufacturerById(
+  id: string | null,
+  manufacturers: RepairManufacturer[] = REPAIR_MANUFACTURERS,
+): RepairManufacturer | undefined {
   if (!id) return undefined;
-  return REPAIR_MANUFACTURERS.find((m) => m.id === id && !m.isAdd);
+  return manufacturers.find((m) => m.id === id && !m.isAdd);
 }
 
 export function getDevicesForCategoryAndManufacturer(
@@ -160,9 +175,12 @@ export function getDeviceById(
   return list.find((d) => d.id === deviceId && !d.isAdd);
 }
 
-export function getCategoryIdFromLabel(label: string | null): string | null {
+export function getCategoryIdFromLabel(
+  label: string | null,
+  categories: RepairCategoryCard[] = REPAIR_CATEGORIES,
+): string | null {
   if (!label) return null;
-  const match = REPAIR_CATEGORIES.find((c) => c.label === label);
+  const match = categories.find((c) => c.label === label && !c.isAdd);
   return match?.id ?? null;
 }
 

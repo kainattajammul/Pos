@@ -42,9 +42,11 @@ model Shop {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  branches  Branch[]
-  members   ShopMember[]
-  roles     Role[]
+  branches         Branch[]
+  members          ShopMember[]
+  roles            Role[]
+  repairCategories   RepairCategory[]
+  repairManufacturers RepairManufacturer[]
 
   @@map("shops")
 }
@@ -182,4 +184,55 @@ model BranchMemberRole {
   @@index([roleId])
 
   @@map("branch_member_roles")
+}
+
+model RepairCategory {
+  id        Int      @id @default(autoincrement())
+
+  shopId    Int      @map("shop_id")
+  name      String
+  slug      String
+  iconKey   String   @default("wrench") @map("icon_key")
+  imageUrl  String?  @map("image_url")
+  sortOrder Int      @default(0) @map("sort_order")
+  isDefault Boolean  @default(false) @map("is_default")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  shop          Shop                 @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  manufacturers RepairManufacturer[]
+
+  @@unique([shopId, slug])
+  @@unique([shopId, name])
+  @@index([shopId])
+
+  @@map("repair_categories")
+}
+
+model RepairManufacturer {
+  id               Int      @id @default(autoincrement())
+
+  shopId           Int      @map("shop_id")
+  repairCategoryId Int      @map("repair_category_id")
+  name             String
+  slug             String
+  iconKey          String   @default("smartphone") @map("icon_key")
+  imageUrl         String?  @map("image_url")
+  logoSlug         String?  @map("logo_slug")
+  sortOrder        Int      @default(0) @map("sort_order")
+  isDefault        Boolean  @default(false) @map("is_default")
+
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  shop             Shop           @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  repairCategory   RepairCategory @relation(fields: [repairCategoryId], references: [id], onDelete: Cascade)
+
+  @@unique([shopId, repairCategoryId, slug])
+  @@unique([shopId, repairCategoryId, name])
+  @@index([shopId])
+  @@index([repairCategoryId])
+
+  @@map("repair_manufacturers")
 }

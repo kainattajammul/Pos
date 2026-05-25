@@ -1,6 +1,7 @@
 "use client";
 
-import { ChevronRight, MoreHorizontal, Plus } from "lucide-react";
+import { useState } from "react";
+import { ChevronRight, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react";
 import type {
   RepairCategoryCard,
   RepairDevice,
@@ -9,8 +10,6 @@ import type {
   RepairWorkflowStep,
 } from "@/lib/repairs-pos-data";
 import {
-  REPAIR_CATEGORIES,
-  REPAIR_MANUFACTURERS,
   canNavigateToRepairStep,
   getDeviceById,
   getManufacturerById,
@@ -23,9 +22,17 @@ import { RepairsProblemsStep } from "@/components/repairs/repairs-problems-step"
 import { RepairsWorkflowActions } from "@/components/repairs/repairs-workflow-actions";
 import { useRepairTicket } from "@/contexts/repair-ticket-context";
 import type { RepairDetailsFormValues } from "@/lib/repairs-details-data";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
 interface RepairsWorkflowPanelProps {
+  categories: RepairCategoryCard[];
+  categoriesLoading?: boolean;
   selectedCategory: string | null;
   selectedCategoryId: string | null;
   activeStep: RepairStep;
@@ -35,7 +42,13 @@ interface RepairsWorkflowPanelProps {
   devices: RepairDevice[];
   onStepChange: (step: RepairStep) => void;
   onSelectCategory: (category: RepairCategoryCard) => void;
-  onSelectManufacturer: (manufacturerId: string) => void;
+  onEditCategory?: (category: RepairCategoryCard) => void;
+  onDeleteCategory?: (category: RepairCategoryCard) => void;
+  manufacturers: RepairManufacturer[];
+  manufacturersLoading?: boolean;
+  onSelectManufacturer: (manufacturer: RepairManufacturer) => void;
+  onEditManufacturer?: (manufacturer: RepairManufacturer) => void;
+  onDeleteManufacturer?: (manufacturer: RepairManufacturer) => void;
   onSelectDevice: (deviceId: string) => void;
   selectedProblemIds: string[];
   onToggleProblem: (problemId: string) => void;
@@ -48,6 +61,8 @@ interface RepairsWorkflowPanelProps {
 }
 
 export function RepairsWorkflowPanel({
+  categories,
+  categoriesLoading = false,
   selectedCategory,
   selectedCategoryId,
   activeStep,
@@ -57,7 +72,13 @@ export function RepairsWorkflowPanel({
   devices,
   onStepChange,
   onSelectCategory,
+  onEditCategory,
+  onDeleteCategory,
+  manufacturers,
+  manufacturersLoading = false,
   onSelectManufacturer,
+  onEditManufacturer,
+  onDeleteManufacturer,
   onSelectDevice,
   selectedProblemIds,
   onToggleProblem,
@@ -69,7 +90,7 @@ export function RepairsWorkflowPanel({
   onConfirmDetails,
 }: RepairsWorkflowPanelProps) {
   const { setDetailsForm } = useRepairTicket();
-  const manufacturer = getManufacturerById(selectedManufacturerId);
+  const manufacturer = getManufacturerById(selectedManufacturerId, manufacturers);
   const manufacturerLabel = manufacturer?.name ?? "Manufacturer";
   const selectedDevice = getDeviceById(
     selectedDeviceId,
@@ -163,26 +184,42 @@ export function RepairsWorkflowPanel({
         )}
       >
         {activeStep === "Category" ? (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {REPAIR_CATEGORIES.map((card) => (
-              <CategoryCard
-                key={card.id}
-                card={card}
-                onSelect={() => onSelectCategory(card)}
-              />
-            ))}
-          </div>
+          categoriesLoading ? (
+            <div className="flex min-h-[200px] items-center justify-center text-sm text-[#6B7280]">
+              Loading categories…
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              {categories.map((card) => (
+                <CategoryCard
+                  key={card.isAdd ? "add" : String(card.dbId ?? card.id)}
+                  card={card}
+                  onSelect={() => onSelectCategory(card)}
+                  onEdit={onEditCategory}
+                  onDelete={onDeleteCategory}
+                />
+              ))}
+            </div>
+          )
         ) : activeStep === "Manufacturer" ? (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5">
-            {REPAIR_MANUFACTURERS.map((m) => (
-              <ManufacturerCard
-                key={m.id}
-                manufacturer={m}
-                selected={selectedManufacturerId === m.id}
-                onSelect={() => onSelectManufacturer(m.id)}
-              />
-            ))}
-          </div>
+          manufacturersLoading ? (
+            <div className="flex min-h-[200px] items-center justify-center text-sm text-[#6B7280]">
+              Loading manufacturers…
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5">
+              {manufacturers.map((m) => (
+                <ManufacturerCard
+                  key={m.isAdd ? "add" : String(m.dbId ?? m.id)}
+                  manufacturer={m}
+                  selected={selectedManufacturerId === m.id}
+                  onSelect={() => onSelectManufacturer(m)}
+                  onEdit={onEditManufacturer}
+                  onDelete={onDeleteManufacturer}
+                />
+              ))}
+            </div>
+          )
         ) : activeStep === "Devices" ? (
           <RepairsDevicesStep
             devices={devices}
@@ -302,11 +339,18 @@ function WorkflowPlaceholder({
 function CategoryCard({
   card,
   onSelect,
+  onEdit,
+  onDelete,
 }: {
   card: RepairCategoryCard;
   onSelect: () => void;
+  onEdit?: (category: RepairCategoryCard) => void;
+  onDelete?: (category: RepairCategoryCard) => void;
 }) {
   const Icon = card.icon;
+  const [imageFailed, setImageFailed] = useState(false);
+  const showImage = Boolean(card.imageUrl) && !imageFailed;
+  const canManage = !card.isAdd && card.dbId != null;
 
   if (card.isAdd) {
     return (
@@ -327,14 +371,64 @@ function CategoryCard({
   }
 
   return (
-    <button
-      type="button"
-      onClick={onSelect}
-      className="flex min-h-[118px] flex-col items-center justify-center gap-3 rounded-lg border border-[#E5E7EB] bg-white p-4 shadow-sm transition-all hover:border-[var(--repair-primary)] hover:shadow-md"
-    >
-      <Icon className="size-9 stroke-[1.25] text-[#374151]" />
-      <span className="text-center text-sm font-medium text-[#111827]">{card.label}</span>
-    </button>
+    <div className="group relative">
+      {canManage && (onEdit || onDelete) ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            type="button"
+            className="absolute top-2 right-2 z-10 flex size-7 items-center justify-center rounded-md bg-white/90 text-[#6B7280] opacity-0 shadow-sm ring-1 ring-[#E5E7EB] transition-opacity group-hover:opacity-100 hover:text-[#111827] data-popup-open:opacity-100"
+            onClick={(e) => e.stopPropagation()}
+            aria-label={`Actions for ${card.label}`}
+          >
+            <MoreHorizontal className="size-4" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-40">
+            {onEdit ? (
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(card);
+                }}
+              >
+                <Pencil className="size-4" />
+                Edit
+              </DropdownMenuItem>
+            ) : null}
+            {onDelete ? (
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(card);
+                }}
+              >
+                <Trash2 className="size-4" />
+                Delete
+              </DropdownMenuItem>
+            ) : null}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : null}
+
+      <button
+        type="button"
+        onClick={onSelect}
+        className="flex min-h-[118px] w-full flex-col items-center justify-center gap-3 rounded-lg border border-[#E5E7EB] bg-white p-4 shadow-sm transition-all hover:border-[var(--repair-primary)] hover:shadow-md"
+      >
+        {showImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={card.imageUrl}
+            alt=""
+            className="size-14 rounded-lg object-cover"
+            onError={() => setImageFailed(true)}
+          />
+        ) : (
+          <Icon className="size-9 stroke-[1.25] text-[#374151]" />
+        )}
+        <span className="text-center text-sm font-medium text-[#111827]">{card.label}</span>
+      </button>
+    </div>
   );
 }
 
@@ -342,11 +436,20 @@ function ManufacturerCard({
   manufacturer,
   selected,
   onSelect,
+  onEdit,
+  onDelete,
 }: {
   manufacturer: RepairManufacturer;
   selected: boolean;
   onSelect: () => void;
+  onEdit?: (manufacturer: RepairManufacturer) => void;
+  onDelete?: (manufacturer: RepairManufacturer) => void;
 }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const showImage = Boolean(manufacturer.imageUrl) && !imageFailed;
+  const brandSlug = manufacturer.logoSlug ?? manufacturer.id;
+  const canManage = !manufacturer.isAdd && manufacturer.dbId != null;
+
   if (manufacturer.isAdd) {
     return (
       <button
@@ -368,32 +471,74 @@ function ManufacturerCard({
   }
 
   return (
-    <button
-      type="button"
-      onClick={onSelect}
-      className={cn(
-        "relative flex min-h-[108px] flex-col items-center justify-center gap-2 rounded-lg border bg-white p-3 shadow-sm transition-all",
-        "hover:border-[var(--repair-primary)] hover:shadow-md",
-        selected
-          ? "border-2 border-[var(--repair-primary)] shadow-md ring-1 ring-[var(--repair-primary)]/20"
-          : "border-[#E5E7EB]",
-      )}
-    >
-      {selected ? (
-        <span
-          className="absolute top-2 right-2 flex size-6 items-center justify-center rounded text-[#6B7280]"
-          aria-hidden
-        >
-          <MoreHorizontal className="size-4" />
-        </span>
+    <div className="group relative">
+      {canManage && (onEdit || onDelete) ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            type="button"
+            className="absolute top-2 right-2 z-10 flex size-7 items-center justify-center rounded-md bg-white/90 text-[#6B7280] opacity-0 shadow-sm ring-1 ring-[#E5E7EB] transition-opacity group-hover:opacity-100 hover:text-[#111827] data-popup-open:opacity-100"
+            onClick={(e) => e.stopPropagation()}
+            aria-label={`Actions for ${manufacturer.name}`}
+          >
+            <MoreHorizontal className="size-4" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-40">
+            {onEdit ? (
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(manufacturer);
+                }}
+              >
+                <Pencil className="size-4" />
+                Edit
+              </DropdownMenuItem>
+            ) : null}
+            {onDelete ? (
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(manufacturer);
+                }}
+              >
+                <Trash2 className="size-4" />
+                Delete
+              </DropdownMenuItem>
+            ) : null}
+          </DropdownMenuContent>
+        </DropdownMenu>
       ) : null}
-      <ManufacturerBrandMark
-        name={manufacturer.name}
-        logoSlug={manufacturer.logoSlug}
-      />
-      <span className="text-center text-xs font-medium text-[#111827]">
-        {manufacturer.name}
-      </span>
-    </button>
+
+      <button
+        type="button"
+        onClick={onSelect}
+        className={cn(
+          "relative flex min-h-[108px] w-full flex-col items-center justify-center gap-2 rounded-lg border bg-white p-3 shadow-sm transition-all",
+          "hover:border-[var(--repair-primary)] hover:shadow-md",
+          selected
+            ? "border-2 border-[var(--repair-primary)] shadow-md ring-1 ring-[var(--repair-primary)]/20"
+            : "border-[#E5E7EB]",
+        )}
+      >
+        {showImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={manufacturer.imageUrl}
+            alt=""
+            className="max-h-12 max-w-[72px] rounded object-contain"
+            onError={() => setImageFailed(true)}
+          />
+        ) : (
+          <ManufacturerBrandMark
+            name={manufacturer.name}
+            logoSlug={brandSlug}
+          />
+        )}
+        <span className="text-center text-xs font-medium text-[#111827]">
+          {manufacturer.name}
+        </span>
+      </button>
+    </div>
   );
 }

@@ -29,4 +29,13 @@ export const queryKeys = {
     list: () => ["customers", "list"] as const,
     detail: (id: number) => ["customers", "detail", id] as const,
   },
+  repairCategories: {
+    all: ["repair-categories"] as const,
+    list: (shopId: number) => ["repair-categories", "list", shopId] as const,
+  },
+  repairManufacturers: {
+    all: ["repair-manufacturers"] as const,
+    list: (shopId: number, repairCategoryId: number) =>
+      ["repair-manufacturers", "list", shopId, repairCategoryId] as const,
+  },
 } as const;

@@ -3,6 +3,8 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import authRoutes from "./auth.routes.js";
 import userRoutes from "./user.routes.js";
 import roleRoutes from "./role.routes.js";
+import repairCategoryRoutes from "./repairCategory.routes.js";
+import repairManufacturerRoutes from "./repairManufacturer.routes.js";
 import dashboardRoutes from "./dashboard.routes.js";
 
 const router = Router();
@@ -18,6 +20,8 @@ router.get("/", (_req, res) => {
         auth: "/api/v1/auth",
         users: "/api/v1/users",
         roles: "/api/v1/roles",
+        repairCategories: "/api/v1/repair-categories",
+        repairManufacturers: "/api/v1/repair-manufacturers",
         dashboard: "/api/v1/dashboard",
       },
     },
@@ -27,6 +31,8 @@ router.get("/", (_req, res) => {
 router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
 router.use("/roles", roleRoutes);
+router.use("/repair-categories", repairCategoryRoutes);
+router.use("/repair-manufacturers", repairManufacturerRoutes);
 router.use("/dashboard", dashboardRoutes);
 
 router.get("/health", (_req, res) => {

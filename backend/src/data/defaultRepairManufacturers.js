@@ -1,0 +1,21 @@
+/** Default manufacturers seeded per repair category (matches legacy POS catalog). */
+export const DEFAULT_REPAIR_MANUFACTURERS = [
+  { name: "Apple", slug: "apple", iconKey: "smartphone", logoSlug: "apple", sortOrder: 1, isDefault: true },
+  { name: "Samsung", slug: "samsung", iconKey: "smartphone", logoSlug: "samsung", sortOrder: 2, isDefault: true },
+  { name: "Google", slug: "google", iconKey: "smartphone", logoSlug: "google", sortOrder: 3, isDefault: true },
+  { name: "HTC", slug: "htc", iconKey: "smartphone", logoSlug: "htc", sortOrder: 4, isDefault: true },
+  { name: "BlackBerry", slug: "blackberry", iconKey: "smartphone", logoSlug: "blackberry", sortOrder: 5, isDefault: true },
+  { name: "ONEPLUS", slug: "oneplus", iconKey: "smartphone", logoSlug: "oneplus", sortOrder: 6, isDefault: true },
+  { name: "Motorola", slug: "motorola", iconKey: "smartphone", logoSlug: "motorola", sortOrder: 7, isDefault: true },
+  { name: "Xiaomi", slug: "xiaomi", iconKey: "smartphone", logoSlug: "xiaomi", sortOrder: 8, isDefault: true },
+  { name: "LG", slug: "lg", iconKey: "smartphone", logoSlug: "lg", sortOrder: 9, isDefault: true },
+  { name: "Nokia", slug: "nokia", iconKey: "smartphone", logoSlug: "nokia", sortOrder: 10, isDefault: true },
+  { name: "Sony", slug: "sony", iconKey: "smartphone", logoSlug: "sony", sortOrder: 11, isDefault: true },
+  { name: "Vivo", slug: "vivo", iconKey: "smartphone", logoSlug: "vivo", sortOrder: 12, isDefault: true },
+  { name: "Asus Zenfone", slug: "asus", iconKey: "smartphone", logoSlug: "asus", sortOrder: 13, isDefault: true },
+  { name: "Alcatel", slug: "alcatel", iconKey: "smartphone", logoSlug: "alcatel", sortOrder: 14, isDefault: true },
+  { name: "ESSENTIAL", slug: "essential", iconKey: "smartphone", logoSlug: "essential", sortOrder: 15, isDefault: true },
+  { name: "Huawei", slug: "huawei", iconKey: "smartphone", logoSlug: "huawei", sortOrder: 16, isDefault: true },
+  { name: "Kyocera", slug: "kyocera", iconKey: "smartphone", logoSlug: "kyocera", sortOrder: 17, isDefault: true },
+  { name: "ZTE", slug: "zte", iconKey: "smartphone", logoSlug: "zte", sortOrder: 18, isDefault: true },
+];

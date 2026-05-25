@@ -1,12 +1,33 @@
 import { createApp } from "./app.js";
 import { env } from "./config/env.js";
 import { connectDatabase, disconnectDatabase } from "./config/database.js";
+import {
+  ensureRepairCategoryStorageBucket,
+  isSupabaseStorageConfigured,
+} from "./config/supabase.js";
 
 async function start() {
   const app = createApp();
   const server = app.listen(env.port, () => {
     console.log(`POS API listening on http://localhost:${env.port}`);
     console.log(`Health: http://localhost:${env.port}/api/v1/health`);
+    if (isSupabaseStorageConfigured()) {
+      ensureRepairCategoryStorageBucket()
+        .then((ok) => {
+          if (ok) {
+            console.log(
+              `Supabase storage: bucket "${env.repairCategoryStorageBucket}" ready (public)`,
+            );
+          }
+        })
+        .catch((err) => {
+          console.warn("Supabase storage setup failed:", err.message);
+        });
+    } else {
+      console.warn(
+        "Supabase storage: not configured — set SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, and create the storage bucket. Restart the server after updating .env.",
+      );
+    }
   });
 
   connectDatabase()

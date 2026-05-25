@@ -1,8 +1,9 @@
 "use client";
 
+import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { setMobileSidebarOpen } from "@/store/ui-slice";
+import { setMobileSidebarOpen, setSidebarCollapsed } from "@/store/ui-slice";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { AppNavbar } from "./app-navbar";
 import { AppSidebar } from "./app-sidebar";
@@ -20,6 +21,17 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const dispatch = useAppDispatch();
   const mobileOpen = useAppSelector((s) => s.ui.mobileSidebarOpen);
   const repairsLayout = isRepairsRoute(pathname);
+
+  useEffect(() => {
+    if (!repairsLayout) return;
+
+    dispatch(setSidebarCollapsed(true));
+    dispatch(setMobileSidebarOpen(false));
+
+    return () => {
+      dispatch(setSidebarCollapsed(false));
+    };
+  }, [repairsLayout, dispatch]);
 
   return (
     <div

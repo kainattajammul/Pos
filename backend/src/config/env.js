@@ -21,4 +21,8 @@ export const env = {
   isProduction: process.env.NODE_ENV === "production",
   /** Allows login without DB when Postgres is not configured (development only). */
   devAuthBypass: process.env.ENABLE_DEV_AUTH_BYPASS === "true" && process.env.NODE_ENV !== "production",
+  supabaseUrl: process.env.SUPABASE_URL ?? "",
+  supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
+  repairCategoryStorageBucket:
+    process.env.REPAIR_CATEGORY_STORAGE_BUCKET ?? "repair-category-images",
 };
