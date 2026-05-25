@@ -1,4 +1,7 @@
-import { DEFAULT_REPAIR_PROBLEMS } from "@/lib/repairs-problems-data";
+import {
+  DEFAULT_REPAIR_PROBLEMS,
+  type RepairProblem,
+} from "@/lib/repairs-problems-data";
 import { DEFAULT_TASK_DUE_AT } from "@/lib/repair-datetime";
 
 export type RepairDetailsSubTab = "checklist" | "condition-images";
@@ -78,11 +81,14 @@ export const DEVICE_NETWORK_OPTIONS = [
 ];
 
 /** Sum selected problem prices; falls back to default repair charge. */
-export function getDefaultRepairCharges(problemIds: string[]): string {
+export function getDefaultRepairCharges(
+  problemIds: string[],
+  problems: RepairProblem[] = DEFAULT_REPAIR_PROBLEMS,
+): string {
   if (problemIds.length === 0) return REPAIR_DETAILS_DEFAULTS.repairCharges;
 
   const total = problemIds.reduce((sum, id) => {
-    const problem = DEFAULT_REPAIR_PROBLEMS.find((p) => p.id === id);
+    const problem = problems.find((p) => p.id === id && !p.isAdd);
     return sum + (problem?.price ?? 0);
   }, 0);
 

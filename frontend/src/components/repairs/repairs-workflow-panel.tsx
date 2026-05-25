@@ -9,6 +9,8 @@ import type {
   RepairStep,
   RepairWorkflowStep,
 } from "@/lib/repairs-pos-data";
+import type { RepairProblem } from "@/lib/repairs-problems-data";
+import type { RepairPart } from "@/lib/repairs-parts-data";
 import {
   canNavigateToRepairStep,
   getDeviceById,
@@ -54,12 +56,22 @@ interface RepairsWorkflowPanelProps {
   onAddDevice?: () => void;
   onEditDevice?: (device: RepairDevice) => void;
   onDeleteDevice?: (device: RepairDevice) => void;
+  problems: RepairProblem[];
+  problemsLoading?: boolean;
   selectedProblemIds: string[];
   onToggleProblem: (problemId: string) => void;
   onProblemsNext: () => void;
+  onAddIssue?: () => void;
+  onEditIssue?: (issue: RepairProblem) => void;
+  onDeleteIssue?: (issue: RepairProblem) => void;
+  parts: RepairPart[];
+  partsLoading?: boolean;
   selectedPartIds: string[];
   onTogglePart: (partId: string) => void;
   onPartsNext: () => void;
+  onAddPart?: () => void;
+  onEditPart?: (part: RepairPart) => void;
+  onDeletePart?: (part: RepairPart) => void;
   initialRepairCharges: string;
   onConfirmDetails: (values: RepairDetailsFormValues) => void;
 }
@@ -88,12 +100,22 @@ export function RepairsWorkflowPanel({
   onAddDevice,
   onEditDevice,
   onDeleteDevice,
+  problems,
+  problemsLoading = false,
   selectedProblemIds,
   onToggleProblem,
   onProblemsNext,
+  onAddIssue,
+  onEditIssue,
+  onDeleteIssue,
+  parts,
+  partsLoading = false,
   selectedPartIds,
   onTogglePart,
   onPartsNext,
+  onAddPart,
+  onEditPart,
+  onDeletePart,
   initialRepairCharges,
   onConfirmDetails,
 }: RepairsWorkflowPanelProps) {
@@ -243,9 +265,14 @@ export function RepairsWorkflowPanel({
         ) : activeStep === "Problems" ? (
           selectedDeviceId ? (
             <RepairsProblemsStep
+              problems={problems}
+              problemsLoading={problemsLoading}
               selectedProblemIds={selectedProblemIds}
               onToggleProblem={onToggleProblem}
               onNext={onProblemsNext}
+              onAddIssue={onAddIssue}
+              onEditIssue={onEditIssue}
+              onDeleteIssue={onDeleteIssue}
             />
           ) : (
             <WorkflowPlaceholder
@@ -256,9 +283,14 @@ export function RepairsWorkflowPanel({
         ) : activeStep === "Parts" ? (
           selectedDeviceId ? (
             <RepairsPartsStep
+              parts={parts}
+              partsLoading={partsLoading}
               selectedPartIds={selectedPartIds}
               onTogglePart={onTogglePart}
               onNext={onPartsNext}
+              onAddPart={onAddPart}
+              onEditPart={onEditPart}
+              onDeletePart={onDeletePart}
             />
           ) : (
             <WorkflowPlaceholder

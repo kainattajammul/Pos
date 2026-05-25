@@ -1,11 +1,33 @@
 export type RepairPartImageVariant =
   | "screen"
+  | "lcd-panel"
   | "oled-assembly"
   | "oled-frame"
-  | "battery"
-  | "home-button"
+  | "touch-panel"
   | "digitizer-white"
-  | "digitizer-black";
+  | "digitizer-black"
+  | "battery"
+  | "charging-port"
+  | "charging-flex"
+  | "home-button"
+  | "power-button"
+  | "volume-button"
+  | "speaker"
+  | "earpiece"
+  | "microphone"
+  | "vibrator"
+  | "camera-front"
+  | "camera-rear"
+  | "proximity-sensor"
+  | "sim-tray"
+  | "back-glass"
+  | "midframe"
+  | "flex-cable"
+  | "antenna"
+  | "wifi-module"
+  | "logic-board"
+  | "screw-kit"
+  | "adhesive";
 
 export interface RepairPart {
   id: string;
@@ -13,8 +35,95 @@ export interface RepairPart {
   price: number;
   onHand: number;
   image: RepairPartImageVariant;
+  imageUrl?: string | null;
+  dbId?: number;
+  isDefault?: boolean;
   isAdd?: boolean;
 }
+
+export const REPAIR_PART_IMAGE_VARIANTS: RepairPartImageVariant[] = [
+  "screen",
+  "lcd-panel",
+  "oled-assembly",
+  "oled-frame",
+  "touch-panel",
+  "digitizer-white",
+  "digitizer-black",
+  "battery",
+  "charging-port",
+  "charging-flex",
+  "home-button",
+  "power-button",
+  "volume-button",
+  "speaker",
+  "earpiece",
+  "microphone",
+  "vibrator",
+  "camera-front",
+  "camera-rear",
+  "proximity-sensor",
+  "sim-tray",
+  "back-glass",
+  "midframe",
+  "flex-cable",
+  "antenna",
+  "wifi-module",
+  "logic-board",
+  "screw-kit",
+  "adhesive",
+];
+
+export const REPAIR_PART_VARIANT_LABELS: Record<RepairPartImageVariant, string> = {
+  screen: "Screen",
+  "lcd-panel": "LCD panel",
+  "oled-assembly": "OLED assembly",
+  "oled-frame": "OLED + frame",
+  "touch-panel": "Touch panel",
+  "digitizer-white": "Digitizer (white)",
+  "digitizer-black": "Digitizer (black)",
+  battery: "Battery",
+  "charging-port": "Charging port",
+  "charging-flex": "Charging flex",
+  "home-button": "Home button",
+  "power-button": "Power button",
+  "volume-button": "Volume button",
+  speaker: "Speaker",
+  earpiece: "Earpiece",
+  microphone: "Microphone",
+  vibrator: "Vibrator",
+  "camera-front": "Front camera",
+  "camera-rear": "Rear camera",
+  "proximity-sensor": "Proximity sensor",
+  "sim-tray": "SIM tray",
+  "back-glass": "Back glass",
+  midframe: "Midframe",
+  "flex-cable": "Flex cable",
+  antenna: "Antenna",
+  "wifi-module": "Wi‑Fi module",
+  "logic-board": "Logic board",
+  "screw-kit": "Screw kit",
+  adhesive: "Adhesive",
+};
+
+export function normalizeRepairPartImageVariant(
+  value: string | undefined | null,
+): RepairPartImageVariant {
+  if (value && REPAIR_PART_IMAGE_VARIANTS.includes(value as RepairPartImageVariant)) {
+    return value as RepairPartImageVariant;
+  }
+  return "screen";
+}
+
+export const REPAIR_PARTS_FALLBACK: RepairPart[] = [
+  {
+    id: "add-part",
+    name: "Add Part",
+    price: 0,
+    onHand: 0,
+    image: "screen",
+    isAdd: true,
+  },
+];
 
 export const DEFAULT_REPAIR_PARTS: RepairPart[] = [
   {

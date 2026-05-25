@@ -43,4 +43,38 @@ export const queryKeys = {
     list: (shopId: number, repairCategoryId: number, repairManufacturerId: number) =>
       ["repair-devices", "list", shopId, repairCategoryId, repairManufacturerId] as const,
   },
+  repairDeviceIssues: {
+    all: ["repair-device-issues"] as const,
+    list: (
+      shopId: number,
+      repairCategoryId: number,
+      repairManufacturerId: number,
+      repairDeviceId: number,
+    ) =>
+      [
+        "repair-device-issues",
+        "list",
+        shopId,
+        repairCategoryId,
+        repairManufacturerId,
+        repairDeviceId,
+      ] as const,
+  },
+  repairDeviceParts: {
+    all: ["repair-device-parts"] as const,
+    list: (
+      shopId: number,
+      repairCategoryId: number,
+      repairManufacturerId: number,
+      repairDeviceId: number,
+    ) =>
+      [
+        "repair-device-parts",
+        "list",
+        shopId,
+        repairCategoryId,
+        repairManufacturerId,
+        repairDeviceId,
+      ] as const,
+  },
 } as const;

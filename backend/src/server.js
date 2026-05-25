@@ -7,6 +7,14 @@ import {
 } from "./config/supabase.js";
 
 async function start() {
+  const { prisma } = await import("./config/database.js");
+  if (!prisma.repairDeviceIssue) {
+    console.error(
+      "Prisma client is missing RepairDeviceIssue. Stop the server, run: npm run db:generate, then npm run dev",
+    );
+    process.exit(1);
+  }
+
   const app = createApp();
   const server = app.listen(env.port, () => {
     console.log(`POS API listening on http://localhost:${env.port}`);

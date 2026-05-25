@@ -1,5 +1,5 @@
 import { WALKIN_CUSTOMER_NAME } from "@/lib/repairs-customer-data";
-import { DEFAULT_REPAIR_PROBLEMS } from "@/lib/repairs-problems-data";
+import type { RepairProblem } from "@/lib/repairs-problems-data";
 import type { RepairDetailsFormValues } from "@/lib/repairs-details-data";
 import type { RepairDevice, RepairManufacturer } from "@/lib/repairs-pos-data";
 import { getDeviceById, getManufacturerById } from "@/lib/repairs-pos-data";
@@ -68,6 +68,7 @@ export interface BuildRepairTicketSnapshotInput {
   ticketId?: string;
   devices?: RepairDevice[];
   manufacturers?: RepairManufacturer[];
+  problems?: RepairProblem[];
 }
 
 export function buildRepairTicketSnapshot(
@@ -89,13 +90,14 @@ export function buildRepairTicketSnapshot(
       ? `${manufacturer.name} ${device.name}`
       : device?.name ?? "Device";
 
+  const problemList = input.problems ?? [];
   const problems = input.selectedProblemIds
-    .map((id) => DEFAULT_REPAIR_PROBLEMS.find((p) => p.id === id))
-    .filter((p): p is NonNullable<typeof p> => Boolean(p && !p.isAdd));
+    .map((id) => problemList.find((p) => p.id === id && !p.isAdd))
+    .filter((p): p is NonNullable<typeof p> => Boolean(p));
 
   const serviceName =
     problems.map((p) => p.name).join(", ") ||
-    DEFAULT_REPAIR_PROBLEMS.find((p) => p.id === "screen")?.name ||
+    problemList.find((p) => p.id === "screen")?.name ||
     "Repair Service";
 
   const imeiSerialValue =

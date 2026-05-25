@@ -1,21 +1,27 @@
-export type RepairProblemIcon =
-  | "camera-rear"
-  | "battery"
-  | "charging-port"
-  | "diagnostic"
-  | "camera-front"
-  | "screen"
-  | "speaker"
-  | "volume"
-  | "water-damage";
+import type { RepairProblemIcon } from "@/lib/repair-issue-icons";
+
+export type { RepairProblemIcon } from "@/lib/repair-issue-icons";
 
 export interface RepairProblem {
   id: string;
   name: string;
   price: number;
   icon: RepairProblemIcon;
+  imageUrl?: string;
+  dbId?: number;
+  isDefault?: boolean;
   isAdd?: boolean;
 }
+
+export const REPAIR_PROBLEMS_FALLBACK: RepairProblem[] = [
+  {
+    id: "add-device-issue",
+    name: "Add Device Issue",
+    price: 0,
+    icon: "diagnostic",
+    isAdd: true,
+  },
+];
 
 export const DEFAULT_REPAIR_PROBLEMS: RepairProblem[] = [
   {

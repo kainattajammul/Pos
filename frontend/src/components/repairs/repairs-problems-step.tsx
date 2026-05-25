@@ -1,38 +1,59 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Check, ChevronRight, Plus, Search } from "lucide-react";
+import {
+  Check,
+  ChevronRight,
+  MoreHorizontal,
+  Pencil,
+  Plus,
+  Search,
+  Trash2,
+} from "lucide-react";
 import { RepairProblemIconMark } from "@/components/repairs/repair-problem-icon";
 import {
-  DEFAULT_REPAIR_PROBLEMS,
   formatRepairProblemPrice,
   type RepairProblem,
 } from "@/lib/repairs-problems-data";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface RepairsProblemsStepProps {
+  problems: RepairProblem[];
+  problemsLoading?: boolean;
   selectedProblemIds: string[];
   onToggleProblem: (problemId: string) => void;
   onNext: () => void;
   onAddIssue?: () => void;
+  onEditIssue?: (issue: RepairProblem) => void;
+  onDeleteIssue?: (issue: RepairProblem) => void;
 }
 
 export function RepairsProblemsStep({
+  problems,
+  problemsLoading = false,
   selectedProblemIds,
   onToggleProblem,
   onNext,
   onAddIssue,
+  onEditIssue,
+  onDeleteIssue,
 }: RepairsProblemsStepProps) {
   const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return DEFAULT_REPAIR_PROBLEMS;
-    return DEFAULT_REPAIR_PROBLEMS.filter(
+    if (!q) return problems;
+    return problems.filter(
       (p) => p.isAdd || p.name.toLowerCase().includes(q),
     );
-  }, [query]);
+  }, [problems, query]);
 
   const handleCardClick = (problem: RepairProblem) => {
     if (problem.isAdd) {
@@ -41,6 +62,14 @@ export function RepairsProblemsStep({
     }
     onToggleProblem(problem.id);
   };
+
+  if (problemsLoading) {
+    return (
+      <div className="flex min-h-[200px] flex-1 items-center justify-center text-sm text-[#6B7280]">
+        Loading device issues…
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -73,10 +102,12 @@ export function RepairsProblemsStep({
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5">
           {filtered.map((problem) => (
             <ProblemCard
-              key={problem.id}
+              key={problem.isAdd ? "add" : String(problem.dbId ?? problem.id)}
               problem={problem}
               selected={selectedProblemIds.includes(problem.id)}
-              onClick={() => handleCardClick(problem)}
+              onSelect={() => handleCardClick(problem)}
+              onEdit={onEditIssue}
+              onDelete={onDeleteIssue}
             />
           ))}
         </div>
@@ -88,17 +119,25 @@ export function RepairsProblemsStep({
 function ProblemCard({
   problem,
   selected,
-  onClick,
+  onSelect,
+  onEdit,
+  onDelete,
 }: {
   problem: RepairProblem;
   selected: boolean;
-  onClick: () => void;
+  onSelect: () => void;
+  onEdit?: (issue: RepairProblem) => void;
+  onDelete?: (issue: RepairProblem) => void;
 }) {
+  const canManage = !problem.isAdd && problem.dbId != null;
+  const [imageFailed, setImageFailed] = useState(false);
+  const showImage = Boolean(problem.imageUrl) && !imageFailed;
+
   if (problem.isAdd) {
     return (
       <button
         type="button"
-        onClick={onClick}
+        onClick={onSelect}
         className="flex min-h-[148px] flex-col items-center justify-center gap-2 rounded-lg p-3 text-[var(--repair-on-primary)] shadow-sm transition-transform hover:scale-[1.01] hover:shadow-md"
         style={{
           background: `linear-gradient(180deg, var(--repair-primary) 0%, var(--repair-accent-end) 100%)`,
@@ -115,39 +154,90 @@ function ProblemCard({
   }
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={selected}
-      className={cn(
-        "relative flex min-h-[148px] flex-col items-center rounded-lg border bg-white px-2 pb-3 pt-8 shadow-sm transition-all",
-        "hover:border-[var(--repair-primary)] hover:shadow-md",
-        selected
-          ? "border-2 border-[var(--repair-primary)] bg-[color-mix(in_srgb,var(--repair-primary)_8%,white)] ring-1 ring-[var(--repair-primary)]/20"
-          : "border-[#E5E7EB]",
-      )}
-    >
-      <span
+    <div className="group relative">
+      {canManage && (onEdit || onDelete) ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            type="button"
+            className="absolute top-2 right-2 z-10 flex size-7 items-center justify-center rounded-md bg-white/90 text-[#6B7280] opacity-0 shadow-sm ring-1 ring-[#E5E7EB] transition-opacity group-hover:opacity-100 hover:text-[#111827] data-popup-open:opacity-100"
+            onClick={(e) => e.stopPropagation()}
+            aria-label={`Actions for ${problem.name}`}
+          >
+            <MoreHorizontal className="size-4" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-40">
+            {onEdit ? (
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(problem);
+                }}
+              >
+                <Pencil className="size-4" />
+                Edit
+              </DropdownMenuItem>
+            ) : null}
+            {onDelete ? (
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(problem);
+                }}
+              >
+                <Trash2 className="size-4" />
+                Delete
+              </DropdownMenuItem>
+            ) : null}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : null}
+
+      <button
+        type="button"
+        onClick={onSelect}
+        aria-pressed={selected}
         className={cn(
-          "absolute top-2 left-2 flex size-4 items-center justify-center rounded border transition-colors",
+          "relative flex min-h-[148px] w-full flex-col items-center rounded-lg border bg-white px-2 pb-3 pt-8 shadow-sm transition-all",
+          "hover:border-[var(--repair-primary)] hover:shadow-md",
           selected
-            ? "border-[var(--repair-primary)] bg-[var(--repair-primary)] text-[var(--repair-on-primary)]"
-            : "border-[#D1D5DB] bg-white",
+            ? "border-2 border-[var(--repair-primary)] bg-[color-mix(in_srgb,var(--repair-primary)_8%,white)] ring-1 ring-[var(--repair-primary)]/20"
+            : "border-[#E5E7EB]",
         )}
-        aria-hidden
       >
-        {selected ? <Check className="size-3 stroke-[3]" /> : null}
-      </span>
+        <span
+          className={cn(
+            "absolute top-2 left-2 flex size-4 items-center justify-center rounded border transition-colors",
+            selected
+              ? "border-[var(--repair-primary)] bg-[var(--repair-primary)] text-[var(--repair-on-primary)]"
+              : "border-[#D1D5DB] bg-white",
+          )}
+          aria-hidden
+        >
+          {selected ? <Check className="size-3 stroke-[3]" /> : null}
+        </span>
 
-      <RepairProblemIconMark icon={problem.icon} className="mb-2" />
+        {showImage ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={problem.imageUrl}
+          alt=""
+          role="presentation"
+          className="mb-2 max-h-12 max-w-full object-contain"
+          onError={() => setImageFailed(true)}
+        />
+      ) : (
+        <RepairProblemIconMark icon={problem.icon} className="mb-2" />
+      )}
 
-      <span className="line-clamp-3 flex-1 px-1 text-center text-xs font-medium leading-snug text-[#111827]">
-        {problem.name}
-      </span>
+        <span className="line-clamp-3 flex-1 px-1 text-center text-xs font-medium leading-snug text-[#111827]">
+          {problem.name}
+        </span>
 
-      <span className="mt-2 text-sm font-semibold text-[var(--repair-primary)]">
-        {formatRepairProblemPrice(problem.price)}
-      </span>
-    </button>
+        <span className="mt-2 text-sm font-semibold text-[var(--repair-primary)]">
+          {formatRepairProblemPrice(problem.price)}
+        </span>
+      </button>
+    </div>
   );
 }

@@ -179,3 +179,111 @@ export async function uploadRepairDeviceImage(
 
   return { url: data.publicUrl, path };
 }
+
+/**
+ * Uploads a device issue image to Supabase Storage and returns the public URL.
+ */
+export async function uploadRepairDeviceIssueImage(
+  file,
+  shopId,
+  repairCategoryId,
+  repairManufacturerId,
+  repairDeviceId,
+) {
+  if (!file?.buffer?.length) {
+    throw new ApiError(HTTP.BAD_REQUEST, "Image file is required");
+  }
+
+  if (!ALLOWED_MIME_TYPES.has(file.mimetype)) {
+    throw new ApiError(
+      HTTP.BAD_REQUEST,
+      "Invalid image type. Use JPEG, PNG, WebP, GIF, or SVG.",
+    );
+  }
+
+  if (file.size > MAX_BYTES) {
+    throw new ApiError(HTTP.BAD_REQUEST, "Image must be 5 MB or smaller");
+  }
+
+  if (!isSupabaseStorageConfigured()) {
+    throw new ApiError(
+      HTTP.SERVICE_UNAVAILABLE,
+      "Image storage is not configured. Set SUPABASE_SERVICE_ROLE_KEY and create the storage bucket in Supabase.",
+    );
+  }
+
+  const supabase = getSupabaseAdmin();
+  const ext = extensionFromMime(file.mimetype);
+  const path = `shop-${shopId}/category-${repairCategoryId}/manufacturer-${repairManufacturerId}/device-${repairDeviceId}/issues/${randomUUID()}.${ext}`;
+
+  const { error } = await supabase.storage
+    .from(env.repairCategoryStorageBucket)
+    .upload(path, file.buffer, {
+      contentType: file.mimetype,
+      upsert: false,
+    });
+
+  if (error) {
+    throw new ApiError(HTTP.BAD_REQUEST, `Image upload failed: ${error.message}`);
+  }
+
+  const { data } = supabase.storage
+    .from(env.repairCategoryStorageBucket)
+    .getPublicUrl(path);
+
+  return { url: data.publicUrl, path };
+}
+
+/**
+ * Uploads a device part image to Supabase Storage and returns the public URL.
+ */
+export async function uploadRepairDevicePartImage(
+  file,
+  shopId,
+  repairCategoryId,
+  repairManufacturerId,
+  repairDeviceId,
+) {
+  if (!file?.buffer?.length) {
+    throw new ApiError(HTTP.BAD_REQUEST, "Image file is required");
+  }
+
+  if (!ALLOWED_MIME_TYPES.has(file.mimetype)) {
+    throw new ApiError(
+      HTTP.BAD_REQUEST,
+      "Invalid image type. Use JPEG, PNG, WebP, GIF, or SVG.",
+    );
+  }
+
+  if (file.size > MAX_BYTES) {
+    throw new ApiError(HTTP.BAD_REQUEST, "Image must be 5 MB or smaller");
+  }
+
+  if (!isSupabaseStorageConfigured()) {
+    throw new ApiError(
+      HTTP.SERVICE_UNAVAILABLE,
+      "Image storage is not configured. Set SUPABASE_SERVICE_ROLE_KEY and create the storage bucket in Supabase.",
+    );
+  }
+
+  const supabase = getSupabaseAdmin();
+  const ext = extensionFromMime(file.mimetype);
+  const path = `shop-${shopId}/category-${repairCategoryId}/manufacturer-${repairManufacturerId}/device-${repairDeviceId}/parts/${randomUUID()}.${ext}`;
+
+  const { error } = await supabase.storage
+    .from(env.repairCategoryStorageBucket)
+    .upload(path, file.buffer, {
+      contentType: file.mimetype,
+      upsert: false,
+    });
+
+  if (error) {
+    throw new ApiError(HTTP.BAD_REQUEST, `Image upload failed: ${error.message}`);
+  }
+
+  const { data } = supabase.storage
+    .from(env.repairCategoryStorageBucket)
+    .getPublicUrl(path);
+
+  return { url: data.publicUrl, path };
+}

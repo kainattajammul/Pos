@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
+import { getApiErrorMessage } from "@/lib/axios";
 import { queryKeys } from "@/constants/query-keys";
 import { fetchRepairManufacturers } from "@/services/repair-manufacturers.service";
 import { APP_CONFIG } from "@/constants/config";
@@ -25,6 +26,18 @@ import {
   useRepairDevices,
   useUpdateRepairDevice,
 } from "@/hooks/use-repair-devices";
+import {
+  useCreateRepairDeviceIssue,
+  useDeleteRepairDeviceIssue,
+  useRepairDeviceIssues,
+  useUpdateRepairDeviceIssue,
+} from "@/hooks/use-repair-device-issues";
+import {
+  useCreateRepairDevicePart,
+  useDeleteRepairDevicePart,
+  useRepairDeviceParts,
+  useUpdateRepairDevicePart,
+} from "@/hooks/use-repair-device-parts";
 import type {
   PosTab,
   RepairCategoryCard,
@@ -32,6 +45,10 @@ import type {
   RepairManufacturer,
   RepairStep,
 } from "@/lib/repairs-pos-data";
+import type { RepairProblem } from "@/lib/repairs-problems-data";
+import { REPAIR_PROBLEMS_FALLBACK } from "@/lib/repairs-problems-data";
+import type { RepairPart } from "@/lib/repairs-parts-data";
+import { REPAIR_PARTS_FALLBACK } from "@/lib/repairs-parts-data";
 import {
   getDefaultRepairCharges,
   type RepairDetailsFormValues,
@@ -77,6 +94,20 @@ const RepairDeviceFormDialog = dynamic(
     ),
   { ssr: false },
 );
+const RepairDeviceIssueFormDialog = dynamic(
+  () =>
+    import("@/components/repairs/repair-device-issue-form-dialog").then(
+      (m) => m.RepairDeviceIssueFormDialog,
+    ),
+  { ssr: false },
+);
+const RepairDevicePartFormDialog = dynamic(
+  () =>
+    import("@/components/repairs/repair-device-part-form-dialog").then(
+      (m) => m.RepairDevicePartFormDialog,
+    ),
+  { ssr: false },
+);
 
 const LOADING_CATEGORIES: RepairCategoryCard[] = [];
 const LOADING_MANUFACTURERS: RepairManufacturer[] = [
@@ -87,7 +118,9 @@ import { RepairTicketProvider } from "@/contexts/repair-ticket-context";
 type DeleteTarget =
   | { type: "category"; item: RepairCategoryCard }
   | { type: "manufacturer"; item: RepairManufacturer }
-  | { type: "device"; item: RepairDevice };
+  | { type: "device"; item: RepairDevice }
+  | { type: "issue"; item: RepairProblem }
+  | { type: "part"; item: RepairPart };
 
 function RepairsPosContent() {
   const shopId = APP_CONFIG.defaultShopId;
@@ -109,6 +142,10 @@ function RepairsPosContent() {
     useState<RepairManufacturer | null>(null);
   const [deviceDialogOpen, setDeviceDialogOpen] = useState(false);
   const [editingDevice, setEditingDevice] = useState<RepairDevice | null>(null);
+  const [issueDialogOpen, setIssueDialogOpen] = useState(false);
+  const [editingIssue, setEditingIssue] = useState<RepairProblem | null>(null);
+  const [partDialogOpen, setPartDialogOpen] = useState(false);
+  const [editingPart, setEditingPart] = useState<RepairPart | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
   const [activeTab, setActiveTab] = useState<PosTab>("Repairs");
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
@@ -175,9 +212,76 @@ function RepairsPosContent() {
     selectedManufacturerDbId ?? 0,
   );
 
+  const selectedDeviceDbId = useMemo(() => {
+    const match = devices.find((d) => d.id === selectedDeviceId && !d.isAdd);
+    return match?.dbId ?? null;
+  }, [devices, selectedDeviceId]);
+
+  const {
+    data: problems = REPAIR_PROBLEMS_FALLBACK,
+    isLoading: problemsLoading,
+    isError: problemsError,
+    error: problemsQueryError,
+  } = useRepairDeviceIssues(
+    shopId,
+    selectedCategoryDbId,
+    selectedManufacturerDbId,
+    selectedDeviceDbId,
+  );
+
+  const createIssue = useCreateRepairDeviceIssue(
+    shopId,
+    selectedCategoryDbId ?? 0,
+    selectedManufacturerDbId ?? 0,
+    selectedDeviceDbId ?? 0,
+  );
+  const updateIssue = useUpdateRepairDeviceIssue(
+    shopId,
+    selectedCategoryDbId ?? 0,
+    selectedManufacturerDbId ?? 0,
+    selectedDeviceDbId ?? 0,
+  );
+  const deleteIssue = useDeleteRepairDeviceIssue(
+    shopId,
+    selectedCategoryDbId ?? 0,
+    selectedManufacturerDbId ?? 0,
+    selectedDeviceDbId ?? 0,
+  );
+
+  const {
+    data: parts = REPAIR_PARTS_FALLBACK,
+    isLoading: partsLoading,
+    isError: partsError,
+    error: partsQueryError,
+  } = useRepairDeviceParts(
+    shopId,
+    selectedCategoryDbId,
+    selectedManufacturerDbId,
+    selectedDeviceDbId,
+  );
+
+  const createPart = useCreateRepairDevicePart(
+    shopId,
+    selectedCategoryDbId ?? 0,
+    selectedManufacturerDbId ?? 0,
+    selectedDeviceDbId ?? 0,
+  );
+  const updatePart = useUpdateRepairDevicePart(
+    shopId,
+    selectedCategoryDbId ?? 0,
+    selectedManufacturerDbId ?? 0,
+    selectedDeviceDbId ?? 0,
+  );
+  const deletePart = useDeleteRepairDevicePart(
+    shopId,
+    selectedCategoryDbId ?? 0,
+    selectedManufacturerDbId ?? 0,
+    selectedDeviceDbId ?? 0,
+  );
+
   const initialRepairCharges = useMemo(
-    () => getDefaultRepairCharges(selectedProblemIds),
-    [selectedProblemIds],
+    () => getDefaultRepairCharges(selectedProblemIds, problems),
+    [selectedProblemIds, problems],
   );
 
   const openAddCategory = () => {
@@ -213,6 +317,36 @@ function RepairsPosContent() {
   const handleDeleteDevice = (device: RepairDevice) => {
     if (!device.dbId) return;
     setDeleteTarget({ type: "device", item: device });
+  };
+
+  const openAddIssue = () => {
+    setEditingIssue(null);
+    setIssueDialogOpen(true);
+  };
+
+  const openEditIssue = (issue: RepairProblem) => {
+    setEditingIssue(issue);
+    setIssueDialogOpen(true);
+  };
+
+  const handleDeleteIssue = (issue: RepairProblem) => {
+    if (!issue.dbId) return;
+    setDeleteTarget({ type: "issue", item: issue });
+  };
+
+  const openAddPart = () => {
+    setEditingPart(null);
+    setPartDialogOpen(true);
+  };
+
+  const openEditPart = (part: RepairPart) => {
+    setEditingPart(part);
+    setPartDialogOpen(true);
+  };
+
+  const handleDeletePart = (part: RepairPart) => {
+    if (!part.dbId) return;
+    setDeleteTarget({ type: "part", item: part });
   };
 
   const handleConfirmDelete = () => {
@@ -258,19 +392,45 @@ function RepairsPosContent() {
       return;
     }
 
-    const device = deleteTarget.item;
-    if (!device.dbId) return;
+    if (deleteTarget.type === "device") {
+      const device = deleteTarget.item;
+      if (!device.dbId) return;
 
-    deleteDevice.mutate(device.dbId, {
+      deleteDevice.mutate(device.dbId, {
+        onSuccess: () => {
+          setDeleteTarget(null);
+          if (selectedDeviceId === device.id) {
+            setSelectedDeviceId(null);
+            setSelectedProblemIds([]);
+            setSelectedPartIds([]);
+            setActiveStep("Devices");
+            setFurthestStep("Devices");
+          }
+        },
+      });
+      return;
+    }
+
+    if (deleteTarget.type === "issue") {
+      const issue = deleteTarget.item;
+      if (!issue.dbId) return;
+
+      deleteIssue.mutate(issue.dbId, {
+        onSuccess: () => {
+          setDeleteTarget(null);
+          setSelectedProblemIds((prev) => prev.filter((id) => id !== issue.id));
+        },
+      });
+      return;
+    }
+
+    const part = deleteTarget.item;
+    if (!part.dbId) return;
+
+    deletePart.mutate(part.dbId, {
       onSuccess: () => {
         setDeleteTarget(null);
-        if (selectedDeviceId === device.id) {
-          setSelectedDeviceId(null);
-          setSelectedProblemIds([]);
-          setSelectedPartIds([]);
-          setActiveStep("Devices");
-          setFurthestStep("Devices");
-        }
+        setSelectedPartIds((prev) => prev.filter((id) => id !== part.id));
       },
     });
   };
@@ -403,6 +563,28 @@ function RepairsPosContent() {
   }, [devicesError]);
 
   useEffect(() => {
+    if (problemsError) {
+      toast.error(
+        getApiErrorMessage(
+          problemsQueryError,
+          "Could not load device issues. Restart the backend after running: npm run db:generate",
+        ),
+      );
+    }
+  }, [problemsError, problemsQueryError]);
+
+  useEffect(() => {
+    if (partsError) {
+      toast.error(
+        getApiErrorMessage(
+          partsQueryError,
+          "Could not load repair parts. Restart the backend after running: npm run db:generate",
+        ),
+      );
+    }
+  }, [partsError, partsQueryError]);
+
+  useEffect(() => {
     if (categoriesLoading || categories.length === 0) return;
     for (const category of categories) {
       if (category.isAdd || !category.dbId) continue;
@@ -426,6 +608,7 @@ function RepairsPosContent() {
         selectedProblemIds={selectedProblemIds}
         devices={devices}
         manufacturers={manufacturers}
+        problems={problems}
       >
         <div className="flex min-h-0 flex-1 overflow-hidden">
           <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden lg:flex-row">
@@ -454,12 +637,22 @@ function RepairsPosContent() {
               onAddDevice={openAddDevice}
               onEditDevice={openEditDevice}
               onDeleteDevice={handleDeleteDevice}
+              problems={problems}
+              problemsLoading={problemsLoading}
               selectedProblemIds={selectedProblemIds}
               onToggleProblem={handleToggleProblem}
               onProblemsNext={handleProblemsNext}
+              onAddIssue={openAddIssue}
+              onEditIssue={openEditIssue}
+              onDeleteIssue={handleDeleteIssue}
+              parts={parts}
+              partsLoading={partsLoading}
               selectedPartIds={selectedPartIds}
               onTogglePart={handleTogglePart}
               onPartsNext={handlePartsNext}
+              onAddPart={openAddPart}
+              onEditPart={openEditPart}
+              onDeletePart={handleDeletePart}
               initialRepairCharges={initialRepairCharges}
               onConfirmDetails={handleConfirmDetails}
             />
@@ -534,6 +727,74 @@ function RepairsPosContent() {
         />
       ) : null}
 
+      {selectedCategoryDbId && selectedManufacturerDbId && selectedDeviceDbId ? (
+        <RepairDeviceIssueFormDialog
+          open={issueDialogOpen}
+          onOpenChange={(open) => {
+            setIssueDialogOpen(open);
+            if (!open) setEditingIssue(null);
+          }}
+          repairCategoryId={selectedCategoryDbId}
+          repairManufacturerId={selectedManufacturerDbId}
+          repairDeviceId={selectedDeviceDbId}
+          issue={editingIssue}
+          isSubmitting={createIssue.isPending || updateIssue.isPending}
+          onSave={(values) => {
+            if (editingIssue?.dbId) {
+              updateIssue.mutate(
+                { id: editingIssue.dbId, payload: values },
+                {
+                  onSuccess: () => {
+                    setIssueDialogOpen(false);
+                    setEditingIssue(null);
+                  },
+                },
+              );
+            } else {
+              createIssue.mutate(values, {
+                onSuccess: () => {
+                  setIssueDialogOpen(false);
+                },
+              });
+            }
+          }}
+        />
+      ) : null}
+
+      {selectedCategoryDbId && selectedManufacturerDbId && selectedDeviceDbId ? (
+        <RepairDevicePartFormDialog
+          open={partDialogOpen}
+          onOpenChange={(open) => {
+            setPartDialogOpen(open);
+            if (!open) setEditingPart(null);
+          }}
+          repairCategoryId={selectedCategoryDbId}
+          repairManufacturerId={selectedManufacturerDbId}
+          repairDeviceId={selectedDeviceDbId}
+          part={editingPart}
+          isSubmitting={createPart.isPending || updatePart.isPending}
+          onSave={(values) => {
+            if (editingPart?.dbId) {
+              updatePart.mutate(
+                { id: editingPart.dbId, payload: values },
+                {
+                  onSuccess: () => {
+                    setPartDialogOpen(false);
+                    setEditingPart(null);
+                  },
+                },
+              );
+            } else {
+              createPart.mutate(values, {
+                onSuccess: () => {
+                  setPartDialogOpen(false);
+                },
+              });
+            }
+          }}
+        />
+      ) : null}
+
       <RepairCategoryFormDialog
         open={categoryDialogOpen}
         onOpenChange={(open) => {
@@ -573,7 +834,9 @@ function RepairsPosContent() {
             !open &&
             !deleteCategory.isPending &&
             !deleteManufacturer.isPending &&
-            !deleteDevice.isPending
+            !deleteDevice.isPending &&
+            !deleteIssue.isPending &&
+            !deletePart.isPending
           ) {
             setDeleteTarget(null);
           }
@@ -583,7 +846,11 @@ function RepairsPosContent() {
             ? "category"
             : deleteTarget?.type === "manufacturer"
               ? "manufacturer"
-              : "device"
+              : deleteTarget?.type === "device"
+                ? "device"
+                : deleteTarget?.type === "issue"
+                  ? "device issue"
+                  : "part"
         }
         itemLabel={
           deleteTarget?.type === "category"
@@ -593,7 +860,9 @@ function RepairsPosContent() {
         isPending={
           deleteCategory.isPending ||
           deleteManufacturer.isPending ||
-          deleteDevice.isPending
+          deleteDevice.isPending ||
+          deleteIssue.isPending ||
+          deletePart.isPending
         }
         onConfirm={handleConfirmDelete}
       />
