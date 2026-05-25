@@ -19,6 +19,7 @@ import {
   type RepairTicketSnapshot,
 } from "@/lib/repair-ticket-snapshot";
 import type { RepairTicketPdfKind } from "@/lib/repair-ticket-pdf";
+import type { RepairDevice, RepairManufacturer } from "@/lib/repairs-pos-data";
 
 interface RepairTicketContextValue {
   customerName: string;
@@ -42,6 +43,8 @@ export interface RepairTicketProviderProps {
   selectedManufacturerId: string | null;
   selectedDeviceId: string | null;
   selectedProblemIds: string[];
+  devices?: RepairDevice[];
+  manufacturers?: RepairManufacturer[];
 }
 
 export function RepairTicketProvider({
@@ -50,6 +53,8 @@ export function RepairTicketProvider({
   selectedManufacturerId,
   selectedDeviceId,
   selectedProblemIds,
+  devices = [],
+  manufacturers = [],
 }: RepairTicketProviderProps) {
   const [customerName, setCustomerName] = useState(WALKIN_CUSTOMER_NAME);
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerTableRow | null>(
@@ -78,6 +83,8 @@ export function RepairTicketProvider({
         selectedDeviceId,
         selectedProblemIds,
         detailsForm,
+        devices,
+        manufacturers,
       }),
     [
       customerName,
@@ -86,6 +93,8 @@ export function RepairTicketProvider({
       selectedDeviceId,
       selectedProblemIds,
       detailsForm,
+      devices,
+      manufacturers,
     ],
   );
 

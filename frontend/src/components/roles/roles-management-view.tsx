@@ -12,7 +12,7 @@ import { AlertCircle, Filter, Plus, RefreshCw, Search, Shield } from "lucide-rea
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { DataTable } from "@/components/data-table/data-table";
 import { createRoleManagementColumns } from "@/components/roles/columns";
-import { DeleteRoleDialog } from "@/components/roles/delete-role-dialog";
+import { DeleteUserDialog } from "@/components/users/delete-user-dialog";
 import { RoleFormDialog } from "@/components/roles/role-form-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
@@ -291,12 +291,13 @@ export function RolesManagementView() {
         onSave={handleFormSave}
       />
 
-      <DeleteRoleDialog
+      <DeleteUserDialog
         open={deleteTarget != null}
         onOpenChange={(open) => {
           if (!open && !deleteMutation.isPending) setDeleteTarget(null);
         }}
-        roleLabel={
+        entityType="role"
+        itemLabel={
           deleteTarget
             ? `${deleteTarget.roleName}${
                 deleteTarget.shopId != null ? ` (Shop ${deleteTarget.shopId})` : ""

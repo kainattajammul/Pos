@@ -5,6 +5,7 @@ import userRoutes from "./user.routes.js";
 import roleRoutes from "./role.routes.js";
 import repairCategoryRoutes from "./repairCategory.routes.js";
 import repairManufacturerRoutes from "./repairManufacturer.routes.js";
+import repairDeviceRoutes from "./repairDevice.routes.js";
 import dashboardRoutes from "./dashboard.routes.js";
 
 const router = Router();
@@ -22,6 +23,7 @@ router.get("/", (_req, res) => {
         roles: "/api/v1/roles",
         repairCategories: "/api/v1/repair-categories",
         repairManufacturers: "/api/v1/repair-manufacturers",
+        repairDevices: "/api/v1/repair-devices",
         dashboard: "/api/v1/dashboard",
       },
     },
@@ -33,6 +35,7 @@ router.use("/users", userRoutes);
 router.use("/roles", roleRoutes);
 router.use("/repair-categories", repairCategoryRoutes);
 router.use("/repair-manufacturers", repairManufacturerRoutes);
+router.use("/repair-devices", repairDeviceRoutes);
 router.use("/dashboard", dashboardRoutes);
 
 router.get("/health", (_req, res) => {

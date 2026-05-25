@@ -1,6 +1,12 @@
+import type { DeviceIconVariant } from "@/components/repairs/device-preview-icon";
+
 export interface RepairDevice {
   id: string;
   name: string;
+  imageUrl?: string;
+  iconVariant?: DeviceIconVariant;
+  dbId?: number;
+  isDefault?: boolean;
   isAdd?: boolean;
 }
 

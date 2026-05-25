@@ -13,7 +13,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { DataTable } from "@/components/data-table/data-table";
 import { createCustomerManagementColumns } from "@/components/customers/columns";
 import { CustomerFormDialog } from "@/components/customers/customer-form-dialog";
-import { DeleteCustomerDialog } from "@/components/customers/delete-customer-dialog";
+import { DeleteUserDialog } from "@/components/users/delete-user-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import {
@@ -288,12 +288,13 @@ export function CustomersManagementView() {
         onSave={handleFormSave}
       />
 
-      <DeleteCustomerDialog
+      <DeleteUserDialog
         open={deleteTarget != null}
         onOpenChange={(open) => {
           if (!open && !deleteMutation.isPending) setDeleteTarget(null);
         }}
-        customerLabel={
+        entityType="customer"
+        itemLabel={
           deleteTarget
             ? `${deleteTarget.displayName}${
                 deleteTarget.email ? ` (${deleteTarget.email})` : ""

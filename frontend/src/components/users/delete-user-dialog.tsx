@@ -10,10 +10,16 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-interface DeleteUserDialogProps {
+export interface DeleteUserDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  userLabel: string;
+  /** Label shown in bold (name, email, category title, etc.) */
+  itemLabel: string;
+  /**
+   * Optional noun before the label, e.g. "category", "manufacturer", "role".
+   * Omit for a plain "delete {itemLabel}" message (users list).
+   */
+  entityType?: string;
   isPending?: boolean;
   onConfirm: () => void;
 }
@@ -21,7 +27,8 @@ interface DeleteUserDialogProps {
 export function DeleteUserDialog({
   open,
   onOpenChange,
-  userLabel,
+  itemLabel,
+  entityType,
   isPending = false,
   onConfirm,
 }: DeleteUserDialogProps) {
@@ -31,8 +38,9 @@ export function DeleteUserDialog({
         <DialogHeader>
           <DialogTitle className="text-lg">Are you absolutely sure?</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. Are you sure you want to delete{" "}
-            <span className="font-medium text-foreground">{userLabel}</span>?
+            This action cannot be undone. Are you sure you want to delete
+            {entityType ? ` ${entityType} ` : " "}
+            <span className="font-medium text-foreground">{itemLabel}</span>?
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">

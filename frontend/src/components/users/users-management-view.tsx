@@ -249,7 +249,7 @@ export function UsersManagementView() {
         onOpenChange={(open) => {
           if (!open && !deleteMutation.isPending) setDeleteTarget(null);
         }}
-        userLabel={
+        itemLabel={
           deleteTarget ? `${deleteTarget.fullName} (${deleteTarget.email})` : ""
         }
         isPending={deleteMutation.isPending}

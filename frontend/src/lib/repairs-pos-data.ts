@@ -169,10 +169,18 @@ export function getDeviceById(
   deviceId: string | null,
   categoryId: string | null,
   manufacturerId: string | null,
+  devices: RepairDevice[] = getDevicesForCategoryAndManufacturer(
+    categoryId,
+    manufacturerId,
+  ),
 ): RepairDevice | undefined {
   if (!deviceId) return undefined;
-  const list = getDevicesForCategoryAndManufacturer(categoryId, manufacturerId);
-  return list.find((d) => d.id === deviceId && !d.isAdd);
+  return devices.find((d) => d.id === deviceId && !d.isAdd);
+}
+
+export function isAddDeviceInList(deviceId: string, devices: RepairDevice[]): boolean {
+  const device = devices.find((d) => d.id === deviceId);
+  return Boolean(device?.isAdd);
 }
 
 export function getCategoryIdFromLabel(

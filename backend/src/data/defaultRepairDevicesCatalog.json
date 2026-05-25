@@ -1,0 +1,446 @@
+{
+  "mobile": {
+    "apple": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "samsung": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "google": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "htc": [
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "blackberry": [
+      null,
+      null,
+      null,
+      null
+    ],
+    "oneplus": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "motorola": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "xiaomi": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "lg": [
+      null,
+      null,
+      null,
+      null
+    ],
+    "nokia": [
+      null,
+      null,
+      null,
+      null
+    ],
+    "sony": [
+      null,
+      null,
+      null,
+      null
+    ],
+    "vivo": [
+      null,
+      null,
+      null,
+      null
+    ],
+    "asus": [
+      null,
+      null,
+      null,
+      null
+    ],
+    "alcatel": [
+      null,
+      null,
+      null
+    ],
+    "essential": [
+      null
+    ],
+    "huawei": [
+      null,
+      null,
+      null,
+      null
+    ],
+    "kyocera": [
+      null,
+      null
+    ],
+    "zte": [
+      null,
+      null,
+      null
+    ]
+  },
+  "tablet": {
+    "apple": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "samsung": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "google": [
+      null,
+      null
+    ],
+    "huawei": [
+      null,
+      null,
+      null
+    ],
+    "xiaomi": [
+      null,
+      null,
+      null,
+      null
+    ],
+    "oneplus": [
+      null,
+      null
+    ],
+    "asus": [
+      null,
+      null,
+      null
+    ],
+    "lg": [
+      null,
+      null
+    ],
+    "nokia": [
+      null,
+      null
+    ],
+    "sony": [
+      null
+    ],
+    "alcatel": [
+      null,
+      null
+    ],
+    "zte": [
+      null
+    ],
+    "motorola": [
+      null,
+      null
+    ],
+    "htc": [
+      null
+    ],
+    "blackberry": [
+      null
+    ]
+  },
+  "computer": {
+    "apple": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "samsung": [
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "google": [
+      null,
+      null
+    ],
+    "asus": [
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "lg": [
+      null,
+      null,
+      null,
+      null
+    ],
+    "huawei": [
+      null,
+      null,
+      null,
+      null
+    ],
+    "oneplus": [
+      null
+    ],
+    "xiaomi": [
+      null,
+      null
+    ],
+    "sony": [
+      null,
+      null
+    ],
+    "motorola": [
+      null
+    ],
+    "zte": [
+      null
+    ],
+    "htc": [
+      null
+    ],
+    "nokia": [
+      null
+    ],
+    "alcatel": [
+      null
+    ],
+    "blackberry": [
+      null
+    ],
+    "kyocera": [
+      null
+    ],
+    "essential": [
+      null
+    ],
+    "vivo": [
+      null
+    ]
+  },
+  "drone": {
+    "apple": [
+      null,
+      null
+    ],
+    "samsung": [
+      null,
+      null
+    ],
+    "google": [
+      null
+    ],
+    "huawei": [
+      null
+    ],
+    "xiaomi": [
+      null,
+      null
+    ],
+    "sony": [
+      null
+    ],
+    "asus": [
+      null
+    ],
+    "oneplus": [
+      null
+    ],
+    "motorola": [
+      null
+    ],
+    "lg": [
+      null
+    ],
+    "nokia": [
+      null
+    ],
+    "zte": [
+      null
+    ],
+    "htc": [
+      null
+    ],
+    "alcatel": [
+      null
+    ],
+    "kyocera": [
+      null
+    ],
+    "essential": [
+      null
+    ],
+    "blackberry": [
+      null
+    ],
+    "vivo": [
+      null
+    ]
+  },
+  "jewelry": {
+    "apple": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "samsung": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "google": [
+      null,
+      null,
+      null,
+      null
+    ],
+    "huawei": [
+      null,
+      null,
+      null
+    ],
+    "xiaomi": [
+      null,
+      null,
+      null
+    ],
+    "oneplus": [
+      null,
+      null
+    ],
+    "motorola": [
+      null,
+      null
+    ],
+    "sony": [
+      null,
+      null
+    ],
+    "asus": [
+      null
+    ],
+    "lg": [
+      null,
+      null
+    ],
+    "nokia": [
+      null
+    ],
+    "alcatel": [
+      null
+    ],
+    "zte": [
+      null
+    ],
+    "htc": [
+      null
+    ],
+    "essential": [
+      null
+    ],
+    "blackberry": [
+      null
+    ],
+    "kyocera": [
+      null
+    ],
+    "vivo": [
+      null,
+      null
+    ]
+  }
+}

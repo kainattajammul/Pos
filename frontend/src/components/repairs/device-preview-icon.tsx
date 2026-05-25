@@ -22,6 +22,9 @@ const DEVICE_IMAGES: Record<DeviceIconVariant, { src: string; className: string 
 interface DevicePreviewIconProps {
   deviceName: string;
   categoryId?: string | null;
+  /** Stored variant from API; when set, used before name-based heuristics */
+  iconVariant?: DeviceIconVariant | null;
+  imageUrl?: string | null;
   className?: string;
 }
 
@@ -41,7 +44,10 @@ function isLaptopComputer(name: string) {
 export function resolveDeviceIconVariant(
   categoryId: string | null | undefined,
   deviceName: string,
+  storedVariant?: DeviceIconVariant | null,
 ): DeviceIconVariant {
+  if (storedVariant) return storedVariant;
+
   const id = (categoryId ?? "").toLowerCase();
 
   if (id === "tablet") return "tablet";
@@ -59,10 +65,31 @@ export function resolveDeviceIconVariant(
 export function DevicePreviewIcon({
   deviceName,
   categoryId,
+  iconVariant,
+  imageUrl,
   className,
 }: DevicePreviewIconProps) {
-  const variant = resolveDeviceIconVariant(categoryId, deviceName);
+  const variant = resolveDeviceIconVariant(categoryId, deviceName, iconVariant);
   const asset = DEVICE_IMAGES[variant];
+
+  if (imageUrl) {
+    return (
+      <div
+        className={cn(
+          "flex h-[88px] w-full items-center justify-center bg-[#F3F4F6] px-2 py-3",
+          className,
+        )}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={imageUrl}
+          alt=""
+          role="presentation"
+          className="max-h-[72px] max-w-full object-contain"
+        />
+      </div>
+    );
+  }
 
   return (
     <div

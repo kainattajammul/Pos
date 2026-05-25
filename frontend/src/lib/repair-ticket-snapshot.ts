@@ -1,6 +1,7 @@
 import { WALKIN_CUSTOMER_NAME } from "@/lib/repairs-customer-data";
 import { DEFAULT_REPAIR_PROBLEMS } from "@/lib/repairs-problems-data";
 import type { RepairDetailsFormValues } from "@/lib/repairs-details-data";
+import type { RepairDevice, RepairManufacturer } from "@/lib/repairs-pos-data";
 import { getDeviceById, getManufacturerById } from "@/lib/repairs-pos-data";
 import { MONTH_NAMES } from "@/lib/repair-datetime";
 
@@ -65,16 +66,22 @@ export interface BuildRepairTicketSnapshotInput {
   selectedProblemIds: string[];
   detailsForm: RepairDetailsFormValues;
   ticketId?: string;
+  devices?: RepairDevice[];
+  manufacturers?: RepairManufacturer[];
 }
 
 export function buildRepairTicketSnapshot(
   input: BuildRepairTicketSnapshotInput,
 ): RepairTicketSnapshot {
-  const manufacturer = getManufacturerById(input.selectedManufacturerId);
+  const manufacturer = getManufacturerById(
+    input.selectedManufacturerId,
+    input.manufacturers,
+  );
   const device = getDeviceById(
     input.selectedDeviceId,
     input.selectedCategoryId,
     input.selectedManufacturerId,
+    input.devices ?? [],
   );
 
   const deviceTitle =

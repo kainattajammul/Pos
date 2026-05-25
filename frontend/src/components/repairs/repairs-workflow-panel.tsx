@@ -49,7 +49,11 @@ interface RepairsWorkflowPanelProps {
   onSelectManufacturer: (manufacturer: RepairManufacturer) => void;
   onEditManufacturer?: (manufacturer: RepairManufacturer) => void;
   onDeleteManufacturer?: (manufacturer: RepairManufacturer) => void;
+  devicesLoading?: boolean;
   onSelectDevice: (deviceId: string) => void;
+  onAddDevice?: () => void;
+  onEditDevice?: (device: RepairDevice) => void;
+  onDeleteDevice?: (device: RepairDevice) => void;
   selectedProblemIds: string[];
   onToggleProblem: (problemId: string) => void;
   onProblemsNext: () => void;
@@ -79,7 +83,11 @@ export function RepairsWorkflowPanel({
   onSelectManufacturer,
   onEditManufacturer,
   onDeleteManufacturer,
+  devicesLoading = false,
   onSelectDevice,
+  onAddDevice,
+  onEditDevice,
+  onDeleteDevice,
   selectedProblemIds,
   onToggleProblem,
   onProblemsNext,
@@ -96,6 +104,7 @@ export function RepairsWorkflowPanel({
     selectedDeviceId,
     selectedCategoryId,
     selectedManufacturerId,
+    devices,
   );
   const deviceLabel = selectedDevice?.name;
   const workflowStepsAfterDevice = ["Problems", "Parts", "Details"] as const;
@@ -225,7 +234,11 @@ export function RepairsWorkflowPanel({
             devices={devices}
             categoryId={selectedCategoryId}
             selectedDeviceId={selectedDeviceId}
+            devicesLoading={devicesLoading}
             onSelectDevice={onSelectDevice}
+            onAddDevice={onAddDevice}
+            onEditDevice={onEditDevice}
+            onDeleteDevice={onDeleteDevice}
           />
         ) : activeStep === "Problems" ? (
           selectedDeviceId ? (

@@ -16,9 +16,16 @@ import {
   useRepairManufacturers,
   useUpdateRepairManufacturer,
 } from "@/hooks/use-repair-manufacturers";
+import {
+  useCreateRepairDevice,
+  useDeleteRepairDevice,
+  useRepairDevices,
+  useUpdateRepairDevice,
+} from "@/hooks/use-repair-devices";
 import type {
   PosTab,
   RepairCategoryCard,
+  RepairDevice,
   RepairManufacturer,
   RepairStep,
 } from "@/lib/repairs-pos-data";
@@ -29,24 +36,26 @@ import {
 } from "@/lib/repairs-details-data";
 import {
   canNavigateToRepairStep,
-  getDevicesForCategoryAndManufacturer,
   getNextRepairStep,
   getRepairStepIndex,
-  isAddDeviceId,
+  isAddDeviceInList,
 } from "@/lib/repairs-pos-data";
+import { REPAIR_DEVICES_FALLBACK } from "@/lib/repairs-devices-data";
 import { RepairsTopNav } from "@/components/repairs/repairs-top-nav";
 import { RepairsPosBar } from "@/components/repairs/repairs-pos-bar";
 import { RepairsCartPanel } from "@/components/repairs/repairs-cart-panel";
 import { RepairsWorkflowPanel } from "@/components/repairs/repairs-workflow-panel";
 import { RepairsSideToolbar } from "@/components/repairs/repairs-side-toolbar";
-import { DeleteConfirmDialog } from "@/components/repairs/delete-confirm-dialog";
 import { RepairCategoryFormDialog } from "@/components/repairs/repair-category-form-dialog";
+import { DeleteUserDialog } from "@/components/users/delete-user-dialog";
 import { RepairManufacturerFormDialog } from "@/components/repairs/repair-manufacturer-form-dialog";
+import { RepairDeviceFormDialog } from "@/components/repairs/repair-device-form-dialog";
 import { RepairTicketProvider } from "@/contexts/repair-ticket-context";
 
 type DeleteTarget =
   | { type: "category"; item: RepairCategoryCard }
-  | { type: "manufacturer"; item: RepairManufacturer };
+  | { type: "manufacturer"; item: RepairManufacturer }
+  | { type: "device"; item: RepairDevice };
 
 function RepairsPosContent() {
   const shopId = APP_CONFIG.defaultShopId;
@@ -65,6 +74,8 @@ function RepairsPosContent() {
   const [manufacturerDialogOpen, setManufacturerDialogOpen] = useState(false);
   const [editingManufacturer, setEditingManufacturer] =
     useState<RepairManufacturer | null>(null);
+  const [deviceDialogOpen, setDeviceDialogOpen] = useState(false);
+  const [editingDevice, setEditingDevice] = useState<RepairDevice | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
   const [activeTab, setActiveTab] = useState<PosTab>("Repairs");
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
@@ -103,9 +114,33 @@ function RepairsPosContent() {
     selectedCategoryDbId ?? 0,
   );
 
-  const devices = getDevicesForCategoryAndManufacturer(
-    selectedCategoryId,
-    selectedManufacturerId,
+  const selectedManufacturerDbId = useMemo(() => {
+    const match = manufacturers.find(
+      (m) => m.id === selectedManufacturerId && !m.isAdd,
+    );
+    return match?.dbId ?? null;
+  }, [manufacturers, selectedManufacturerId]);
+
+  const {
+    data: devices = REPAIR_DEVICES_FALLBACK,
+    isLoading: devicesLoading,
+    isError: devicesError,
+  } = useRepairDevices(shopId, selectedCategoryDbId, selectedManufacturerDbId);
+
+  const createDevice = useCreateRepairDevice(
+    shopId,
+    selectedCategoryDbId ?? 0,
+    selectedManufacturerDbId ?? 0,
+  );
+  const updateDevice = useUpdateRepairDevice(
+    shopId,
+    selectedCategoryDbId ?? 0,
+    selectedManufacturerDbId ?? 0,
+  );
+  const deleteDevice = useDeleteRepairDevice(
+    shopId,
+    selectedCategoryDbId ?? 0,
+    selectedManufacturerDbId ?? 0,
   );
 
   const initialRepairCharges = useMemo(
@@ -133,6 +168,21 @@ function RepairsPosContent() {
     setDeleteTarget({ type: "manufacturer", item: manufacturer });
   };
 
+  const openAddDevice = () => {
+    setEditingDevice(null);
+    setDeviceDialogOpen(true);
+  };
+
+  const openEditDevice = (device: RepairDevice) => {
+    setEditingDevice(device);
+    setDeviceDialogOpen(true);
+  };
+
+  const handleDeleteDevice = (device: RepairDevice) => {
+    if (!device.dbId) return;
+    setDeleteTarget({ type: "device", item: device });
+  };
+
   const handleConfirmDelete = () => {
     if (!deleteTarget) return;
 
@@ -156,19 +206,38 @@ function RepairsPosContent() {
       return;
     }
 
-    const manufacturer = deleteTarget.item;
-    if (!manufacturer.dbId) return;
+    if (deleteTarget.type === "manufacturer") {
+      const manufacturer = deleteTarget.item;
+      if (!manufacturer.dbId) return;
 
-    deleteManufacturer.mutate(manufacturer.dbId, {
+      deleteManufacturer.mutate(manufacturer.dbId, {
+        onSuccess: () => {
+          setDeleteTarget(null);
+          if (selectedManufacturerId === manufacturer.id) {
+            setSelectedManufacturerId(null);
+            setSelectedDeviceId(null);
+            setSelectedProblemIds([]);
+            setSelectedPartIds([]);
+            setActiveStep("Manufacturer");
+            setFurthestStep("Manufacturer");
+          }
+        },
+      });
+      return;
+    }
+
+    const device = deleteTarget.item;
+    if (!device.dbId) return;
+
+    deleteDevice.mutate(device.dbId, {
       onSuccess: () => {
         setDeleteTarget(null);
-        if (selectedManufacturerId === manufacturer.id) {
-          setSelectedManufacturerId(null);
+        if (selectedDeviceId === device.id) {
           setSelectedDeviceId(null);
           setSelectedProblemIds([]);
           setSelectedPartIds([]);
-          setActiveStep("Manufacturer");
-          setFurthestStep("Manufacturer");
+          setActiveStep("Devices");
+          setFurthestStep("Devices");
         }
       },
     });
@@ -220,7 +289,7 @@ function RepairsPosContent() {
   };
 
   const handleSelectDevice = (deviceId: string) => {
-    if (isAddDeviceId(deviceId, selectedCategoryId, selectedManufacturerId)) return;
+    if (isAddDeviceInList(deviceId, devices)) return;
     setSelectedDeviceId(deviceId);
     setSelectedProblemIds([]);
     setSelectedPartIds([]);
@@ -296,6 +365,12 @@ function RepairsPosContent() {
   }, [manufacturersError]);
 
   useEffect(() => {
+    if (devicesError) {
+      toast.error("Could not load devices.");
+    }
+  }, [devicesError]);
+
+  useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo(
         "[data-pos-animate]",
@@ -329,6 +404,8 @@ function RepairsPosContent() {
         selectedManufacturerId={selectedManufacturerId}
         selectedDeviceId={selectedDeviceId}
         selectedProblemIds={selectedProblemIds}
+        devices={devices}
+        manufacturers={manufacturers}
       >
         <div className="flex min-h-0 flex-1 overflow-hidden">
           <div
@@ -345,6 +422,7 @@ function RepairsPosContent() {
               selectedManufacturerId={selectedManufacturerId}
               selectedDeviceId={selectedDeviceId}
               devices={devices}
+              devicesLoading={devicesLoading}
               furthestStep={furthestStep}
               onStepChange={handleStepChange}
               onSelectCategory={handleSelectCategory}
@@ -356,6 +434,9 @@ function RepairsPosContent() {
               onEditManufacturer={openEditManufacturer}
               onDeleteManufacturer={handleDeleteManufacturer}
               onSelectDevice={handleSelectDevice}
+              onAddDevice={openAddDevice}
+              onEditDevice={openEditDevice}
+              onDeleteDevice={handleDeleteDevice}
               selectedProblemIds={selectedProblemIds}
               onToggleProblem={handleToggleProblem}
               onProblemsNext={handleProblemsNext}
@@ -404,6 +485,40 @@ function RepairsPosContent() {
         />
       ) : null}
 
+      {selectedCategoryDbId && selectedManufacturerDbId ? (
+        <RepairDeviceFormDialog
+          open={deviceDialogOpen}
+          onOpenChange={(open) => {
+            setDeviceDialogOpen(open);
+            if (!open) setEditingDevice(null);
+          }}
+          repairCategoryId={selectedCategoryDbId}
+          repairManufacturerId={selectedManufacturerDbId}
+          categoryId={selectedCategoryId}
+          device={editingDevice}
+          isSubmitting={createDevice.isPending || updateDevice.isPending}
+          onSave={(values) => {
+            if (editingDevice?.dbId) {
+              updateDevice.mutate(
+                { id: editingDevice.dbId, payload: values },
+                {
+                  onSuccess: () => {
+                    setDeviceDialogOpen(false);
+                    setEditingDevice(null);
+                  },
+                },
+              );
+            } else {
+              createDevice.mutate(values, {
+                onSuccess: () => {
+                  setDeviceDialogOpen(false);
+                },
+              });
+            }
+          }}
+        />
+      ) : null}
+
       <RepairCategoryFormDialog
         open={categoryDialogOpen}
         onOpenChange={(open) => {
@@ -436,22 +551,35 @@ function RepairsPosContent() {
         }}
       />
 
-      <DeleteConfirmDialog
+      <DeleteUserDialog
         open={deleteTarget !== null}
         onOpenChange={(open) => {
-          if (!open) setDeleteTarget(null);
+          if (
+            !open &&
+            !deleteCategory.isPending &&
+            !deleteManufacturer.isPending &&
+            !deleteDevice.isPending
+          ) {
+            setDeleteTarget(null);
+          }
         }}
-        title={
+        entityType={
           deleteTarget?.type === "category"
-            ? "Delete category"
-            : "Delete manufacturer"
+            ? "category"
+            : deleteTarget?.type === "manufacturer"
+              ? "manufacturer"
+              : "device"
         }
-        itemName={
+        itemLabel={
           deleteTarget?.type === "category"
             ? deleteTarget.item.label
             : (deleteTarget?.item.name ?? "")
         }
-        isDeleting={deleteCategory.isPending || deleteManufacturer.isPending}
+        isPending={
+          deleteCategory.isPending ||
+          deleteManufacturer.isPending ||
+          deleteDevice.isPending
+        }
         onConfirm={handleConfirmDelete}
       />
     </div>
