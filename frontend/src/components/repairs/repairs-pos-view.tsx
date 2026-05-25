@@ -51,10 +51,7 @@ import type { RepairProblem } from "@/lib/repairs-problems-data";
 import { REPAIR_PROBLEMS_FALLBACK } from "@/lib/repairs-problems-data";
 import type { RepairPart } from "@/lib/repairs-parts-data";
 import { REPAIR_PARTS_FALLBACK } from "@/lib/repairs-parts-data";
-import {
-  getDefaultRepairCharges,
-  type RepairDetailsFormValues,
-} from "@/lib/repairs-details-data";
+import { getDefaultRepairCharges } from "@/lib/repairs-details-data";
 import {
   canNavigateToRepairStep,
   getNextRepairStep,
