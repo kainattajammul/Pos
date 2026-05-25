@@ -9,24 +9,19 @@ import {
   type FilterFn,
 } from "@tanstack/react-table";
 import { AlertCircle, Plus, RefreshCw, Search, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { DataTable } from "@/components/data-table/data-table";
 import { createUserManagementColumns } from "@/components/users/columns";
 import { DeleteUserDialog } from "@/components/users/delete-user-dialog";
-import { UserFormDialog } from "@/components/users/user-form-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  useCreateUser,
-  useDeleteUser,
-  useUpdateUser,
-  useUsers,
-} from "@/hooks/use-users";
+import { useDeleteUser, useUsers } from "@/hooks/use-users";
 import { getApiErrorMessage } from "@/lib/axios";
 import { cn } from "@/lib/utils";
-import type { CreateUserPayload, UpdateUserPayload, UserTableRow } from "@/types/user-table";
+import type { UserTableRow } from "@/types/user-table";
 
 const globalUserFilter: FilterFn<UserTableRow> = (row, _columnId, filterValue) => {
   const q = String(filterValue ?? "").toLowerCase().trim();
@@ -37,6 +32,7 @@ const globalUserFilter: FilterFn<UserTableRow> = (row, _columnId, filterValue) =
     r.fullName,
     r.email,
     r.phone ?? "",
+    r.accessPin ?? "",
     r.createdAt,
     r.updatedAt,
   ]
@@ -45,34 +41,26 @@ const globalUserFilter: FilterFn<UserTableRow> = (row, _columnId, filterValue) =
   return haystack.includes(q);
 };
 
-function mapStatusToApi(status: "active" | "inactive"): CreateUserPayload["status"] {
-  return status === "inactive" ? "INACTIVE" : "ACTIVE";
-}
-
 export function UsersManagementView() {
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [globalFilter, setGlobalFilter] = useState("");
-
-  const [formOpen, setFormOpen] = useState(false);
-  const [formMode, setFormMode] = useState<"add" | "edit">("add");
-  const [formUser, setFormUser] = useState<UserTableRow | null>(null);
 
   const [deleteTarget, setDeleteTarget] = useState<UserTableRow | null>(null);
 
   const { data: users = [], isLoading, isError, error, refetch, isFetching } = useUsers();
-  const createMutation = useCreateUser();
-  const updateMutation = useUpdateUser();
   const deleteMutation = useDeleteUser();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const onEdit = useCallback((user: UserTableRow) => {
-    setFormMode("edit");
-    setFormUser(user);
-    setFormOpen(true);
-  }, []);
+  const onEdit = useCallback(
+    (user: UserTableRow) => {
+      router.push(`/users/${user.id}/edit`);
+    },
+    [router],
+  );
 
   const onDelete = useCallback((user: UserTableRow) => {
     setDeleteTarget(user);
@@ -104,53 +92,8 @@ export function UsersManagementView() {
   };
 
   const openAdd = () => {
-    setFormMode("add");
-    setFormUser(null);
-    setFormOpen(true);
+    router.push("/users/create");
   };
-
-  const handleFormSave = (values: {
-    fullName: string;
-    email: string;
-    password?: string;
-    phone: string | null;
-    roleId: number | null;
-    shopId: number | null;
-    status: string;
-  }) => {
-    if (formMode === "add") {
-      if (!values.password || values.shopId == null) return;
-      const payload: CreateUserPayload = {
-        fullName: values.fullName,
-        email: values.email,
-        password: values.password,
-        phone: values.phone,
-        shopId: values.shopId,
-        roleId: values.roleId,
-        status: mapStatusToApi(values.status as "active" | "inactive"),
-      };
-      createMutation.mutate(payload, {
-        onSuccess: () => setFormOpen(false),
-      });
-      return;
-    }
-
-    if (!formUser) return;
-    const payload: UpdateUserPayload = {
-      fullName: values.fullName,
-      email: values.email,
-      phone: values.phone,
-    };
-    if (values.password) {
-      payload.password = values.password;
-    }
-    updateMutation.mutate(
-      { id: formUser.id, payload },
-      { onSuccess: () => setFormOpen(false) },
-    );
-  };
-
-  const isFormSubmitting = createMutation.isPending || updateMutation.isPending;
 
   if (!mounted) return null;
 
@@ -234,15 +177,6 @@ export function UsersManagementView() {
           emptyMessage="No users match your search."
         />
       )}
-
-      <UserFormDialog
-        open={formOpen}
-        onOpenChange={setFormOpen}
-        mode={formMode}
-        user={formUser}
-        isSubmitting={isFormSubmitting}
-        onSave={handleFormSave}
-      />
 
       <DeleteUserDialog
         open={deleteTarget != null}

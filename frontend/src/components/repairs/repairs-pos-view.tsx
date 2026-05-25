@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import gsap from "gsap";
 import { toast } from "sonner";
 import { APP_CONFIG } from "@/constants/config";
@@ -43,6 +44,7 @@ import { DeleteConfirmDialog } from "@/components/repairs/delete-confirm-dialog"
 import { RepairCategoryFormDialog } from "@/components/repairs/repair-category-form-dialog";
 import { RepairManufacturerFormDialog } from "@/components/repairs/repair-manufacturer-form-dialog";
 import { RepairTicketProvider } from "@/contexts/repair-ticket-context";
+import type { RepairSearchSelection } from "@/types/repair-search";
 
 type DeleteTarget =
   | { type: "category"; item: RepairCategoryCard }
@@ -50,6 +52,7 @@ type DeleteTarget =
 
 function RepairsPosContent() {
   const shopId = APP_CONFIG.defaultShopId;
+  const searchParams = useSearchParams();
   const {
     data: categories = REPAIR_CATEGORIES,
     isLoading: categoriesLoading,
@@ -78,6 +81,7 @@ function RepairsPosContent() {
   const [selectedProblemIds, setSelectedProblemIds] = useState<string[]>([]);
   const [selectedPartIds, setSelectedPartIds] = useState<string[]>([]);
   const mainRef = useRef<HTMLDivElement>(null);
+  const deepLinkKeyRef = useRef<string | null>(null);
 
   const selectedCategoryDbId = useMemo(() => {
     const match = categories.find((c) => c.id === selectedCategoryId && !c.isAdd);
@@ -265,6 +269,36 @@ function RepairsPosContent() {
     });
   };
 
+  const handleRepairSearchSelect = (selection: RepairSearchSelection) => {
+    const category = categories.find(
+      (c) => c.id === selection.categorySlug && !c.isAdd,
+    );
+    if (!category) {
+      toast.error("Repair category not found for this device");
+      return;
+    }
+
+    setSelectedCategoryId(category.id);
+    setSelectedCategory(category.label);
+    setSelectedManufacturerId(selection.manufacturerSlug);
+    setSelectedDeviceId(selection.deviceCatalogKey ?? `device-${selection.deviceId}`);
+    setSelectedProblemIds(
+      selection.problemCatalogKey ? [selection.problemCatalogKey] : [],
+    );
+    setSelectedPartIds([]);
+    setActiveStep("Problems");
+    setFurthestStep("Problems");
+    deepLinkKeyRef.current = `${selection.deviceId}-${selection.repairTypeId}`;
+    toast.success(`${selection.repairName} — ${selection.deviceName}`);
+
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.set("deviceId", String(selection.deviceId));
+      url.searchParams.set("repairTypeId", String(selection.repairTypeId));
+      window.history.replaceState(null, "", url.pathname + url.search);
+    }
+  };
+
   const handleStepChange = (step: RepairStep) => {
     if (!canNavigateToRepairStep(step, furthestStep)) return;
     setActiveStep(step);
@@ -282,6 +316,42 @@ function RepairsPosContent() {
       setSelectedPartIds([]);
     }
   };
+
+  useEffect(() => {
+    const deviceId = Number(searchParams.get("deviceId"));
+    const repairTypeId = Number(searchParams.get("repairTypeId"));
+    if (!Number.isFinite(deviceId) || !Number.isFinite(repairTypeId)) return;
+    if (deviceId < 1 || repairTypeId < 1) return;
+
+    const key = `${deviceId}-${repairTypeId}`;
+    if (deepLinkKeyRef.current === key) return;
+
+    let cancelled = false;
+
+    void fetchRepairBookingContext(shopId, deviceId, repairTypeId)
+      .then((ctx) => {
+        if (cancelled) return;
+        deepLinkKeyRef.current = key;
+        handleRepairSearchSelect({
+          deviceId: ctx.device_id,
+          repairTypeId: ctx.repair_type_id,
+          deviceCatalogKey: ctx.device_catalog_key,
+          problemCatalogKey: ctx.catalog_key,
+          categorySlug: ctx.category_slug,
+          manufacturerSlug: ctx.manufacturer_slug,
+          deviceName: ctx.device_name,
+          repairName: ctx.repair_name,
+        });
+      })
+      .catch(() => {
+        if (!cancelled) toast.error("Could not load repair booking details");
+      });
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- deep link once on mount
+  }, [searchParams, shopId]);
 
   useEffect(() => {
     if (categoriesError) {
@@ -364,6 +434,8 @@ function RepairsPosContent() {
               onPartsNext={handlePartsNext}
               initialRepairCharges={initialRepairCharges}
               onConfirmDetails={handleConfirmDetails}
+              shopId={shopId}
+              onSearchSelect={handleRepairSearchSelect}
             />
           </div>
           <div data-pos-animate>

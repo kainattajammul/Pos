@@ -68,7 +68,10 @@ export function SidebarNav({ collapsed, onNavigate }: SidebarNavProps) {
                 >
                   <div className="min-h-0 space-y-0.5 py-1 pl-9">
                     {item.children?.map((child) => {
-                      const childActive = pathname === child.href;
+                      const childActive =
+                        pathname === child.href ||
+                        (child.href === "/users" && pathname.startsWith("/users/")) ||
+                        (child.href === "/roles" && pathname.startsWith("/roles/"));
                       return (
                         <Link
                           key={child.href}

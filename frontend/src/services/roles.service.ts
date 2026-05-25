@@ -30,6 +30,11 @@ export async function fetchRoles(): Promise<RoleTableRow[]> {
   return data.data.map(mapApiRoleToRow);
 }
 
+export async function fetchRole(id: number): Promise<RoleTableRow> {
+  const { data } = await apiClient.get<ApiSuccessResponse<ApiRole>>(`/roles/${id}`);
+  return mapApiRoleToRow(data.data);
+}
+
 export async function createRole(payload: CreateRolePayload): Promise<RoleMutationResult> {
   const { data } = await apiClient.post<ApiSuccessResponse<RoleMutationResult>>(
     "/roles",

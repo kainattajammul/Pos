@@ -46,7 +46,7 @@ export function useDashboardSummary() {
 export function useRevenueAnalytics(days = 30) {
   return useQuery({
     queryKey: queryKeys.dashboard.revenue(days),
-    queryFn: () => withMockFallback(() => fetchRevenueAnalytics(days), mockRevenue),
+    queryFn: () => resolveDashboardData(() => fetchRevenueAnalytics(days), mockRevenue),
   });
 }
 
@@ -61,7 +61,7 @@ export function useMonthlySales(year = new Date().getFullYear()) {
 export function useRepairReports() {
   return useQuery({
     queryKey: queryKeys.dashboard.repairReports,
-    queryFn: () => withMockFallback(fetchRepairReports, mockRepairReport),
+    queryFn: () => resolveDashboardData(fetchRepairReports, mockRepairReport),
   });
 }
 

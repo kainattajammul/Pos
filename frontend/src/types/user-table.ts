@@ -4,6 +4,7 @@ export interface ApiUser {
   fullName: string;
   email: string;
   phone: string | null;
+  accessPin: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -13,6 +14,7 @@ export interface UserTableRow {
   fullName: string;
   email: string;
   phone: string | null;
+  accessPin: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -21,6 +23,7 @@ export interface CreateUserPayload {
   fullName: string;
   email: string;
   password: string;
+  accessPin: string;
   phone?: string | null;
   shopId: number;
   roleId?: number | null;
@@ -31,6 +34,7 @@ export interface UpdateUserPayload {
   fullName?: string;
   email?: string;
   password?: string;
+  accessPin?: string;
   phone?: string | null;
 }
 
