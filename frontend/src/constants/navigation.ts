@@ -34,6 +34,7 @@ export const MAIN_NAV: NavItem[] = [
     children: [
       { title: "Users", href: "/users" },
       { title: "Roles", href: "/roles" },
+      { title: "Sales Commission Agents", href: "/sales-commission-agents" },
     ],
   },
   {

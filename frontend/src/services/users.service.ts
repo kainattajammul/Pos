@@ -19,6 +19,7 @@ export function mapApiUserToRow(user: ApiUser): UserTableRow {
     fullName: user.fullName,
     email: user.email,
     phone: user.phone ?? null,
+    accessPin: user.accessPin ?? null,
     createdAt: toIsoString(user.createdAt),
     updatedAt: toIsoString(user.updatedAt),
   };
@@ -27,6 +28,11 @@ export function mapApiUserToRow(user: ApiUser): UserTableRow {
 export async function fetchUsers(): Promise<UserTableRow[]> {
   const { data } = await apiClient.get<ApiSuccessResponse<ApiUser[]>>("/users");
   return data.data.map(mapApiUserToRow);
+}
+
+export async function fetchUser(id: number): Promise<UserTableRow> {
+  const { data } = await apiClient.get<ApiSuccessResponse<ApiUser>>(`/users/${id}`);
+  return mapApiUserToRow(data.data);
 }
 
 export async function createUser(payload: CreateUserPayload): Promise<UserMutationResult> {

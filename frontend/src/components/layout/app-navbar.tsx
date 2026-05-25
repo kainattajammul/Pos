@@ -21,16 +21,33 @@ import { useAuth } from "@/hooks/use-auth";
 
 const routeTitles: Record<string, string> = {
   "/dashboard": "Dashboard",
+  "/users": "Users",
+  "/users/create": "Add user",
+  "/users/edit": "Edit user",
+  "/roles": "Roles",
+  "/roles/create": "Add Role",
+  "/customer": "Customers",
   "/products": "Products",
   "/repairs": "Repairs",
   "/settings": "Settings",
 };
 
+function resolveNavbarTitle(pathname: string): string {
+  if (routeTitles[pathname]) return routeTitles[pathname];
+  if (pathname.startsWith("/roles/create")) return "Add Role";
+  if (pathname.startsWith("/roles/") && pathname.endsWith("/edit")) return "Edit Role";
+  if (pathname.startsWith("/roles/")) return "Roles";
+  if (pathname.endsWith("/edit")) return "Edit user";
+  if (pathname.startsWith("/users/create")) return "Add user";
+  if (pathname.startsWith("/users/")) return "Users";
+  return "Dashboard";
+}
+
 export function AppNavbar() {
   const pathname = usePathname();
   const dispatch = useAppDispatch();
   const { user, logout } = useAuth();
-  const title = routeTitles[pathname] ?? "Dashboard";
+  const title = resolveNavbarTitle(pathname);
   const initials = user?.email?.slice(0, 2).toUpperCase() ?? "FD";
 
   return (

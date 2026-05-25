@@ -4,7 +4,7 @@ import type { Column, ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { UserTableRow } from "@/types/user-table";
+import type { SalesCommissionAgentTableRow } from "@/types/sales-commission-agent";
 
 function formatDate(iso: string) {
   try {
@@ -23,7 +23,7 @@ function SortableHeader({
   title,
   className,
 }: {
-  column: Column<UserTableRow, unknown>;
+  column: Column<SalesCommissionAgentTableRow, unknown>;
   title: string;
   className?: string;
 }) {
@@ -53,10 +53,15 @@ function SortableHeader({
   );
 }
 
-export function createUserManagementColumns(handlers: {
-  onEdit: (user: UserTableRow) => void;
-  onDelete: (user: UserTableRow) => void;
-}): ColumnDef<UserTableRow>[] {
+function formatPercent(value: number | null) {
+  if (value == null) return "—";
+  return `${value}%`;
+}
+
+export function createSalesCommissionAgentColumns(handlers: {
+  onEdit: (agent: SalesCommissionAgentTableRow) => void;
+  onDelete: (agent: SalesCommissionAgentTableRow) => void;
+}): ColumnDef<SalesCommissionAgentTableRow>[] {
   const { onEdit, onDelete } = handlers;
 
   return [
@@ -76,9 +81,9 @@ export function createUserManagementColumns(handlers: {
     },
     {
       accessorKey: "fullName",
-      header: ({ column }) => <SortableHeader column={column} title="Full name" />,
+      header: ({ column }) => <SortableHeader column={column} title="Full Name" />,
       cell: ({ row }) => (
-        <span className="block max-w-[160px] truncate font-medium text-neutral-900">
+        <span className="block max-w-[180px] truncate font-medium text-neutral-900">
           {row.original.fullName}
         </span>
       ),
@@ -86,31 +91,53 @@ export function createUserManagementColumns(handlers: {
     {
       accessorKey: "email",
       header: ({ column }) => <SortableHeader column={column} title="Email" />,
-      cell: ({ row }) => (
-        <a
-          href={`mailto:${row.original.email}`}
-          className="block max-w-[200px] truncate text-sm font-medium text-blue-600 underline-offset-2 hover:text-blue-700 hover:underline"
-          title={row.original.email}
-        >
-          {row.original.email}
-        </a>
-      ),
+      cell: ({ row }) => {
+        const email = row.original.email;
+        if (!email) {
+          return <span className="text-neutral-500">—</span>;
+        }
+        return (
+          <a
+            href={`mailto:${email}`}
+            className="block max-w-[200px] truncate text-sm font-medium text-blue-600 underline-offset-2 hover:text-blue-700 hover:underline"
+            title={email}
+          >
+            {email}
+          </a>
+        );
+      },
     },
     {
-      accessorKey: "phone",
-      header: ({ column }) => <SortableHeader column={column} title="Phone" />,
+      accessorKey: "contactNumber",
+      header: ({ column }) => (
+        <SortableHeader column={column} title="Contact Number" />
+      ),
       cell: ({ row }) => (
-        <span className="block max-w-[130px] truncate text-neutral-700">
-          {row.original.phone ?? "—"}
+        <span className="block max-w-[140px] truncate text-neutral-700">
+          {row.original.contactNumber ?? "—"}
         </span>
       ),
     },
     {
-      accessorKey: "accessPin",
-      header: ({ column }) => <SortableHeader column={column} title="Access PIN" />,
+      accessorKey: "address",
+      header: ({ column }) => <SortableHeader column={column} title="Address" />,
       cell: ({ row }) => (
-        <span className="font-mono text-sm tracking-widest text-neutral-700">
-          {row.original.accessPin ?? "—"}
+        <span
+          className="block max-w-[220px] truncate text-neutral-700"
+          title={row.original.address ?? undefined}
+        >
+          {row.original.address ?? "—"}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "salesCommissionPercent",
+      header: ({ column }) => (
+        <SortableHeader column={column} title="Sales Commission Percentage (%)" />
+      ),
+      cell: ({ row }) => (
+        <span className="tabular-nums text-neutral-700">
+          {formatPercent(row.original.salesCommissionPercent)}
         </span>
       ),
     },
@@ -134,7 +161,7 @@ export function createUserManagementColumns(handlers: {
             size="icon-sm"
             variant="outline"
             className="size-8 border-0 bg-primary text-primary-foreground shadow-sm hover:bg-primary/90"
-            aria-label="Edit user"
+            aria-label="Edit sales commission agent"
             onClick={() => onEdit(row.original)}
           >
             <Pencil className="size-3.5" />
@@ -144,7 +171,7 @@ export function createUserManagementColumns(handlers: {
             size="icon-sm"
             variant="outline"
             className="size-8 border-0 bg-red-500 text-white shadow-sm hover:bg-red-600 hover:text-white"
-            aria-label="Delete user"
+            aria-label="Delete sales commission agent"
             onClick={() => onDelete(row.original)}
           >
             <Trash2 className="size-3.5" />

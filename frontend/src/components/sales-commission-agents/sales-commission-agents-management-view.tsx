@@ -8,39 +8,44 @@ import {
   useReactTable,
   type FilterFn,
 } from "@tanstack/react-table";
-import { AlertCircle, Filter, Plus, RefreshCw, Search, Shield } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { AlertCircle, HandCoins, Plus, RefreshCw, Search } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { DataTable } from "@/components/data-table/data-table";
-import { createRoleManagementColumns } from "@/components/roles/columns";
-import { DeleteRoleDialog } from "@/components/roles/delete-role-dialog";
+import { createSalesCommissionAgentColumns } from "@/components/sales-commission-agents/columns";
+import { DeleteSalesCommissionAgentDialog } from "@/components/sales-commission-agents/delete-sales-commission-agent-dialog";
+import { SalesCommissionAgentFormDialog } from "@/components/sales-commission-agents/sales-commission-agent-form-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useDeleteRole, useRoles } from "@/hooks/use-roles";
+import {
+  useCreateSalesCommissionAgent,
+  useDeleteSalesCommissionAgent,
+  useSalesCommissionAgent,
+  useSalesCommissionAgents,
+  useUpdateSalesCommissionAgent,
+} from "@/hooks/use-sales-commission-agents";
 import { getApiErrorMessage } from "@/lib/axios";
 import { cn } from "@/lib/utils";
-import type { RoleTableRow } from "@/types/role-table";
+import type { SalesCommissionAgentTableRow } from "@/types/sales-commission-agent";
 
-const globalRoleFilter: FilterFn<RoleTableRow> = (row, _columnId, filterValue) => {
+const globalAgentFilter: FilterFn<SalesCommissionAgentTableRow> = (
+  row,
+  _columnId,
+  filterValue,
+) => {
   const q = String(filterValue ?? "").toLowerCase().trim();
   if (!q) return true;
   const r = row.original;
   const haystack = [
     String(r.id),
-    r.roleName,
-    r.shopId != null ? String(r.shopId) : "",
-    r.description ?? "",
-    r.status,
+    r.fullName,
+    r.firstName,
+    r.lastName ?? "",
+    r.email ?? "",
+    r.contactNumber ?? "",
+    r.address ?? "",
+    r.salesCommissionPercent != null ? String(r.salesCommissionPercent) : "",
     r.createdAt,
   ]
     .join(" ")
@@ -48,50 +53,48 @@ const globalRoleFilter: FilterFn<RoleTableRow> = (row, _columnId, filterValue) =
   return haystack.includes(q);
 };
 
-type StatusFilter = "all" | "active" | "inactive";
+type FormMode = "add" | "edit" | null;
 
-export function RolesManagementView() {
-  const router = useRouter();
+export function SalesCommissionAgentsManagementView() {
   const [mounted, setMounted] = useState(false);
   const [globalFilter, setGlobalFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [formMode, setFormMode] = useState<FormMode>(null);
+  const [editTarget, setEditTarget] = useState<SalesCommissionAgentTableRow | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<SalesCommissionAgentTableRow | null>(null);
 
-  const [deleteTarget, setDeleteTarget] = useState<RoleTableRow | null>(null);
+  const { data: agents = [], isLoading, isError, error, refetch, isFetching } =
+    useSalesCommissionAgents();
+  const createMutation = useCreateSalesCommissionAgent();
+  const updateMutation = useUpdateSalesCommissionAgent();
+  const deleteMutation = useDeleteSalesCommissionAgent();
 
-  const { data: roles = [], isLoading, isError, error, refetch, isFetching } = useRoles();
-  const deleteMutation = useDeleteRole();
+  const editId = formMode === "edit" && editTarget ? editTarget.id : 0;
+  const { data: editAgent, isFetching: editAgentFetching } = useSalesCommissionAgent(editId);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const filteredRows = useMemo(() => {
-    if (statusFilter === "all") return roles;
-    return roles.filter((row) => row.status.toLowerCase() === statusFilter);
-  }, [roles, statusFilter]);
+  const onEdit = useCallback((agent: SalesCommissionAgentTableRow) => {
+    setEditTarget(agent);
+    setFormMode("edit");
+  }, []);
 
-  const onEdit = useCallback(
-    (role: RoleTableRow) => {
-      router.push(`/roles/${role.id}/edit`);
-    },
-    [router],
-  );
-
-  const onDelete = useCallback((role: RoleTableRow) => {
-    setDeleteTarget(role);
+  const onDelete = useCallback((agent: SalesCommissionAgentTableRow) => {
+    setDeleteTarget(agent);
   }, []);
 
   const columns = useMemo(
-    () => createRoleManagementColumns({ onEdit, onDelete }),
+    () => createSalesCommissionAgentColumns({ onEdit, onDelete }),
     [onEdit, onDelete],
   );
 
   const table = useReactTable({
-    data: filteredRows,
+    data: agents,
     columns,
     state: { globalFilter },
     onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: globalRoleFilter,
+    globalFilterFn: globalAgentFilter,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -107,8 +110,20 @@ export function RolesManagementView() {
   };
 
   const openAdd = () => {
-    router.push("/roles/create");
+    setEditTarget(null);
+    setFormMode("add");
   };
+
+  const closeForm = () => {
+    if (createMutation.isPending || updateMutation.isPending) return;
+    setFormMode(null);
+    setEditTarget(null);
+  };
+
+  const formOpen = formMode != null;
+  const isSubmitting = createMutation.isPending || updateMutation.isPending;
+  const agentForForm =
+    formMode === "edit" ? (editAgent ?? editTarget) : null;
 
   if (!mounted) return null;
 
@@ -117,7 +132,7 @@ export function RolesManagementView() {
       <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight text-neutral-900 md:text-3xl">
-            Roles
+            Sales Commission Agents
           </h1>
         </div>
 
@@ -130,58 +145,14 @@ export function RolesManagementView() {
                 setGlobalFilter(e.target.value);
                 table.setPageIndex(0);
               }}
-              placeholder="Search roles..."
+              placeholder="Search sales commission agents…"
               className="h-10 border-neutral-200 bg-white pl-10 pr-3 text-sm shadow-sm placeholder:text-neutral-400"
-              aria-label="Search roles"
+              aria-label="Search sales commission agents"
               disabled={isLoading}
             />
           </div>
 
           <div className="flex shrink-0 items-center justify-end gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon-sm"
-                    className="size-10 border-neutral-200 bg-white text-neutral-600 shadow-sm hover:bg-neutral-50"
-                    aria-label="Filter by status"
-                  />
-                }
-              >
-                <Filter className="size-4" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuLabel>Status</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => {
-                    setStatusFilter("all");
-                    table.setPageIndex(0);
-                  }}
-                >
-                  All statuses
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    setStatusFilter("active");
-                    table.setPageIndex(0);
-                  }}
-                >
-                  Active
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    setStatusFilter("inactive");
-                    table.setPageIndex(0);
-                  }}
-                >
-                  Inactive
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
             <Button
               type="button"
               variant="outline"
@@ -201,18 +172,11 @@ export function RolesManagementView() {
               disabled={isLoading}
             >
               <Plus className="size-4" />
-              Add Role
+              Add
             </Button>
           </div>
         </div>
       </header>
-
-      {statusFilter !== "all" ? (
-        <p className="text-xs text-neutral-500">
-          Filter:{" "}
-          <span className="font-medium capitalize text-neutral-700">{statusFilter}</span>
-        </p>
-      ) : null}
 
       {isLoading ? (
         <div className="space-y-3 rounded-xl border border-neutral-200/90 bg-white p-4 shadow-sm">
@@ -223,36 +187,60 @@ export function RolesManagementView() {
       ) : isError ? (
         <EmptyState
           icon={AlertCircle}
-          title="Could not load roles"
-          description={getApiErrorMessage(error, "Failed to fetch roles")}
+          title="Could not load sales commission agents"
+          description={getApiErrorMessage(
+            error,
+            "Failed to fetch sales commission agents",
+          )}
           actionLabel="Try again"
           onAction={() => void refetch()}
         />
-      ) : roles.length === 0 && !globalFilter ? (
+      ) : agents.length === 0 && !globalFilter ? (
         <EmptyState
-          icon={Shield}
-          title="No roles yet"
-          description="Add your first role to get started."
-          actionLabel="Add Role"
+          icon={HandCoins}
+          title="No sales commission agents yet"
+          description="Add your first sales commission agent to get started."
+          actionLabel="Add"
           onAction={openAdd}
         />
       ) : (
         <DataTable
           table={table}
           totalFilteredRows={table.getFilteredRowModel().rows.length}
-          emptyMessage="No roles match your search."
+          emptyMessage="No sales commission agents match your search."
         />
       )}
 
-      <DeleteRoleDialog
+      <SalesCommissionAgentFormDialog
+        open={formOpen}
+        onOpenChange={(open) => {
+          if (!open) closeForm();
+        }}
+        mode={formMode === "edit" ? "edit" : "add"}
+        agent={agentForForm}
+        isSubmitting={isSubmitting || (formMode === "edit" && editAgentFetching && !editAgent)}
+        onSave={(payload) => {
+          if (formMode === "add") {
+            createMutation.mutate(payload, { onSuccess: () => closeForm() });
+            return;
+          }
+          if (!editTarget) return;
+          updateMutation.mutate(
+            { id: editTarget.id, payload },
+            { onSuccess: () => closeForm() },
+          );
+        }}
+      />
+
+      <DeleteSalesCommissionAgentDialog
         open={deleteTarget != null}
         onOpenChange={(open) => {
           if (!open && !deleteMutation.isPending) setDeleteTarget(null);
         }}
-        roleLabel={
+        agentLabel={
           deleteTarget
-            ? `${deleteTarget.roleName}${
-                deleteTarget.shopId != null ? ` (Shop ${deleteTarget.shopId})` : ""
+            ? `${deleteTarget.fullName}${
+                deleteTarget.email ? ` (${deleteTarget.email})` : ""
               }`
             : ""
         }

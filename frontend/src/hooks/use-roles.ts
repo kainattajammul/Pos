@@ -4,8 +4,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { queryKeys } from "@/constants/query-keys";
 import { getApiErrorMessage } from "@/lib/axios";
-import { createRole, deleteRole, fetchRoles, updateRole } from "@/services/roles.service";
-import type { CreateRolePayload, UpdateRolePayload } from "@/types/role-table";
+import {
+  createRole,
+  deleteRole,
+  fetchRole,
+  fetchRoles,
+  updateRole,
+} from "@/services/roles.service";
+import type { CreateRolePayload, RoleTableRow, UpdateRolePayload } from "@/types/role-table";
 import type { ApiErrorResponse } from "@/types/api";
 import { isAxiosError } from "axios";
 
@@ -24,6 +30,30 @@ export function useRoles() {
   return useQuery({
     queryKey: queryKeys.roles.list(),
     queryFn: fetchRoles,
+  });
+}
+
+export function useRole(id: number) {
+  const queryClient = useQueryClient();
+
+  return useQuery({
+    queryKey: queryKeys.roles.detail(id),
+    queryFn: async () => {
+      try {
+        return await fetchRole(id);
+      } catch {
+        const cached = queryClient.getQueryData<RoleTableRow[]>(queryKeys.roles.list());
+        const fromList = cached?.find((r) => r.id === id);
+        if (fromList) return fromList;
+        throw new Error("Role not found");
+      }
+    },
+    enabled: Number.isFinite(id) && id > 0,
+    initialData: () => {
+      const cached = queryClient.getQueryData<RoleTableRow[]>(queryKeys.roles.list());
+      return cached?.find((r) => r.id === id);
+    },
+    staleTime: 30_000,
   });
 }
 

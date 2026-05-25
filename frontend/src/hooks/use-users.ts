@@ -7,10 +7,15 @@ import { getApiErrorMessage } from "@/lib/axios";
 import {
   createUser,
   deleteUser,
+  fetchUser,
   fetchUsers,
   updateUser,
 } from "@/services/users.service";
-import type { CreateUserPayload, UpdateUserPayload } from "@/types/user-table";
+import type {
+  CreateUserPayload,
+  UpdateUserPayload,
+  UserTableRow,
+} from "@/types/user-table";
 import type { ApiErrorResponse } from "@/types/api";
 import { isAxiosError } from "axios";
 
@@ -29,6 +34,30 @@ export function useUsers() {
   return useQuery({
     queryKey: queryKeys.users.list(),
     queryFn: fetchUsers,
+  });
+}
+
+export function useUser(id: number) {
+  const queryClient = useQueryClient();
+
+  return useQuery({
+    queryKey: queryKeys.users.detail(id),
+    queryFn: async () => {
+      try {
+        return await fetchUser(id);
+      } catch {
+        const cached = queryClient.getQueryData<UserTableRow[]>(queryKeys.users.list());
+        const fromList = cached?.find((u) => u.id === id);
+        if (fromList) return fromList;
+        throw new Error("User not found");
+      }
+    },
+    enabled: Number.isFinite(id) && id > 0,
+    initialData: () => {
+      const cached = queryClient.getQueryData<UserTableRow[]>(queryKeys.users.list());
+      return cached?.find((u) => u.id === id);
+    },
+    staleTime: 30_000,
   });
 }
 
