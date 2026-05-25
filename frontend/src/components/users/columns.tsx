@@ -124,7 +124,7 @@ export function createUserManagementColumns(handlers: {
             type="button"
             size="icon-sm"
             variant="outline"
-            className="size-8 border-0 bg-orange-500 text-white shadow-sm hover:bg-orange-600 hover:text-white"
+            className="size-8 border-0 bg-primary text-primary-foreground shadow-sm hover:bg-primary/90"
             aria-label="Edit user"
             onClick={() => onEdit(row.original)}
           >

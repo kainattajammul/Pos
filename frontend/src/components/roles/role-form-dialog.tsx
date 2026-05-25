@@ -144,7 +144,7 @@ export function RoleFormDialog({
         >
           <div className="space-y-2">
             <Label htmlFor="role-name">
-              Role name <span className="text-orange-500">*</span>
+              Role name <span className="text-primary">*</span>
             </Label>
             <Input
               id="role-name"
@@ -162,7 +162,7 @@ export function RoleFormDialog({
             <Label htmlFor="role-shopId">
               Shop ID{" "}
               {mode === "add" ? (
-                <span className="text-orange-500">*</span>
+                <span className="text-primary">*</span>
               ) : null}
             </Label>
             <Input
@@ -192,7 +192,7 @@ export function RoleFormDialog({
 
           <div className="space-y-2">
             <Label htmlFor="role-status">
-              Status <span className="text-orange-500">*</span>
+              Status <span className="text-primary">*</span>
             </Label>
             <select
               id="role-status"
@@ -220,7 +220,7 @@ export function RoleFormDialog({
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="border-0 bg-orange-500 font-semibold text-white hover:bg-orange-600 hover:text-white"
+              className="border-0 bg-primary font-semibold text-primary-foreground hover:bg-primary/90"
             >
               {isSubmitting ? (
                 <>

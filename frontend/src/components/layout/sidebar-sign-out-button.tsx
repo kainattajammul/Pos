@@ -21,8 +21,8 @@ export function SidebarSignOutButton({ collapsed }: SidebarSignOutButtonProps) {
       title="Sign out"
       aria-label={isLoggingOut ? "Signing out" : "Sign out"}
       className={cn(
-        "w-full gap-2 border-0 bg-emerald-600 font-medium text-white shadow-sm transition-colors",
-        "hover:bg-emerald-700 hover:text-white focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2",
+        "w-full gap-2 border-0 bg-primary font-medium text-primary-foreground shadow-sm transition-colors",
+        "hover:bg-primary/90 hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
         "disabled:pointer-events-none disabled:opacity-60",
         collapsed ? "size-9 shrink-0 p-0" : "h-9 px-3 text-sm",
       )}

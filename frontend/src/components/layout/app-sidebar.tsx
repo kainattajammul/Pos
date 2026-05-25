@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { BrandLogo } from "./brand-logo";
 import { SidebarNav } from "./sidebar-nav";
+import { ThemeColorPicker } from "@/components/shared/theme-color-picker";
 import { SidebarSignOutButton } from "./sidebar-sign-out-button";
 
 type SidebarVariant = "default" | "repairs";
@@ -94,6 +95,12 @@ export function AppSidebar({
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <SidebarNav collapsed={navCollapsed} onNavigate={onClose} />
       </div>
+
+      {!navCollapsed && !isRepairs ? (
+        <div className="shrink-0 border-t border-sidebar-border px-3 py-3">
+          <ThemeColorPicker layout="compact" showLabel />
+        </div>
+      ) : null}
 
       <div
         className={cn(

@@ -9,6 +9,7 @@ import {
   mockRepairReport,
   mockRevenue,
 } from "@/lib/mock-data";
+import { hasRealApiSession } from "@/lib/auth-session";
 import {
   fetchDashboardSummary,
   fetchMonthlySales,
@@ -19,9 +20,15 @@ import {
 
 const useMockFallback = process.env.NEXT_PUBLIC_USE_MOCK !== "false";
 
-async function withMockFallback<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
+async function resolveDashboardData<T>(
+  fetcher: () => Promise<T>,
+  fallback: T,
+): Promise<T> {
+  if (useMockFallback && !hasRealApiSession()) {
+    return fallback;
+  }
   try {
-    return await fn();
+    return await fetcher();
   } catch {
     if (useMockFallback) return fallback;
     throw new Error("Failed to load dashboard data");
@@ -32,7 +39,7 @@ export function useDashboardSummary() {
   return useQuery({
     queryKey: queryKeys.dashboard.summary,
     queryFn: () =>
-      withMockFallback(fetchDashboardSummary, mockDashboardSummary),
+      resolveDashboardData(fetchDashboardSummary, mockDashboardSummary),
   });
 }
 
@@ -47,7 +54,7 @@ export function useMonthlySales(year = new Date().getFullYear()) {
   return useQuery({
     queryKey: queryKeys.dashboard.monthlySales(year),
     queryFn: () =>
-      withMockFallback(() => fetchMonthlySales(year), mockMonthlySales),
+      resolveDashboardData(() => fetchMonthlySales(year), mockMonthlySales),
   });
 }
 
@@ -62,6 +69,6 @@ export function useRecentActivities(limit = 8) {
   return useQuery({
     queryKey: queryKeys.dashboard.activities(limit),
     queryFn: () =>
-      withMockFallback(() => fetchRecentActivities(limit), mockActivities),
+      resolveDashboardData(() => fetchRecentActivities(limit), mockActivities),
   });
 }

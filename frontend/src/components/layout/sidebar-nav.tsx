@@ -18,6 +18,7 @@ export function SidebarNav({ collapsed, onNavigate }: SidebarNavProps) {
   const pathname = usePathname();
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
     "User Management": true,
+    Customer: true,
     Stock: true,
   });
 

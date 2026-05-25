@@ -24,4 +24,9 @@ export const queryKeys = {
     list: () => ["roles", "list"] as const,
     detail: (id: number) => ["roles", "detail", id] as const,
   },
+  customers: {
+    all: ["customers"] as const,
+    list: () => ["customers", "list"] as const,
+    detail: (id: number) => ["customers", "detail", id] as const,
+  },
 } as const;

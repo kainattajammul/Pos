@@ -9,6 +9,7 @@ import {
   Settings,
   ShoppingBag,
   ShoppingCart,
+  UserCircle,
   Users,
   Wrench,
 } from "lucide-react";
@@ -39,6 +40,11 @@ export const MAIN_NAV: NavItem[] = [
     title: "Repair Management System",
     icon: Wrench,
     children: [{ title: "Repairs", href: "/repairs" }],
+  },
+  {
+    title: "Customer",
+    icon: UserCircle,
+    children: [{ title: "Customers", href: "/customer" }],
   },
   {
     title: "Contacts",

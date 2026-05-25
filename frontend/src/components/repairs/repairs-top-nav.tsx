@@ -69,7 +69,7 @@ export function RepairsTopNav() {
         <span className="shrink-0 text-sm font-bold tracking-tight md:text-base">
           Repair Store
         </span>
-        <nav className="hidden items-center gap-0.5 overflow-x-auto md:flex">
+      <nav className="hidden items-center gap-0.5 overflow-hidden md:flex">
           {POS_NAV_ITEMS.map((item) => (
             <button
               key={item.label}

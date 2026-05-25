@@ -235,7 +235,7 @@ export function RolesManagementView() {
             <Button
               type="button"
               onClick={openAdd}
-              className="h-10 gap-2 border-0 bg-orange-500 px-4 font-semibold text-white shadow-sm hover:bg-orange-600 hover:text-white"
+              className="h-10 gap-2 border-0 bg-primary px-4 font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
               disabled={isLoading}
             >
               <Plus className="size-4" />

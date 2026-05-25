@@ -162,7 +162,7 @@ export function UserFormDialog({
         >
           <div className="space-y-2">
             <Label htmlFor="user-fullName">
-              Full name <span className="text-orange-500">*</span>
+              Full name <span className="text-primary">*</span>
             </Label>
             <Input
               id="user-fullName"
@@ -178,7 +178,7 @@ export function UserFormDialog({
 
           <div className="space-y-2">
             <Label htmlFor="user-email">
-              Email <span className="text-orange-500">*</span>
+              Email <span className="text-primary">*</span>
             </Label>
             <Input
               id="user-email"
@@ -197,7 +197,7 @@ export function UserFormDialog({
             <Label htmlFor="user-password">
               Password{" "}
               {mode === "add" ? (
-                <span className="text-orange-500">*</span>
+                <span className="text-primary">*</span>
               ) : (
                 <span className="text-muted-foreground font-normal">(optional)</span>
               )}
@@ -250,7 +250,7 @@ export function UserFormDialog({
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="user-shopId">
-                    Shop ID <span className="text-orange-500">*</span>
+                    Shop ID <span className="text-primary">*</span>
                   </Label>
                   <Input
                     id="user-shopId"
@@ -270,7 +270,7 @@ export function UserFormDialog({
 
               <div className="space-y-2">
                 <Label htmlFor="user-status">
-                  Status <span className="text-orange-500">*</span>
+                  Status <span className="text-primary">*</span>
                 </Label>
                 <select
                   id="user-status"
@@ -300,7 +300,7 @@ export function UserFormDialog({
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="border-0 bg-orange-500 font-semibold text-white hover:bg-orange-600 hover:text-white"
+              className="border-0 bg-primary font-semibold text-primary-foreground hover:bg-primary/90"
             >
               {isSubmitting ? (
                 <>

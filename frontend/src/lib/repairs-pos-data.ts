@@ -1,5 +1,12 @@
 import type { LucideIcon } from "lucide-react";
 import { Gem, Laptop, Plus, Radio, Smartphone, Tablet } from "lucide-react";
+import type { RepairCategoryId, RepairDevice } from "@/lib/repairs-devices-data";
+import {
+  REPAIR_DEVICES_BY_CATEGORY,
+  REPAIR_DEVICES_FALLBACK,
+} from "@/lib/repairs-devices-data";
+
+export type { RepairDevice } from "@/lib/repairs-devices-data";
 
 export interface PosNavItem {
   label: string;
@@ -27,8 +34,8 @@ export const POS_TABS = [
 
 export type PosTab = (typeof POS_TABS)[number];
 
-export const REPAIR_STEPS = [
-  "Category",
+/** Workflow steps shown after a repair category is chosen (e.g. Mobile Repair). */
+export const REPAIR_WORKFLOW_STEPS = [
   "Manufacturer",
   "Devices",
   "Problems",
@@ -36,13 +43,127 @@ export const REPAIR_STEPS = [
   "Details",
 ] as const;
 
+export type RepairWorkflowStep = (typeof REPAIR_WORKFLOW_STEPS)[number];
+
+/** Includes category picker before the workflow begins. */
+export const REPAIR_STEPS = ["Category", ...REPAIR_WORKFLOW_STEPS] as const;
+
 export type RepairStep = (typeof REPAIR_STEPS)[number];
+
+export const REPAIR_STEP_ORDER = REPAIR_STEPS;
+
+export function getRepairStepIndex(step: RepairStep): number {
+  return REPAIR_STEP_ORDER.indexOf(step);
+}
+
+export function canNavigateToRepairStep(
+  target: RepairStep,
+  furthestStep: RepairStep,
+): boolean {
+  return getRepairStepIndex(target) <= getRepairStepIndex(furthestStep);
+}
+
+export function getNextRepairStep(step: RepairStep): RepairStep | null {
+  const index = getRepairStepIndex(step);
+  if (index < 0 || index >= REPAIR_STEP_ORDER.length - 1) return null;
+  return REPAIR_STEP_ORDER[index + 1] ?? null;
+}
+
+export interface RepairManufacturer {
+  id: string;
+  name: string;
+  isAdd?: boolean;
+  /** simple-icons slug for CDN logo (https://simpleicons.org) */
+  logoSlug?: string;
+}
+
+export const REPAIR_MANUFACTURERS: RepairManufacturer[] = [
+  { id: "add", name: "Add Manufacturer", isAdd: true },
+  { id: "apple", name: "Apple", logoSlug: "apple" },
+  { id: "samsung", name: "Samsung", logoSlug: "samsung" },
+  { id: "google", name: "Google", logoSlug: "google" },
+  { id: "htc", name: "HTC", logoSlug: "htc" },
+  { id: "blackberry", name: "BlackBerry", logoSlug: "blackberry" },
+  { id: "oneplus", name: "ONEPLUS", logoSlug: "oneplus" },
+  { id: "motorola", name: "Motorola", logoSlug: "motorola" },
+  { id: "xiaomi", name: "Xiaomi", logoSlug: "xiaomi" },
+  { id: "lg", name: "LG", logoSlug: "lg" },
+  { id: "nokia", name: "Nokia", logoSlug: "nokia" },
+  { id: "sony", name: "Sony", logoSlug: "sony" },
+  { id: "vivo", name: "Vivo", logoSlug: "vivo" },
+  { id: "asus", name: "Asus Zenfone", logoSlug: "asus" },
+  { id: "alcatel", name: "Alcatel", logoSlug: "alcatel" },
+  { id: "essential", name: "ESSENTIAL", logoSlug: "essential" },
+  { id: "huawei", name: "Huawei", logoSlug: "huawei" },
+  { id: "kyocera", name: "Kyocera", logoSlug: "kyocera" },
+  { id: "zte", name: "ZTE", logoSlug: "zte" },
+];
 
 export interface RepairCategoryCard {
   id: string;
   label: string;
   icon: LucideIcon;
   isAdd?: boolean;
+}
+
+/** Steps shown in breadcrumb after the manufacturer name. */
+export const REPAIR_POST_MANUFACTURER_STEPS = [
+  "Devices",
+  "Problems",
+  "Parts",
+  "Details",
+] as const;
+
+export type RepairPostManufacturerStep = (typeof REPAIR_POST_MANUFACTURER_STEPS)[number];
+
+export function getManufacturerById(id: string | null): RepairManufacturer | undefined {
+  if (!id) return undefined;
+  return REPAIR_MANUFACTURERS.find((m) => m.id === id && !m.isAdd);
+}
+
+export function getDevicesForCategoryAndManufacturer(
+  categoryId: string | null,
+  manufacturerId: string | null,
+): RepairDevice[] {
+  if (!categoryId || !manufacturerId) return REPAIR_DEVICES_FALLBACK;
+  const categoryDevices =
+    REPAIR_DEVICES_BY_CATEGORY[categoryId as RepairCategoryId];
+  if (!categoryDevices) return REPAIR_DEVICES_FALLBACK;
+  return categoryDevices[manufacturerId] ?? REPAIR_DEVICES_FALLBACK;
+}
+
+/** @deprecated Use getDevicesForCategoryAndManufacturer */
+export function getDevicesForManufacturer(
+  manufacturerId: string | null,
+  categoryId: string | null = "mobile",
+): RepairDevice[] {
+  return getDevicesForCategoryAndManufacturer(categoryId, manufacturerId);
+}
+
+export function isAddDeviceId(
+  deviceId: string,
+  categoryId: string | null,
+  manufacturerId: string | null,
+): boolean {
+  const list = getDevicesForCategoryAndManufacturer(categoryId, manufacturerId);
+  const device = list.find((d) => d.id === deviceId);
+  return Boolean(device?.isAdd);
+}
+
+export function getDeviceById(
+  deviceId: string | null,
+  categoryId: string | null,
+  manufacturerId: string | null,
+): RepairDevice | undefined {
+  if (!deviceId) return undefined;
+  const list = getDevicesForCategoryAndManufacturer(categoryId, manufacturerId);
+  return list.find((d) => d.id === deviceId && !d.isAdd);
+}
+
+export function getCategoryIdFromLabel(label: string | null): string | null {
+  if (!label) return null;
+  const match = REPAIR_CATEGORIES.find((c) => c.label === label);
+  return match?.id ?? null;
 }
 
 export const REPAIR_CATEGORIES: RepairCategoryCard[] = [

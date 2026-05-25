@@ -24,6 +24,14 @@ export function persistSession(session: StoredSession) {
   localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
 }
 
+/** True when the session can call JWT-protected APIs (real login, not mock bypass). */
+export function hasRealApiSession(): boolean {
+  const session = readSession();
+  return Boolean(
+    session?.accessToken && !session.accessToken.startsWith("mock-"),
+  );
+}
+
 export function readSession(): StoredSession | null {
   if (typeof window === "undefined") return null;
   try {

@@ -47,7 +47,7 @@ export function DeleteRoleDialog({
           <Button
             type="button"
             disabled={isPending}
-            className="border-0 bg-orange-500 font-semibold text-white hover:bg-orange-600 hover:text-white"
+            className="border-0 bg-destructive font-semibold text-white hover:bg-destructive/90"
             onClick={onConfirm}
           >
             {isPending ? (

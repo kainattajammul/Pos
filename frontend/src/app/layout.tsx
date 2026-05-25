@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { ThemeInitScript } from "@/components/shared/theme-init-script";
 import { AppProviders } from "@/providers/app-providers";
 import { APP_CONFIG } from "@/constants/config";
 import "./globals.css";
@@ -24,6 +25,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <ThemeInitScript />
+      </head>
       <body className={`${inter.variable} min-h-screen antialiased`}>
         <AppProviders>{children}</AppProviders>
       </body>

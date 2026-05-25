@@ -1,0 +1,326 @@
+export interface RepairDevice {
+  id: string;
+  name: string;
+  isAdd?: boolean;
+}
+
+export type RepairCategoryId = "mobile" | "tablet" | "computer" | "drone" | "jewelry";
+
+export const REPAIR_DEVICE_CATEGORY_IDS: RepairCategoryId[] = [
+  "mobile",
+  "tablet",
+  "computer",
+  "drone",
+  "jewelry",
+];
+
+function slugify(name: string) {
+  return name
+    .toLowerCase()
+    .replace(/\+/g, "-plus")
+    .replace(/&/g, "-and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function uniqueDeviceId(
+  categoryId: string,
+  manufacturerId: string,
+  name: string,
+  seen: Set<string>,
+): string {
+  const base = `${categoryId}-${manufacturerId}-${slugify(name)}`;
+  let id = base;
+  let suffix = 2;
+  while (seen.has(id)) {
+    id = `${base}-${suffix++}`;
+  }
+  seen.add(id);
+  return id;
+}
+
+function devices(
+  categoryId: string,
+  manufacturerId: string,
+  names: string[],
+): RepairDevice[] {
+  const add: RepairDevice = {
+    id: `${categoryId}-${manufacturerId}-add-device`,
+    name: "Add Device",
+    isAdd: true,
+  };
+  const seen = new Set<string>([add.id]);
+  const list = names.map((name) => ({
+    id: uniqueDeviceId(categoryId, manufacturerId, name, seen),
+    name,
+  }));
+  return [add, ...list];
+}
+
+function categoryCatalog(
+  categoryId: string,
+  byManufacturer: Record<string, string[]>,
+): Record<string, RepairDevice[]> {
+  return Object.fromEntries(
+    Object.entries(byManufacturer).map(([manufacturerId, names]) => [
+      manufacturerId,
+      devices(categoryId, manufacturerId, names),
+    ]),
+  );
+}
+
+/** Devices keyed by repair category, then manufacturer id. */
+export const REPAIR_DEVICES_BY_CATEGORY: Record<
+  RepairCategoryId,
+  Record<string, RepairDevice[]>
+> = {
+  mobile: categoryCatalog("mobile", {
+    apple: [
+      "iPhone 15 Pro Max",
+      "iPhone 15 Pro",
+      "iPhone 15 Plus",
+      "iPhone 15",
+      "iPhone 14 Pro Max",
+      "iPhone 14 Pro",
+      "iPhone 14 Plus",
+      "iPhone 14",
+      "iPhone 13 Pro Max",
+      "iPhone 13 Pro",
+      "iPhone 13 mini",
+      "iPhone 13",
+      "iPhone 12 Pro Max",
+      "iPhone 12 Pro",
+      "iPhone 12",
+      "iPhone 11 Pro Max",
+      "iPhone 11 Pro",
+      "iPhone 11",
+      "iPhone XS Max",
+      "iPhone SE",
+    ],
+    samsung: [
+      "Galaxy S24 Ultra",
+      "Galaxy S24+",
+      "Galaxy S24",
+      "Galaxy S23 Ultra",
+      "Galaxy S23+",
+      "Galaxy S23",
+      "Galaxy S22 Ultra",
+      "Galaxy Z Fold6",
+      "Galaxy Z Fold5",
+      "Galaxy Z Flip6",
+      "Galaxy Z Flip5",
+      "Galaxy A55",
+      "Galaxy A54",
+      "Galaxy A35",
+      "Galaxy A34",
+      "Galaxy A15",
+      "Galaxy Note 20 Ultra",
+      "Galaxy Note 20",
+    ],
+    google: [
+      "Pixel 9 Pro XL",
+      "Pixel 9 Pro",
+      "Pixel 9",
+      "Pixel 8 Pro",
+      "Pixel 8",
+      "Pixel 8a",
+      "Pixel 7 Pro",
+      "Pixel 7",
+      "Pixel 7a",
+      "Pixel 6 Pro",
+      "Pixel 6",
+      "Pixel 6a",
+      "Pixel Fold",
+    ],
+    htc: ["HTC U23 Pro", "HTC U23", "HTC Desire 22 Pro", "HTC Desire 21 Pro", "HTC Wildfire E3"],
+    blackberry: [
+      "BlackBerry KEY2",
+      "BlackBerry KEY2 LE",
+      "BlackBerry KEYone",
+      "BlackBerry Motion",
+    ],
+    oneplus: [
+      "OnePlus 12",
+      "OnePlus 12R",
+      "OnePlus 11",
+      "OnePlus 10 Pro",
+      "OnePlus Nord 4",
+      "OnePlus Nord CE 4",
+      "OnePlus Open",
+    ],
+    motorola: [
+      "Motorola Edge 50 Ultra",
+      "Motorola Edge 50 Pro",
+      "Motorola Razr 50 Ultra",
+      "Motorola Razr 40 Ultra",
+      "Moto G Power 5G",
+      "Moto G Stylus 5G",
+      "ThinkPhone 25",
+    ],
+    xiaomi: [
+      "Xiaomi 14 Ultra",
+      "Xiaomi 14",
+      "Redmi Note 13 Pro+",
+      "Redmi Note 13 Pro",
+      "POCO X6 Pro",
+      "POCO F6 Pro",
+    ],
+    lg: ["LG Velvet", "LG Wing", "LG V60 ThinQ", "LG G8 ThinQ"],
+    nokia: ["Nokia X30", "Nokia G42", "Nokia XR21", "Nokia G22"],
+    sony: ["Xperia 1 VI", "Xperia 5 V", "Xperia 10 VI", "Xperia Pro-I"],
+    vivo: ["vivo X100 Pro", "vivo X100", "vivo V30 Pro", "iQOO 12 Pro"],
+    asus: ["ROG Phone 8 Pro", "ROG Phone 8", "Zenfone 11 Ultra", "Zenfone 10"],
+    alcatel: ["Alcatel 3L", "Alcatel 1S", "Alcatel Go Flip 4"],
+    essential: ["Essential PH-1"],
+    huawei: [
+      "Huawei P60 Pro",
+      "Huawei Mate 60 Pro",
+      "Huawei Nova 12 Pro",
+      "Huawei Mate X5",
+    ],
+    kyocera: ["Kyocera DuraForce Pro 3", "Kyocera Torque 5G"],
+    zte: ["ZTE Axon 60 Ultra", "ZTE nubia Red Magic 9 Pro", "ZTE nubia Z60 Ultra"],
+  }),
+
+  tablet: categoryCatalog("tablet", {
+    apple: [
+      "iPad Pro 13 (M4)",
+      "iPad Pro 11 (M4)",
+      "iPad Pro 12.9",
+      "iPad Pro 11",
+      "iPad Air 13 (M2)",
+      "iPad Air 11 (M2)",
+      "iPad Air",
+      "iPad (10th gen)",
+      "iPad mini",
+    ],
+    samsung: [
+      "Galaxy Tab S9 Ultra",
+      "Galaxy Tab S9+",
+      "Galaxy Tab S9",
+      "Galaxy Tab S8 Ultra",
+      "Galaxy Tab S8+",
+      "Galaxy Tab S8",
+      "Galaxy Tab A9+",
+      "Galaxy Tab A9",
+      "Galaxy Tab Active5",
+    ],
+    google: ["Pixel Tablet", "Pixel Slate"],
+    huawei: ["MatePad Pro 13.2", "MatePad 11.5", "MatePad SE"],
+    xiaomi: ["Xiaomi Pad 6S Pro", "Xiaomi Pad 6", "Redmi Pad Pro", "Redmi Pad SE"],
+    oneplus: ["OnePlus Pad 2", "OnePlus Pad"],
+    asus: ["ROG Flow Z13", "ZenPad 10", "Transformer Mini"],
+    lg: ["LG G Pad 5", "LG Ultra Tab"],
+    nokia: ["Nokia T21", "Nokia T10"],
+    sony: ["Xperia Tablet Z4"],
+    alcatel: ["Alcatel 3T 10", "Alcatel 1T 10"],
+    zte: ["ZTE Grand X View 4"],
+    motorola: ["Moto Tab G70", "Moto Tab G62"],
+    htc: ["HTC Nexus 9"],
+    blackberry: ["BlackBerry PlayBook"],
+  }),
+
+  computer: categoryCatalog("computer", {
+    apple: [
+      "MacBook Pro 16 (M3 Max)",
+      "MacBook Pro 14 (M3 Pro)",
+      "MacBook Air 15 (M3)",
+      "MacBook Air 13 (M3)",
+      "iMac 24 (M3)",
+      "Mac mini (M2 Pro)",
+      "Mac Studio (M2 Ultra)",
+      "Mac Pro (M2 Ultra)",
+    ],
+    samsung: [
+      "Galaxy Book4 Ultra",
+      "Galaxy Book4 Pro 360",
+      "Galaxy Book4 Pro",
+      "Galaxy Book4",
+      "Galaxy Chromebook Plus",
+    ],
+    google: ["Chromebook Pixel", "Chromebook Plus"],
+    asus: [
+      "ROG Zephyrus G16",
+      "ROG Strix Scar 18",
+      "Zenbook Pro 16",
+      "Zenbook 14",
+      "ProArt Studiobook 16",
+    ],
+    lg: ["LG gram 17", "LG gram 16", "LG gram 15", "LG gram Pro 16"],
+    huawei: ["MateBook X Pro", "MateBook 16", "MateBook 14", "MateBook D 16"],
+    oneplus: ["OnePlus Nord Laptop (Concept)"],
+    xiaomi: ["RedmiBook Pro 15", "Xiaomi Book Air 13"],
+    sony: ["VAIO SX14", "VAIO F16"],
+    motorola: ["ThinkPhone Desktop Dock"],
+    zte: ["ZTE Blade V Book"],
+    htc: ["HTC Nexus 9 Laptop Dock"],
+    nokia: ["Nokia Book 13"],
+    alcatel: ["Alcatel 1T Book"],
+    blackberry: ["BlackBerry KEY2 Laptop Dock"],
+    kyocera: ["Kyocera DuraBook"],
+    essential: ["Essential Laptop Dock"],
+    vivo: ["vivo Book Pro"],
+  }),
+
+  drone: categoryCatalog("drone", {
+    apple: ["Apple Vision Pro", "Apple TV 4K Drone Controller Hub"],
+    samsung: ["Samsung Galaxy SmartTag Drone Kit", "Samsung Pro Repair Drone"],
+    google: ["Google Wing Delivery Drone (Service Unit)"],
+    huawei: ["Huawei HiDrone Repair Unit"],
+    xiaomi: ["Xiaomi FIMI X8 Pro", "Xiaomi FIMI Mini 3"],
+    sony: ["Sony Airpeak S1"],
+    asus: ["ASUS ZenDrone Pro (Service)"],
+    oneplus: ["OnePlus SkyLink Drone"],
+    motorola: ["Motorola MotoDrone Racer"],
+    lg: ["LG AeroView Drone"],
+    nokia: ["Nokia Drone Networks Repair Node"],
+    zte: ["ZTE SkyEye Drone"],
+    htc: ["HTC RE Repair Drone"],
+    alcatel: ["Alcatel Pocket Drone"],
+    kyocera: ["Kyocera Industrial Drone"],
+    essential: ["Essential Camera Drone"],
+    blackberry: ["BlackBerry Secure Drone Module"],
+    vivo: ["vivo Flying Camera Drone"],
+  }),
+
+  jewelry: categoryCatalog("jewelry", {
+    apple: [
+      "Apple Watch Ultra 2",
+      "Apple Watch Series 9",
+      "Apple Watch SE",
+      "Apple Watch Series 8",
+      "AirPods Pro (2nd gen)",
+      "AirPods Max",
+    ],
+    samsung: [
+      "Galaxy Watch7",
+      "Galaxy Watch7 Classic",
+      "Galaxy Watch6",
+      "Galaxy Ring",
+      "Galaxy Buds3 Pro",
+      "Galaxy Fit3",
+    ],
+    google: ["Pixel Watch 3", "Pixel Watch 2", "Pixel Buds Pro 2", "Fitbit Charge 6"],
+    huawei: ["Huawei Watch GT 5 Pro", "Huawei Watch Fit 3", "Huawei FreeBuds Pro 3"],
+    xiaomi: ["Xiaomi Watch 2 Pro", "Xiaomi Smart Band 9", "Redmi Watch 4"],
+    oneplus: ["OnePlus Watch 2", "OnePlus Buds Pro 2"],
+    motorola: ["Motorola Moto Watch 40", "Motorola Buds+"],
+    sony: ["Sony WH-1000XM5", "Sony LinkBuds"],
+    asus: ["ASUS ZenWatch Repair Series"],
+    lg: ["LG Tone Free", "LG Watch Sport"],
+    nokia: ["Nokia XR20 Watch Band Kit"],
+    alcatel: ["Alcatel 1 Watch"],
+    zte: ["ZTE Watch Live"],
+    htc: ["HTC Vive Flow"],
+    essential: ["Essential Home Jewelry Hub"],
+    blackberry: ["BlackBerry Pearl Classic"],
+    kyocera: ["Kyocera DuraXV Watch"],
+    vivo: ["vivo Watch 3", "vivo TWS 4"],
+  }),
+};
+
+/** Fallback when category/manufacturer has no catalog entry. */
+export const REPAIR_DEVICES_FALLBACK: RepairDevice[] = [
+  { id: "generic-add-device", name: "Add Device", isAdd: true },
+];
