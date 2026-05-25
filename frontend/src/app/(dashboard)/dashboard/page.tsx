@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import gsap from "gsap";
 import { ActivityTimeline } from "@/components/dashboard/activity-timeline";
 import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton";
 import { RecentActivitySection } from "@/components/dashboard/recent-activity-section";

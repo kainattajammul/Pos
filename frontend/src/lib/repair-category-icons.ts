@@ -12,6 +12,8 @@ function toPascalCase(iconKey: string): string {
 /** Resolves a stored icon key to a Lucide component (falls back to Wrench). */
 export function resolveRepairCategoryIcon(iconKey: string): LucideIcon {
   const pascal = toPascalCase(iconKey || "wrench");
-  const icon = (LucideIcons as Record<string, LucideIcon | undefined>)[pascal];
+  const icon = (LucideIcons as unknown as Record<string, LucideIcon | undefined>)[
+    pascal
+  ];
   return icon ?? LucideIcons.Wrench;
 }

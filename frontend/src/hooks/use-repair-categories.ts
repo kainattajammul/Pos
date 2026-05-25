@@ -72,7 +72,8 @@ export function useCreateRepairCategory(shopId: number) {
   });
 }
 
-export function useUpdateRepairCategory(shopId: number) {
+export function useUpdateRepairCategory(_shopId: number) {
+  void _shopId;
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -94,6 +95,7 @@ export function useUpdateRepairCategory(shopId: number) {
 }
 
 export function useDeleteRepairCategory(_shopId: number) {
+  void _shopId;
   const queryClient = useQueryClient();
 
   return useMutation({

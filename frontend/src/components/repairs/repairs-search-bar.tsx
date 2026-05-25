@@ -17,6 +17,7 @@ interface RepairsSearchBarProps {
 
 export function RepairsSearchBar({ shopId, onSelect, className }: RepairsSearchBarProps) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [open, setOpen] = useState(false);
@@ -72,9 +73,23 @@ export function RepairsSearchBar({ shopId, onSelect, className }: RepairsSearchB
   };
 
   return (
-    <div ref={rootRef} className={cn("relative w-full min-w-0 max-w-xl", className)}>
-      <div className="flex items-stretch overflow-hidden rounded-full border border-[#D1D5DB] bg-white shadow-sm">
+    <div ref={rootRef} className={cn("relative w-full min-w-0", className)}>
+      <div
+        className={cn(
+          "flex items-center gap-3 border-b border-[#D1D5DB] pb-2 transition-colors",
+          "focus-within:border-[var(--repair-primary)]",
+        )}
+      >
+        <button
+          type="button"
+          className="shrink-0 text-[#9CA3AF] transition-colors hover:text-[var(--repair-primary)]"
+          aria-label="Focus search"
+          onClick={() => inputRef.current?.focus()}
+        >
+          <Search className="size-5" strokeWidth={1.75} />
+        </button>
         <input
+          ref={inputRef}
           type="search"
           value={inputValue}
           onChange={(e) => {
@@ -82,32 +97,29 @@ export function RepairsSearchBar({ shopId, onSelect, className }: RepairsSearchB
             setOpen(true);
           }}
           onFocus={() => setOpen(true)}
-          placeholder="Search device or repair…"
-          className="h-11 min-w-0 flex-1 border-0 bg-transparent px-4 text-sm text-[#111827] outline-none placeholder:text-[#9CA3AF] sm:h-12 sm:px-5 sm:text-base"
+          placeholder="Search..."
+          className="min-w-0 flex-1 border-0 bg-transparent text-sm text-[#111827] outline-none placeholder:text-[#9CA3AF] sm:text-base"
           aria-label="Search device or repair"
-          aria-expanded={showPanel}
           aria-controls="repair-search-results"
           autoComplete="off"
         />
-        <button
-          type="button"
-          className="flex h-11 w-12 shrink-0 items-center justify-center bg-[#111827] text-white transition hover:bg-[#1F2937] sm:h-12 sm:w-14"
-          aria-label="Search repairs"
-          onClick={() => setOpen(true)}
-        >
-          <Search className="size-5" />
-        </button>
+        {loading ? (
+          <Loader2
+            className="size-5 shrink-0 animate-spin text-[var(--repair-primary)]"
+            aria-label="Searching"
+          />
+        ) : null}
       </div>
 
       {showPanel ? (
         <div
           id="repair-search-results"
           role="listbox"
-          className="absolute top-[calc(100%+8px)] right-0 z-50 max-h-[min(70vh,420px)] w-full min-w-[280px] overflow-y-auto rounded-xl border border-[#E5E7EB] bg-white shadow-lg"
+          className="absolute top-[calc(100%+8px)] left-0 right-0 z-50 max-h-[min(70vh,420px)] overflow-y-auto rounded-lg border border-[#E5E7EB] bg-white shadow-lg"
         >
           {loading ? (
             <div className="flex items-center justify-center gap-2 px-4 py-8 text-sm text-[#6B7280]">
-              <Loader2 className="size-4 animate-spin" />
+              <Loader2 className="size-4 animate-spin text-[var(--repair-primary)]" />
               Searching repairs…
             </div>
           ) : results.length === 0 ? (
@@ -125,8 +137,9 @@ export function RepairsSearchBar({ shopId, onSelect, className }: RepairsSearchB
                         <button
                           type="button"
                           role="option"
+                          aria-selected={false}
                           className={cn(
-                            "flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left text-sm transition hover:bg-[#EFF6FF]",
+                            "flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left text-sm transition hover:bg-[color-mix(in_srgb,var(--repair-primary)_6%,white)]",
                             index % 2 === 0 ? "bg-white" : "bg-[#F9FAFB]",
                           )}
                           onClick={() => handleSelect(group, repair)}

@@ -654,10 +654,11 @@ function RepairsPosContent() {
   useEffect(() => {
     if (categoriesLoading || categories.length === 0) return;
     for (const category of categories) {
-      if (category.isAdd || !category.dbId) continue;
+      const categoryDbId = category.dbId;
+      if (category.isAdd || categoryDbId == null) continue;
       void queryClient.prefetchQuery({
-        queryKey: queryKeys.repairManufacturers.list(shopId, category.dbId),
-        queryFn: () => fetchRepairManufacturers(shopId, category.dbId),
+        queryKey: queryKeys.repairManufacturers.list(shopId, categoryDbId),
+        queryFn: () => fetchRepairManufacturers(shopId, categoryDbId),
         staleTime: 10 * 60 * 1000,
       });
     }

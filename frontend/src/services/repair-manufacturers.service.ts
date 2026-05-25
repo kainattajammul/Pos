@@ -1,5 +1,4 @@
 import { apiClient } from "@/lib/axios";
-import { Plus } from "lucide-react";
 import type { RepairManufacturer } from "@/lib/repairs-pos-data";
 import type { ApiSuccessResponse } from "@/types/api";
 import type {

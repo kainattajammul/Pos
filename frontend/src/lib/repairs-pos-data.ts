@@ -135,9 +135,9 @@ export function getManufacturerById(
 
 /** @deprecated Prefer API-backed device list from repairs workflow */
 export function getDevicesForCategoryAndManufacturer(
-  _categoryId: string | null,
-  _manufacturerId: string | null,
+  ..._args: [string | null, string | null]
 ): RepairDevice[] {
+  void _args;
   return REPAIR_DEVICES_FALLBACK;
 }
 

@@ -77,7 +77,12 @@ export function useCreateRepairManufacturer(shopId: number, repairCategoryId: nu
   });
 }
 
-export function useUpdateRepairManufacturer(shopId: number, repairCategoryId: number) {
+export function useUpdateRepairManufacturer(
+  _shopId: number,
+  _repairCategoryId: number,
+) {
+  void _shopId;
+  void _repairCategoryId;
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -98,7 +103,12 @@ export function useUpdateRepairManufacturer(shopId: number, repairCategoryId: nu
   });
 }
 
-export function useDeleteRepairManufacturer(_shopId: number, _repairCategoryId: number) {
+export function useDeleteRepairManufacturer(
+  _shopId: number,
+  _repairCategoryId: number,
+) {
+  void _shopId;
+  void _repairCategoryId;
   const queryClient = useQueryClient();
 
   return useMutation({

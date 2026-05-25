@@ -139,10 +139,10 @@ export function RepairsWorkflowPanel({
 
   return (
     <section className="flex min-h-0 min-w-0 flex-1 flex-col bg-white">
-      <div className="shrink-0 border-b border-[#E5E7EB] px-4 py-3">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      <div className="shrink-0 border-b border-[#E5E7EB] px-4 py-3 md:px-5">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between lg:gap-12 xl:gap-16">
         <nav
-          className="flex min-w-0 flex-1 flex-wrap items-center gap-1 text-sm"
+          className="flex min-w-0 flex-1 flex-wrap items-center justify-start gap-1 text-sm"
           aria-label="Repair workflow"
         >
           {selectedCategory ? (
@@ -212,7 +212,7 @@ export function RepairsWorkflowPanel({
         <RepairsSearchBar
           shopId={shopId}
           onSelect={onSearchSelect}
-          className="w-full shrink-0 lg:max-w-xl lg:ml-auto"
+          className="w-full max-w-[240px] sm:max-w-[280px] lg:shrink-0"
         />
         </div>
       </div>
