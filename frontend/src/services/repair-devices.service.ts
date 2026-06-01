@@ -16,6 +16,7 @@ export function mapApiRepairDeviceToCard(device: ApiRepairDevice): RepairDevice 
     imageUrl: device.imageUrl ?? undefined,
     iconVariant: device.iconVariant ?? undefined,
     dbId: device.id,
+    repairDeviceSeriesId: device.repairDeviceSeriesId ?? null,
     isDefault: device.isDefault,
   };
 }

@@ -1,9 +1,32 @@
 import "./env.js";
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 
-// Single Prisma instance for the whole app (connection pooling via Supabase)
-const prisma = new PrismaClient({
-  log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
+const isDev = process.env.NODE_ENV === "development";
+
+const basePrisma = new PrismaClient({
+  log: isDev ? ["error", "warn"] : ["error"],
+});
+
+/** Retry once after reconnect when Supabase pooler drops idle connections (P1001). */
+const prisma = basePrisma.$extends({
+  query: {
+    $allModels: {
+      async $allOperations({ args, query }) {
+        try {
+          return await query(args);
+        } catch (error) {
+          if (
+            error instanceof Prisma.PrismaClientKnownRequestError &&
+            error.code === "P1001"
+          ) {
+            await reconnectDatabase();
+            return await query(args);
+          }
+          throw error;
+        }
+      },
+    },
+  },
 });
 
 let connected = false;
@@ -12,14 +35,41 @@ export function isDatabaseConnected() {
   return connected;
 }
 
-export async function connectDatabase() {
-  await prisma.$connect();
+export async function reconnectDatabase() {
+  try {
+    await basePrisma.$disconnect();
+  } catch {
+    // ignore
+  }
+  connected = false;
+  await basePrisma.$connect();
   connected = true;
-  return prisma;
+}
+
+export async function connectDatabase(maxAttempts = 5) {
+  let lastError;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      await basePrisma.$connect();
+      connected = true;
+      return prisma;
+    } catch (err) {
+      lastError = err;
+      connected = false;
+      if (attempt < maxAttempts) {
+        const delayMs = Math.min(1000 * attempt, 5000);
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+    }
+  }
+
+  throw lastError;
 }
 
 export async function disconnectDatabase() {
-  await prisma.$disconnect();
+  await basePrisma.$disconnect();
+  connected = false;
 }
 
 export { prisma };

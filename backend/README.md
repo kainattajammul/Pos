@@ -38,11 +38,21 @@ backend/
 2. Copy the pooler strings (region: `aws-1-ap-northeast-1`) into `backend/.env`:
 
 ```env
-DATABASE_URL=postgresql://postgres.alrmshmfmkqetlgypoma:[YOUR-PASSWORD]@aws-1-ap-northeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true
-DIRECT_URL=postgresql://postgres.alrmshmfmkqetlgypoma:[YOUR-PASSWORD]@aws-1-ap-northeast-1.pooler.supabase.com:5432/postgres
+# Session pooler (port 5432) — recommended for this long-running API
+DATABASE_URL=postgresql://postgres.alrmshmfmkqetlgypoma:[YOUR-PASSWORD]@aws-1-ap-northeast-1.pooler.supabase.com:5432/postgres?pgbouncer=true&connect_timeout=30
+# Direct host — for `prisma migrate` only
+DIRECT_URL=postgresql://postgres.alrmshmfmkqetlgypoma:[YOUR-PASSWORD]@db.alrmshmfmkqetlgypoma.supabase.co:5432/postgres?sslmode=require
 ```
 
 The publishable key is for the Supabase JS client only. **Prisma uses `DATABASE_URL` with the database password.**
+
+### `Can't reach database server` (Prisma P1001)
+
+1. In [Supabase Dashboard](https://supabase.com/dashboard) → your project → confirm it is **not paused** (free tier pauses after inactivity).
+2. In `backend/.env`, set **`DATABASE_URL` to port `5432`** (session pooler), not `6543` (transaction pooler). Port 6543 is intended for serverless and often fails with a persistent Node server.
+3. Copy fresh connection strings from **Project Settings → Database → Connection string** (URI).
+4. Test: `npm run db:test`
+5. Restart the API after changing `.env`: stop `npm run dev`, then start again.
 
 ## Prisma migration commands
 

@@ -6,6 +6,7 @@ import roleRoutes from "./role.routes.js";
 import repairCategoryRoutes from "./repairCategory.routes.js";
 import repairManufacturerRoutes from "./repairManufacturer.routes.js";
 import repairDeviceRoutes from "./repairDevice.routes.js";
+import repairDeviceSeriesRoutes from "./repairDeviceSeries.routes.js";
 import repairDeviceIssueRoutes from "./repairDeviceIssue.routes.js";
 import repairDevicePartRoutes from "./repairDevicePart.routes.js";
 import dashboardRoutes from "./dashboard.routes.js";
@@ -26,6 +27,7 @@ router.get("/", (_req, res) => {
         repairCategories: "/api/v1/repair-categories",
         repairManufacturers: "/api/v1/repair-manufacturers",
         repairDevices: "/api/v1/repair-devices",
+        repairDeviceSeries: "/api/v1/repair-device-series",
         repairDeviceIssues: "/api/v1/repair-device-issues",
         repairDeviceParts: "/api/v1/repair-device-parts",
         dashboard: "/api/v1/dashboard",
@@ -40,6 +42,7 @@ router.use("/roles", roleRoutes);
 router.use("/repair-categories", repairCategoryRoutes);
 router.use("/repair-manufacturers", repairManufacturerRoutes);
 router.use("/repair-devices", repairDeviceRoutes);
+router.use("/repair-device-series", repairDeviceSeriesRoutes);
 router.use("/repair-device-issues", repairDeviceIssueRoutes);
 router.use("/repair-device-parts", repairDevicePartRoutes);
 router.use("/dashboard", dashboardRoutes);

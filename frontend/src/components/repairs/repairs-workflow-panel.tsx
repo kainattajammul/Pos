@@ -1,7 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronRight, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react";
+import {
+  ChevronRight,
+  Layers,
+  MoreHorizontal,
+  Pencil,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import type {
   RepairCategoryCard,
   RepairDevice,
@@ -18,6 +25,13 @@ import {
 } from "@/lib/repairs-pos-data";
 import { ManufacturerBrandMark } from "@/components/repairs/manufacturer-brand-mark";
 import { RepairsDevicesStep } from "@/components/repairs/repairs-devices-step";
+import { RepairsSeriesDevicesStep } from "@/components/repairs/repairs-series-devices-step";
+import type { RepairDeviceSeries } from "@/lib/repairs-series-data";
+import {
+  getManufacturerSeriesModeKey,
+  isSeriesModeEnabledForManufacturer,
+} from "@/lib/repairs-series-mode";
+import { Switch } from "@/components/ui/switch";
 import { RepairsDetailsStep } from "@/components/repairs/repairs-details-step";
 import { RepairsPartsStep } from "@/components/repairs/repairs-parts-step";
 import { RepairsProblemsStep } from "@/components/repairs/repairs-problems-step";
@@ -30,6 +44,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
@@ -53,6 +68,17 @@ interface RepairsWorkflowPanelProps {
   onSelectManufacturer: (manufacturer: RepairManufacturer) => void;
   onEditManufacturer?: (manufacturer: RepairManufacturer) => void;
   onDeleteManufacturer?: (manufacturer: RepairManufacturer) => void;
+  onCreateSeries?: (manufacturer: RepairManufacturer) => void;
+  seriesModeByManufacturer?: Record<string, boolean>;
+  onSeriesModeChange?: (manufacturer: RepairManufacturer, enabled: boolean) => void;
+  deviceSeries?: RepairDeviceSeries[];
+  deviceSeriesLoading?: boolean;
+  onCreateSeriesFromDevices?: () => void;
+  onEditSeries?: (series: RepairDeviceSeries) => void;
+  onDeleteSeries?: (series: RepairDeviceSeries) => void;
+  onAssignDevicesToSeries?: (series: RepairDeviceSeries) => void;
+  onRemoveDeviceFromSeries?: (device: RepairDevice) => void;
+  onAddDeviceToSeries?: (seriesDbId?: number) => void;
   devicesLoading?: boolean;
   onSelectDevice: (deviceId: string) => void;
   onAddDevice?: () => void;
@@ -99,6 +125,17 @@ export function RepairsWorkflowPanel({
   onSelectManufacturer,
   onEditManufacturer,
   onDeleteManufacturer,
+  onCreateSeries,
+  seriesModeByManufacturer = {},
+  onSeriesModeChange,
+  deviceSeries = [],
+  deviceSeriesLoading = false,
+  onCreateSeriesFromDevices,
+  onEditSeries,
+  onDeleteSeries,
+  onAssignDevicesToSeries,
+  onRemoveDeviceFromSeries,
+  onAddDeviceToSeries,
   devicesLoading = false,
   onSelectDevice,
   onAddDevice,
@@ -128,6 +165,10 @@ export function RepairsWorkflowPanel({
   const { setDetailsForm } = useRepairTicket();
   const manufacturer = getManufacturerById(selectedManufacturerId, manufacturers);
   const manufacturerLabel = manufacturer?.name ?? "Manufacturer";
+  const selectedManufacturerSeriesMode = isSeriesModeEnabledForManufacturer(
+    seriesModeByManufacturer,
+    manufacturer,
+  );
   const selectedDevice = getDeviceById(
     selectedDeviceId,
     selectedCategoryId,
@@ -260,21 +301,45 @@ export function RepairsWorkflowPanel({
                   onSelect={() => onSelectManufacturer(m)}
                   onEdit={onEditManufacturer}
                   onDelete={onDeleteManufacturer}
+                  onCreateSeries={onCreateSeries}
+                  seriesModeByManufacturer={seriesModeByManufacturer}
+                  onSeriesModeChange={onSeriesModeChange}
                 />
               ))}
             </div>
           )
         ) : activeStep === "Devices" ? (
-          <RepairsDevicesStep
-            devices={devices}
-            categoryId={selectedCategoryId}
-            selectedDeviceId={selectedDeviceId}
-            devicesLoading={devicesLoading}
-            onSelectDevice={onSelectDevice}
-            onAddDevice={onAddDevice}
-            onEditDevice={onEditDevice}
-            onDeleteDevice={onDeleteDevice}
-          />
+          selectedManufacturerSeriesMode ? (
+            <RepairsSeriesDevicesStep
+              series={deviceSeries}
+              seriesLoading={deviceSeriesLoading}
+              devicesLoading={devicesLoading}
+              devices={devices}
+              manufacturerName={manufacturerLabel}
+              categoryId={selectedCategoryId}
+              selectedDeviceId={selectedDeviceId}
+              onSelectDevice={onSelectDevice}
+              onAddDevice={onAddDeviceToSeries ?? onAddDevice}
+              onEditDevice={onEditDevice}
+              onDeleteDevice={onDeleteDevice}
+              onRemoveDeviceFromSeries={onRemoveDeviceFromSeries}
+              onCreateSeries={onCreateSeriesFromDevices}
+              onEditSeries={onEditSeries}
+              onDeleteSeries={onDeleteSeries}
+              onAssignDevices={onAssignDevicesToSeries}
+            />
+          ) : (
+            <RepairsDevicesStep
+              devices={devices}
+              categoryId={selectedCategoryId}
+              selectedDeviceId={selectedDeviceId}
+              devicesLoading={devicesLoading}
+              onSelectDevice={onSelectDevice}
+              onAddDevice={onAddDevice}
+              onEditDevice={onEditDevice}
+              onDeleteDevice={onDeleteDevice}
+            />
+          )
         ) : activeStep === "Problems" ? (
           selectedDeviceId ? (
             <RepairsProblemsStep
@@ -496,13 +561,21 @@ function ManufacturerCard({
   onSelect,
   onEdit,
   onDelete,
+  onCreateSeries,
+  seriesModeByManufacturer = {},
+  onSeriesModeChange,
 }: {
   manufacturer: RepairManufacturer;
   selected: boolean;
   onSelect: () => void;
   onEdit?: (manufacturer: RepairManufacturer) => void;
   onDelete?: (manufacturer: RepairManufacturer) => void;
+  onCreateSeries?: (manufacturer: RepairManufacturer) => void;
+  seriesModeByManufacturer?: Record<string, boolean>;
+  onSeriesModeChange?: (manufacturer: RepairManufacturer, enabled: boolean) => void;
 }) {
+  const seriesModeKey = getManufacturerSeriesModeKey(manufacturer);
+  const seriesModeEnabled = seriesModeByManufacturer[seriesModeKey] === true;
   const [imageFailed, setImageFailed] = useState(false);
   const showImage = Boolean(manufacturer.imageUrl) && !imageFailed;
   const brandSlug = manufacturer.logoSlug ?? manufacturer.id;
@@ -530,17 +603,54 @@ function ManufacturerCard({
 
   return (
     <div className="group relative">
-      {canManage && (onEdit || onDelete) ? (
+      {canManage && (onEdit || onDelete || onCreateSeries || onSeriesModeChange) ? (
         <DropdownMenu>
           <DropdownMenuTrigger
             type="button"
-            className="absolute top-2 right-2 z-10 flex size-7 items-center justify-center rounded-md bg-white/90 text-[#6B7280] opacity-0 shadow-sm ring-1 ring-[#E5E7EB] transition-opacity group-hover:opacity-100 hover:text-[#111827] data-popup-open:opacity-100"
+            className="absolute top-2 right-2 z-10 flex size-7 items-center justify-center rounded-md bg-white/90 text-[#6B7280] shadow-sm ring-1 ring-[#E5E7EB] hover:text-[#111827] data-popup-open:bg-white"
             onClick={(e) => e.stopPropagation()}
             aria-label={`Actions for ${manufacturer.name}`}
           >
             <MoreHorizontal className="size-4" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-40">
+          <DropdownMenuContent align="end" className="w-52">
+            {onCreateSeries ? (
+              <DropdownMenuItem
+                disabled={!seriesModeEnabled}
+                title={
+                  seriesModeEnabled
+                    ? undefined
+                    : "Turn on Series mode to create a series"
+                }
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!seriesModeEnabled) return;
+                  onCreateSeries(manufacturer);
+                }}
+              >
+                <Layers className="size-4" />
+                Create Series
+              </DropdownMenuItem>
+            ) : null}
+            {onSeriesModeChange ? (
+              <>
+                <DropdownMenuSeparator />
+                <div
+                  className="flex items-center justify-between gap-3 rounded-md px-2 py-2"
+                  onClick={(e) => e.stopPropagation()}
+                  onPointerDown={(e) => e.stopPropagation()}
+                >
+                  <span className="text-sm font-medium text-[#374151]">Series mode</span>
+                  <Switch
+                    checked={seriesModeEnabled}
+                    onCheckedChange={(enabled) =>
+                      onSeriesModeChange?.(manufacturer, enabled)
+                    }
+                    aria-label={`Series mode for ${manufacturer.name}`}
+                  />
+                </div>
+              </>
+            ) : null}
             {onEdit ? (
               <DropdownMenuItem
                 onClick={(e) => {

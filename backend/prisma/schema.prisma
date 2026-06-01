@@ -48,6 +48,7 @@ model Shop {
   repairCategories    RepairCategory[]
   repairManufacturers RepairManufacturer[]
   repairDevices       RepairDevice[]
+  repairDeviceSeries  RepairDeviceSeries[]
   repairDeviceIssues  RepairDeviceIssue[]
   repairDeviceParts   RepairDevicePart[]
 
@@ -206,6 +207,7 @@ model RepairCategory {
   shop          Shop                 @relation(fields: [shopId], references: [id], onDelete: Cascade)
   manufacturers RepairManufacturer[]
   devices       RepairDevice[]
+  deviceSeries  RepairDeviceSeries[]
   deviceIssues  RepairDeviceIssue[]
   deviceParts   RepairDevicePart[]
 
@@ -235,6 +237,7 @@ model RepairManufacturer {
   shop             Shop           @relation(fields: [shopId], references: [id], onDelete: Cascade)
   repairCategory   RepairCategory @relation(fields: [repairCategoryId], references: [id], onDelete: Cascade)
   devices          RepairDevice[]
+  deviceSeries     RepairDeviceSeries[]
   deviceIssues     RepairDeviceIssue[]
   deviceParts      RepairDevicePart[]
 
@@ -246,12 +249,40 @@ model RepairManufacturer {
   @@map("repair_manufacturers")
 }
 
+model RepairDeviceSeries {
+  id                   Int      @id @default(autoincrement())
+
+  shopId               Int      @map("shop_id")
+  repairCategoryId     Int      @map("repair_category_id")
+  repairManufacturerId Int      @map("repair_manufacturer_id")
+  name                 String
+  slug                 String
+  sortOrder            Int      @default(0) @map("sort_order")
+
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  shop               Shop               @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  repairCategory     RepairCategory     @relation(fields: [repairCategoryId], references: [id], onDelete: Cascade)
+  repairManufacturer RepairManufacturer @relation(fields: [repairManufacturerId], references: [id], onDelete: Cascade)
+  devices            RepairDevice[]
+
+  @@unique([shopId, repairManufacturerId, slug])
+  @@unique([shopId, repairManufacturerId, name])
+  @@index([shopId])
+  @@index([repairCategoryId])
+  @@index([repairManufacturerId])
+
+  @@map("repair_device_series")
+}
+
 model RepairDevice {
   id                   Int      @id @default(autoincrement())
 
   shopId               Int      @map("shop_id")
   repairCategoryId     Int      @map("repair_category_id")
   repairManufacturerId Int      @map("repair_manufacturer_id")
+  repairDeviceSeriesId Int?     @map("repair_device_series_id")
   name                 String
   slug                 String
   imageUrl             String?  @map("image_url")
@@ -265,6 +296,7 @@ model RepairDevice {
   shop               Shop               @relation(fields: [shopId], references: [id], onDelete: Cascade)
   repairCategory     RepairCategory     @relation(fields: [repairCategoryId], references: [id], onDelete: Cascade)
   repairManufacturer RepairManufacturer @relation(fields: [repairManufacturerId], references: [id], onDelete: Cascade)
+  repairDeviceSeries RepairDeviceSeries? @relation(fields: [repairDeviceSeriesId], references: [id], onDelete: SetNull)
   issues             RepairDeviceIssue[]
   parts              RepairDevicePart[]
 
@@ -273,6 +305,7 @@ model RepairDevice {
   @@index([shopId])
   @@index([repairCategoryId])
   @@index([repairManufacturerId])
+  @@index([repairDeviceSeriesId])
 
   @@map("repair_devices")
 }

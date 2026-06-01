@@ -29,6 +29,12 @@ import {
   useUpdateRepairDevice,
 } from "@/hooks/use-repair-devices";
 import {
+  useCreateRepairDeviceSeries,
+  useDeleteRepairDeviceSeries,
+  useRepairDeviceSeries,
+  useUpdateRepairDeviceSeries,
+} from "@/hooks/use-repair-device-series";
+import {
   useCreateRepairDeviceIssue,
   useDeleteRepairDeviceIssue,
   useRepairDeviceIssues,
@@ -50,6 +56,7 @@ import type {
 import type { RepairProblem } from "@/lib/repairs-problems-data";
 import { REPAIR_PROBLEMS_FALLBACK } from "@/lib/repairs-problems-data";
 import type { RepairPart } from "@/lib/repairs-parts-data";
+import type { RepairDeviceSeries } from "@/lib/repairs-series-data";
 import { REPAIR_PARTS_FALLBACK } from "@/lib/repairs-parts-data";
 import { getDefaultRepairCharges } from "@/lib/repairs-details-data";
 import {
@@ -59,6 +66,12 @@ import {
   isAddDeviceInList,
 } from "@/lib/repairs-pos-data";
 import { REPAIR_DEVICES_FALLBACK } from "@/lib/repairs-devices-data";
+import {
+  getManufacturerSeriesModeKey,
+  readSeriesModeByManufacturer,
+  writeSeriesModeByManufacturer,
+  type SeriesModeByManufacturer,
+} from "@/lib/repairs-series-mode";
 import { RepairsTopNav } from "@/components/repairs/repairs-top-nav";
 import { RepairsPosBar } from "@/components/repairs/repairs-pos-bar";
 import { RepairsCartPanel } from "@/components/repairs/repairs-cart-panel";
@@ -107,6 +120,20 @@ const RepairDevicePartFormDialog = dynamic(
     ),
   { ssr: false },
 );
+const RepairDeviceSeriesFormDialog = dynamic(
+  () =>
+    import("@/components/repairs/repair-device-series-form-dialog").then(
+      (m) => m.RepairDeviceSeriesFormDialog,
+    ),
+  { ssr: false },
+);
+const RepairsAssignDevicesDialog = dynamic(
+  () =>
+    import("@/components/repairs/repairs-assign-devices-dialog").then(
+      (m) => m.RepairsAssignDevicesDialog,
+    ),
+  { ssr: false },
+);
 
 const LOADING_CATEGORIES: RepairCategoryCard[] = [];
 const LOADING_MANUFACTURERS: RepairManufacturer[] = [
@@ -120,6 +147,7 @@ import {
 type DeleteTarget =
   | { type: "category"; item: RepairCategoryCard }
   | { type: "manufacturer"; item: RepairManufacturer }
+  | { type: "series"; item: RepairDeviceSeries }
   | { type: "device"; item: RepairDevice }
   | { type: "issue"; item: RepairProblem }
   | { type: "part"; item: RepairPart };
@@ -150,6 +178,18 @@ function RepairsPosContent() {
   const [partDialogOpen, setPartDialogOpen] = useState(false);
   const [editingPart, setEditingPart] = useState<RepairPart | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
+  const [seriesModeByManufacturer, setSeriesModeByManufacturer] = useState<
+    SeriesModeByManufacturer
+  >(readSeriesModeByManufacturer);
+  const [seriesDialogOpen, setSeriesDialogOpen] = useState(false);
+  const [editingSeries, setEditingSeries] = useState<RepairDeviceSeries | null>(null);
+  const [seriesFormManufacturer, setSeriesFormManufacturer] =
+    useState<RepairManufacturer | null>(null);
+  const [assignSeriesTarget, setAssignSeriesTarget] =
+    useState<RepairDeviceSeries | null>(null);
+  const [pendingDeviceSeriesId, setPendingDeviceSeriesId] = useState<number | null>(
+    null,
+  );
   const [activeTab, setActiveTab] = useState<PosTab>("Repairs");
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -215,6 +255,30 @@ function RepairsPosContent() {
     selectedCategoryDbId ?? 0,
     selectedManufacturerDbId ?? 0,
   );
+
+  const {
+    data: deviceSeries = [],
+    isLoading: deviceSeriesLoading,
+  } = useRepairDeviceSeries(shopId, selectedCategoryDbId, selectedManufacturerDbId);
+
+  const createDeviceSeries = useCreateRepairDeviceSeries(
+    shopId,
+    selectedCategoryDbId ?? 0,
+    seriesFormManufacturer?.dbId ?? selectedManufacturerDbId ?? 0,
+  );
+  const updateDeviceSeries = useUpdateRepairDeviceSeries(
+    shopId,
+    selectedCategoryDbId ?? 0,
+    selectedManufacturerDbId ?? 0,
+  );
+  const deleteDeviceSeries = useDeleteRepairDeviceSeries(
+    shopId,
+    selectedCategoryDbId ?? 0,
+    selectedManufacturerDbId ?? 0,
+  );
+
+  const seriesFormManufacturerDbId =
+    seriesFormManufacturer?.dbId ?? selectedManufacturerDbId;
 
   const selectedDeviceDbId = useMemo(() => {
     const match = devices.find((d) => d.id === selectedDeviceId && !d.isAdd);
@@ -309,9 +373,65 @@ function RepairsPosContent() {
     setDeleteTarget({ type: "manufacturer", item: manufacturer });
   };
 
-  const openAddDevice = () => {
+  const handleSeriesModeChange = (
+    manufacturer: RepairManufacturer,
+    enabled: boolean,
+  ) => {
+    const key = getManufacturerSeriesModeKey(manufacturer);
+    setSeriesModeByManufacturer((prev) => {
+      const next = { ...prev, [key]: enabled };
+      writeSeriesModeByManufacturer(next);
+      return next;
+    });
+  };
+
+  const openCreateSeries = (manufacturer: RepairManufacturer) => {
+    if (!manufacturer.dbId) return;
+    setSeriesFormManufacturer(manufacturer);
+    setEditingSeries(null);
+    setSeriesDialogOpen(true);
+  };
+
+  const openEditSeries = (series: RepairDeviceSeries) => {
+    setEditingSeries(series);
+    setSeriesFormManufacturer(null);
+    setSeriesDialogOpen(true);
+  };
+
+  const handleDeleteSeries = (series: RepairDeviceSeries) => {
+    if (!series.dbId) return;
+    setDeleteTarget({ type: "series", item: series });
+  };
+
+  const openAddDevice = (seriesDbId?: number) => {
     setEditingDevice(null);
+    setPendingDeviceSeriesId(seriesDbId ?? null);
     setDeviceDialogOpen(true);
+  };
+
+  const handleRemoveDeviceFromSeries = (device: RepairDevice) => {
+    if (!device.dbId) return;
+    updateDevice.mutate({
+      id: device.dbId,
+      payload: { repairDeviceSeriesId: null },
+    });
+  };
+
+  const handleAssignDevicesToSeries = async (deviceDbIds: number[]) => {
+    if (!assignSeriesTarget?.dbId) return;
+    try {
+      await Promise.all(
+        deviceDbIds.map((id) =>
+          updateDevice.mutateAsync({
+            id,
+            payload: { repairDeviceSeriesId: assignSeriesTarget.dbId },
+          }),
+        ),
+      );
+      setAssignSeriesTarget(null);
+    } catch {
+      // Errors surfaced by mutation hooks
+    }
   };
 
   const openEditDevice = (device: RepairDevice) => {
@@ -384,6 +504,14 @@ function RepairsPosContent() {
       deleteManufacturer.mutate(manufacturer.dbId, {
         onSuccess: () => {
           setDeleteTarget(null);
+          const modeKey = getManufacturerSeriesModeKey(manufacturer);
+          setSeriesModeByManufacturer((prev) => {
+            if (!(modeKey in prev)) return prev;
+            const next = { ...prev };
+            delete next[modeKey];
+            writeSeriesModeByManufacturer(next);
+            return next;
+          });
           if (selectedManufacturerId === manufacturer.id) {
             setSelectedManufacturerId(null);
             setSelectedDeviceId(null);
@@ -393,6 +521,16 @@ function RepairsPosContent() {
             setFurthestStep("Manufacturer");
           }
         },
+      });
+      return;
+    }
+
+    if (deleteTarget.type === "series") {
+      const series = deleteTarget.item;
+      if (!series.dbId) return;
+
+      deleteDeviceSeries.mutate(series.dbId, {
+        onSuccess: () => setDeleteTarget(null),
       });
       return;
     }
@@ -703,8 +841,24 @@ function RepairsPosContent() {
               onSelectManufacturer={handleSelectManufacturer}
               onEditManufacturer={openEditManufacturer}
               onDeleteManufacturer={handleDeleteManufacturer}
+              onCreateSeries={openCreateSeries}
+              seriesModeByManufacturer={seriesModeByManufacturer}
+              onSeriesModeChange={handleSeriesModeChange}
+              deviceSeries={deviceSeries}
+              deviceSeriesLoading={deviceSeriesLoading}
+              onCreateSeriesFromDevices={() => {
+                const m = manufacturers.find(
+                  (item) => item.id === selectedManufacturerId && !item.isAdd,
+                );
+                if (m) openCreateSeries(m);
+              }}
+              onEditSeries={openEditSeries}
+              onDeleteSeries={handleDeleteSeries}
+              onAssignDevicesToSeries={setAssignSeriesTarget}
+              onRemoveDeviceFromSeries={handleRemoveDeviceFromSeries}
+              onAddDeviceToSeries={openAddDevice}
               onSelectDevice={handleSelectDevice}
-              onAddDevice={openAddDevice}
+              onAddDevice={() => openAddDevice()}
               onEditDevice={openEditDevice}
               onDeleteDevice={handleDeleteDevice}
               problems={problems}
@@ -768,7 +922,10 @@ function RepairsPosContent() {
           open={deviceDialogOpen}
           onOpenChange={(open) => {
             setDeviceDialogOpen(open);
-            if (!open) setEditingDevice(null);
+            if (!open) {
+              setEditingDevice(null);
+              setPendingDeviceSeriesId(null);
+            }
           }}
           repairCategoryId={selectedCategoryDbId}
           repairManufacturerId={selectedManufacturerDbId}
@@ -787,13 +944,91 @@ function RepairsPosContent() {
                 },
               );
             } else {
-              createDevice.mutate(values, {
-                onSuccess: () => {
-                  setDeviceDialogOpen(false);
+              createDevice.mutate(
+                {
+                  ...values,
+                  repairDeviceSeriesId: pendingDeviceSeriesId,
                 },
-              });
+                {
+                  onSuccess: () => {
+                    setDeviceDialogOpen(false);
+                    setPendingDeviceSeriesId(null);
+                  },
+                },
+              );
             }
           }}
+        />
+      ) : null}
+
+      {selectedCategoryDbId && seriesFormManufacturerDbId ? (
+        <RepairDeviceSeriesFormDialog
+          open={seriesDialogOpen}
+          onOpenChange={(open) => {
+            setSeriesDialogOpen(open);
+            if (!open) {
+              setEditingSeries(null);
+              setSeriesFormManufacturer(null);
+            }
+          }}
+          manufacturerName={
+            seriesFormManufacturer?.name ??
+            manufacturers.find((m) => m.id === selectedManufacturerId)?.name
+          }
+          series={editingSeries}
+          isSubmitting={
+            createDeviceSeries.isPending || updateDeviceSeries.isPending
+          }
+          onSave={(values) => {
+            if (editingSeries?.dbId) {
+              updateDeviceSeries.mutate(
+                { id: editingSeries.dbId, payload: values },
+                {
+                  onSuccess: () => {
+                    setSeriesDialogOpen(false);
+                    setEditingSeries(null);
+                  },
+                },
+              );
+            } else {
+              const manufacturerDbId = seriesFormManufacturerDbId;
+              if (!manufacturerDbId) return;
+              createDeviceSeries.mutate(
+                { ...values, repairManufacturerId: manufacturerDbId },
+                {
+                  onSuccess: () => {
+                    setSeriesDialogOpen(false);
+                    setSeriesFormManufacturer(null);
+                  },
+                },
+              );
+            }
+          }}
+        />
+      ) : null}
+
+      {assignSeriesTarget ? (
+        <RepairsAssignDevicesDialog
+          open={assignSeriesTarget !== null}
+          onOpenChange={(open) => {
+            if (!open) setAssignSeriesTarget(null);
+          }}
+          seriesName={assignSeriesTarget.name}
+          devices={devices}
+          assignedDeviceDbIds={
+            assignSeriesTarget.dbId
+              ? devices
+                  .filter(
+                    (d) =>
+                      !d.isAdd &&
+                      d.dbId != null &&
+                      d.repairDeviceSeriesId === assignSeriesTarget.dbId,
+                  )
+                  .map((d) => d.dbId!)
+              : []
+          }
+          isSubmitting={updateDevice.isPending}
+          onAssign={handleAssignDevicesToSeries}
         />
       ) : null}
 
@@ -904,6 +1139,7 @@ function RepairsPosContent() {
             !open &&
             !deleteCategory.isPending &&
             !deleteManufacturer.isPending &&
+            !deleteDeviceSeries.isPending &&
             !deleteDevice.isPending &&
             !deleteIssue.isPending &&
             !deletePart.isPending
@@ -916,7 +1152,9 @@ function RepairsPosContent() {
             ? "category"
             : deleteTarget?.type === "manufacturer"
               ? "manufacturer"
-              : deleteTarget?.type === "device"
+              : deleteTarget?.type === "series"
+                ? "series"
+                : deleteTarget?.type === "device"
                 ? "device"
                 : deleteTarget?.type === "issue"
                   ? "device issue"
@@ -930,6 +1168,7 @@ function RepairsPosContent() {
         isPending={
           deleteCategory.isPending ||
           deleteManufacturer.isPending ||
+          deleteDeviceSeries.isPending ||
           deleteDevice.isPending ||
           deleteIssue.isPending ||
           deletePart.isPending

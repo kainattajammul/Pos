@@ -3,6 +3,7 @@ import { HTTP } from "../constants/httpStatus.js";
 import { RepairCategoryModel } from "../models/repairCategory.model.js";
 import { RepairManufacturerModel } from "../models/repairManufacturer.model.js";
 import { RepairDeviceModel } from "../models/repairDevice.model.js";
+import { ensureSeriesExists } from "./repairDeviceSeries.service.js";
 import { ShopModel } from "../models/shop.model.js";
 import { slugify } from "../utils/slugify.js";
 import { getDefaultDeviceNames } from "../data/defaultRepairDevices.js";
@@ -140,6 +141,7 @@ export async function createRepairDevice({
   shopId,
   repairCategoryId,
   repairManufacturerId,
+  repairDeviceSeriesId,
   name,
   imageUrl,
   iconVariant,
@@ -148,6 +150,15 @@ export async function createRepairDevice({
   await ensureShopExists(shopId);
   const category = await ensureCategoryExists(shopId, repairCategoryId);
   await ensureManufacturerExists(shopId, repairCategoryId, repairManufacturerId);
+
+  if (repairDeviceSeriesId != null) {
+    await ensureSeriesExists(
+      shopId,
+      repairCategoryId,
+      repairManufacturerId,
+      repairDeviceSeriesId,
+    );
+  }
 
   const trimmedName = String(name).trim();
   const slug = slugify(trimmedName);
@@ -190,6 +201,8 @@ export async function createRepairDevice({
     shopId: Number(shopId),
     repairCategoryId: Number(repairCategoryId),
     repairManufacturerId: Number(repairManufacturerId),
+    repairDeviceSeriesId:
+      repairDeviceSeriesId != null ? Number(repairDeviceSeriesId) : null,
     name: trimmedName,
     slug,
     imageUrl: imageUrl ?? null,
@@ -241,6 +254,20 @@ export async function updateRepairDevice(id, payload) {
 
   if (payload.sortOrder !== undefined) {
     data.sortOrder = payload.sortOrder;
+  }
+
+  if (payload.repairDeviceSeriesId !== undefined) {
+    if (payload.repairDeviceSeriesId === null) {
+      data.repairDeviceSeriesId = null;
+    } else {
+      await ensureSeriesExists(
+        device.shopId,
+        device.repairCategoryId,
+        device.repairManufacturerId,
+        payload.repairDeviceSeriesId,
+      );
+      data.repairDeviceSeriesId = Number(payload.repairDeviceSeriesId);
+    }
   }
 
   if (data.slug) {

@@ -5,6 +5,7 @@ export interface ApiRepairDevice {
   shopId: number;
   repairCategoryId: number;
   repairManufacturerId: number;
+  repairDeviceSeriesId: number | null;
   name: string;
   slug: string;
   imageUrl: string | null;
@@ -19,6 +20,7 @@ export interface CreateRepairDevicePayload {
   shopId: number;
   repairCategoryId: number;
   repairManufacturerId: number;
+  repairDeviceSeriesId?: number | null;
   name: string;
   imageUrl?: string | null;
   iconVariant?: DeviceIconVariant | null;
@@ -30,6 +32,7 @@ export interface UpdateRepairDevicePayload {
   imageUrl?: string | null;
   iconVariant?: DeviceIconVariant | null;
   sortOrder?: number;
+  repairDeviceSeriesId?: number | null;
 }
 
 export interface UploadRepairDeviceImageResult {

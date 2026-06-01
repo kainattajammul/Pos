@@ -5,6 +5,7 @@ export function toPublicRepairDevice(device) {
     shopId: device.shopId,
     repairCategoryId: device.repairCategoryId,
     repairManufacturerId: device.repairManufacturerId,
+    repairDeviceSeriesId: device.repairDeviceSeriesId ?? null,
     name: device.name,
     slug: device.slug,
     imageUrl: device.imageUrl ?? null,

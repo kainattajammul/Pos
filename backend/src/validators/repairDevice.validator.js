@@ -60,6 +60,10 @@ export const createRepairDeviceRules = [
     .isIn(ICON_VARIANTS)
     .withMessage(`iconVariant must be one of: ${ICON_VARIANTS.join(", ")}`),
   body("sortOrder").optional().isInt({ min: 0 }),
+  body("repairDeviceSeriesId")
+    .optional({ values: "null" })
+    .custom((value) => value === null || Number.isInteger(Number(value)))
+    .withMessage("repairDeviceSeriesId must be a positive integer or null"),
 ];
 
 export const repairDeviceIdParamRules = [
@@ -82,13 +86,18 @@ export const updateRepairDeviceRules = [
     .isIn(ICON_VARIANTS)
     .withMessage(`iconVariant must be one of: ${ICON_VARIANTS.join(", ")}`),
   body("sortOrder").optional().isInt({ min: 0 }),
+  body("repairDeviceSeriesId")
+    .optional({ values: "null" })
+    .custom((value) => value === null || Number.isInteger(Number(value)))
+    .withMessage("repairDeviceSeriesId must be a positive integer or null"),
   body().custom((_value, { req }) => {
-    const { name, imageUrl, iconVariant, sortOrder } = req.body;
+    const { name, imageUrl, iconVariant, sortOrder, repairDeviceSeriesId } = req.body;
     const hasField =
       name !== undefined ||
       imageUrl !== undefined ||
       iconVariant !== undefined ||
-      sortOrder !== undefined;
+      sortOrder !== undefined ||
+      repairDeviceSeriesId !== undefined;
     if (!hasField) {
       throw new Error("At least one field is required to update");
     }

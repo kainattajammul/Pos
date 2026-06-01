@@ -6,6 +6,7 @@ export interface RepairDevice {
   imageUrl?: string;
   iconVariant?: DeviceIconVariant;
   dbId?: number;
+  repairDeviceSeriesId?: number | null;
   isDefault?: boolean;
   isAdd?: boolean;
 }
