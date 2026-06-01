@@ -46,6 +46,17 @@ DIRECT_URL=postgresql://postgres.alrmshmfmkqetlgypoma:[YOUR-PASSWORD]@db.alrmshm
 
 The publishable key is for the Supabase JS client only. **Prisma uses `DATABASE_URL` with the database password.**
 
+### Prisma Studio: `Can't reach database server`
+
+Use the project script (connects via **DIRECT_URL**, not the pooler):
+
+```bash
+cd backend
+npm run db:studio
+```
+
+Do **not** run bare `prisma studio` unless `DATABASE_URL` is already a direct host (`db.*.supabase.co`). Ensure `DIRECT_URL` is set in `.env` and the Supabase project is **not paused**.
+
 ### `Can't reach database server` (Prisma P1001)
 
 1. In [Supabase Dashboard](https://supabase.com/dashboard) → your project → confirm it is **not paused** (free tier pauses after inactivity).

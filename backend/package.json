@@ -13,7 +13,8 @@
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:push": "prisma db push",
-    "db:studio": "prisma studio",
+    "db:studio": "node scripts/prisma-studio.mjs",
+    "db:env-check": "node scripts/check-db-env.mjs",
     "db:deploy": "prisma migrate deploy",
     "test:roles": "node scripts/test-roles-api.mjs",
     "db:test": "node scripts/test-db-connection.mjs"
