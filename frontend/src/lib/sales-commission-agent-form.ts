@@ -1,11 +1,8 @@
 import { z } from "zod";
-
-export const PREFIX_OPTIONS = ["", "Mr", "Mrs", "Ms", "Miss", "Dr", "Prof"] as const;
+import type { SalesCommissionAgentTableRow } from "@/types/sales-commission-agent";
 
 export const salesCommissionAgentFormSchema = z.object({
-  prefix: z.string(),
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string(),
+  name: z.string().min(1, "Name is required"),
   email: z
     .string()
     .refine((v) => v === "" || z.email().safeParse(v).success, "Enter a valid email"),
@@ -27,9 +24,7 @@ export const salesCommissionAgentFormSchema = z.object({
 export type SalesCommissionAgentFormValues = z.infer<typeof salesCommissionAgentFormSchema>;
 
 export const SALES_COMMISSION_AGENT_FORM_DEFAULTS: SalesCommissionAgentFormValues = {
-  prefix: "",
-  firstName: "",
-  lastName: "",
+  name: "",
   email: "",
   contactNumber: "",
   address: "",
@@ -37,20 +32,13 @@ export const SALES_COMMISSION_AGENT_FORM_DEFAULTS: SalesCommissionAgentFormValue
 };
 
 export function mapAgentToFormValues(
-  agent: {
-    prefix: string | null;
-    firstName: string;
-    lastName: string | null;
-    email: string | null;
-    contactNumber: string | null;
-    address: string | null;
-    salesCommissionPercent: number | null;
-  },
+  agent: Pick<
+    SalesCommissionAgentTableRow,
+    "name" | "email" | "contactNumber" | "address" | "salesCommissionPercent"
+  >,
 ): SalesCommissionAgentFormValues {
   return {
-    prefix: agent.prefix ?? "",
-    firstName: agent.firstName,
-    lastName: agent.lastName ?? "",
+    name: agent.name,
     email: agent.email ?? "",
     contactNumber: agent.contactNumber ?? "",
     address: agent.address ?? "",
@@ -62,9 +50,7 @@ export function mapAgentToFormValues(
 export function formValuesToPayload(values: SalesCommissionAgentFormValues) {
   const percentRaw = values.salesCommissionPercent.trim();
   return {
-    prefix: values.prefix.trim() || undefined,
-    firstName: values.firstName.trim(),
-    lastName: values.lastName.trim() || undefined,
+    name: values.name.trim(),
     email: values.email.trim() || undefined,
     contactNumber: values.contactNumber.trim() || undefined,
     address: values.address.trim() || undefined,
