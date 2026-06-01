@@ -154,6 +154,7 @@ export function RepairsWorkflowActions() {
           icon={Plus}
           label="Create Ticket"
           variant="primary"
+          tone="repair"
           onClick={() => setTicketDialogOpen(true)}
         />
         <ActionToolbar.Button
@@ -198,6 +199,7 @@ export function RepairsWorkflowActions() {
         <ActionToolbar.Button
           label="Checkout"
           variant="primary"
+          tone="repair"
           onClick={() => setCheckoutOpen(true)}
         />
       </ActionToolbar>

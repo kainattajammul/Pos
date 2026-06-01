@@ -54,6 +54,10 @@ The publishable key is for the Supabase JS client only. **Prisma uses `DATABASE_
 4. Test: `npm run db:test`
 5. Restart the API after changing `.env`: stop `npm run dev`, then start again.
 
+### `connection was forcibly closed` / `10054` in the terminal
+
+Supabase closed an idle pooled connection. The API now **reconnects and retries** automatically and sends a light **keepalive** ping every 4 minutes. If logs persist, confirm `DATABASE_URL` uses port **5432** (session pooler), not **6543**.
+
 ## Prisma migration commands
 
 ```bash

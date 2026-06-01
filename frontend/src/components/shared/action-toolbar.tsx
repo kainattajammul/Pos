@@ -15,6 +15,7 @@ const CANCEL_BG = "#fff1f2";
 const CANCEL_FG = "#b91c1c";
 
 export type ActionToolbarVariant = "default" | "primary" | "destructive";
+export type ActionToolbarTone = "default" | "repair";
 
 const variantStyles: Record<ActionToolbarVariant, string> = {
   default: cn(
@@ -23,8 +24,8 @@ const variantStyles: Record<ActionToolbarVariant, string> = {
     "active:bg-zinc-100",
   ),
   primary: cn(
-    "border-transparent text-white shadow-sm",
-    "hover:brightness-110 active:brightness-95",
+    "border-transparent shadow-sm",
+    "hover:opacity-90 active:opacity-95",
   ),
   destructive: cn(
     "border-red-100 shadow-sm",
@@ -44,6 +45,8 @@ export interface ActionToolbarButtonProps
   label: string;
   icon?: LucideIcon;
   variant?: ActionToolbarVariant;
+  /** When `primary`, use repair POS theme colors (`--repair-primary`, etc.). */
+  tone?: ActionToolbarTone;
 }
 
 function ActionToolbarRoot({
@@ -68,14 +71,23 @@ function ActionToolbarButton({
   label,
   icon: Icon,
   variant = "default",
+  tone = "default",
   className,
   type = "button",
   style,
   ...props
 }: ActionToolbarButtonProps) {
+  const isRepairPrimary = variant === "primary" && tone === "repair";
+
   const primaryStyle =
     variant === "primary"
-      ? { backgroundColor: PRIMARY_NAVY, ...style }
+      ? tone === "repair"
+        ? {
+            background: `linear-gradient(135deg, var(--repair-primary) 0%, var(--repair-accent-end) 100%)`,
+            color: "var(--repair-on-primary)",
+            ...style,
+          }
+        : { backgroundColor: PRIMARY_NAVY, color: "#ffffff", ...style }
       : variant === "destructive"
         ? { backgroundColor: CANCEL_BG, color: CANCEL_FG, ...style }
         : style;
@@ -86,11 +98,15 @@ function ActionToolbarButton({
       className={cn(
         "inline-flex min-h-[46px] items-center justify-center gap-2.5 rounded-lg border px-[18px] py-3.5",
         "text-[15px] font-medium leading-none transition-all duration-150",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1f2a44]/30 focus-visible:ring-offset-2",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+        isRepairPrimary
+          ? "focus-visible:ring-[var(--repair-primary)]/35"
+          : "focus-visible:ring-[#1f2a44]/30",
         "disabled:pointer-events-none disabled:opacity-50",
         "[&_svg]:size-[18px] [&_svg]:shrink-0",
         variantStyles[variant],
         variant === "destructive" && "[&_svg]:text-[#b91c1c]",
+        isRepairPrimary && "[&_svg]:text-[var(--repair-on-primary)]",
         className,
       )}
       style={primaryStyle}
