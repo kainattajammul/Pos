@@ -12,6 +12,7 @@ const router = Router();
 
 /** Public — list / create roles (no auth until frontend auth is wired) */
 router.get("/", asyncHandler(RoleController.getAll));
+router.get("/:id", roleIdParamRules, validateRequest, asyncHandler(RoleController.getOne));
 router.post("/", createRoleRules, validateRequest, asyncHandler(RoleController.create));
 router.put("/:id", updateRoleRules, validateRequest, asyncHandler(RoleController.update));
 router.delete("/:id", roleIdParamRules, validateRequest, asyncHandler(RoleController.remove));

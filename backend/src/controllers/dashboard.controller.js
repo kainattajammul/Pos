@@ -1,21 +1,18 @@
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { getDashboardSummary } from "../services/dashboard.service.js";
 import {
   getMockRevenue,
   mockActivities,
-  mockDashboardSummary,
   mockMonthlySales,
   mockRepairReport,
 } from "../data/mockDashboard.js";
 
-/**
- * Dashboard controller — MOCK DATA ONLY.
- * No database queries for analytics, sales, products, or inventory.
- */
 export const DashboardController = {
-  summary(_req, res) {
+  async summary(_req, res) {
+    const data = await getDashboardSummary();
     return ApiResponse.success(res, {
-      message: "Dashboard summary (mock)",
-      data: mockDashboardSummary,
+      message: "Dashboard summary fetched successfully",
+      data,
     });
   },
 

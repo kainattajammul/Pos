@@ -29,16 +29,6 @@ export function StatCard({ data, className }: StatCardProps) {
   const TrendIcon = data.trend === "up" ? TrendingUp : TrendingDown;
 
   useEffect(() => {
-    if (!cardRef.current) return;
-    gsap.from(cardRef.current, {
-      opacity: 0,
-      y: 20,
-      duration: 0.55,
-      ease: "power3.out",
-    });
-  }, []);
-
-  useEffect(() => {
     if (!valueRef.current) return;
     const tween = animateCounter(valueRef.current, data.value);
     return () => {
@@ -50,7 +40,7 @@ export function StatCard({ data, className }: StatCardProps) {
     <Card
       ref={cardRef}
       className={cn(
-        "group border-0 bg-card/90 shadow-[0_8px_30px_rgba(15,23,42,0.06)] backdrop-blur-sm transition-shadow hover:shadow-[0_12px_40px_rgba(15,23,42,0.1)] dark:shadow-none",
+        "group border border-neutral-200/90 bg-white opacity-100 shadow-sm transition-shadow hover:shadow-md dark:border-border dark:bg-card",
         className,
       )}
     >
@@ -62,7 +52,10 @@ export function StatCard({ data, className }: StatCardProps) {
       </CardHeader>
       <CardContent className="flex items-end justify-between gap-3">
         <div>
-          <p ref={valueRef} className="text-3xl font-bold tracking-tight md:text-4xl">
+          <p
+            ref={valueRef}
+            className="text-3xl font-bold tracking-tight text-neutral-900 md:text-4xl dark:text-foreground"
+          >
             0
           </p>
           <p

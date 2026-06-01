@@ -9,6 +9,8 @@ import repairDeviceRoutes from "./repairDevice.routes.js";
 import repairDeviceSeriesRoutes from "./repairDeviceSeries.routes.js";
 import repairDeviceIssueRoutes from "./repairDeviceIssue.routes.js";
 import repairDevicePartRoutes from "./repairDevicePart.routes.js";
+import salesCommissionAgentRoutes from "./salesCommissionAgent.routes.js";
+import repairSearchRoutes from "./repairSearch.routes.js";
 import dashboardRoutes from "./dashboard.routes.js";
 
 const router = Router();
@@ -30,6 +32,8 @@ router.get("/", (_req, res) => {
         repairDeviceSeries: "/api/v1/repair-device-series",
         repairDeviceIssues: "/api/v1/repair-device-issues",
         repairDeviceParts: "/api/v1/repair-device-parts",
+        salesCommissionAgents: "/api/v1/sales-commission-agents",
+        repairs: "/api/v1/repairs",
         dashboard: "/api/v1/dashboard",
       },
     },
@@ -45,6 +49,8 @@ router.use("/repair-devices", repairDeviceRoutes);
 router.use("/repair-device-series", repairDeviceSeriesRoutes);
 router.use("/repair-device-issues", repairDeviceIssueRoutes);
 router.use("/repair-device-parts", repairDevicePartRoutes);
+router.use("/sales-commission-agents", salesCommissionAgentRoutes);
+router.use("/repairs", repairSearchRoutes);
 router.use("/dashboard", dashboardRoutes);
 
 router.get("/health", (_req, res) => {

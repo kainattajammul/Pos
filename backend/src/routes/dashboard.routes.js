@@ -1,11 +1,10 @@
 import { Router } from "express";
 import { DashboardController } from "../controllers/dashboard.controller.js";
-import { authenticate } from "../middleware/auth.middleware.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const router = Router();
 
-router.use(authenticate);
+/** Public — mock analytics only; no sensitive data (matches users list scope). */
 
 router.get("/summary", asyncHandler(DashboardController.summary));
 router.get("/revenue", asyncHandler(DashboardController.revenue));

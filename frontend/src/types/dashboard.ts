@@ -4,6 +4,9 @@ export interface DashboardSummary {
   activeRepairs: number;
   lowStockProducts: number;
   lowStockThreshold: number;
+  totalRoles: number;
+  totalCommissionAgents: number;
+  commissionTodayTotal: string;
 }
 
 export interface RevenuePoint {

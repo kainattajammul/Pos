@@ -3,6 +3,7 @@ import { HTTP } from "../constants/httpStatus.js";
 import { prisma } from "../config/database.js";
 import { UserModel } from "../models/user.model.js";
 import { ShopModel } from "../models/shop.model.js";
+import { normalizeAccessPin } from "../utils/accessPin.js";
 import { hashPassword } from "../utils/password.js";
 import { parseMemberStatus } from "../utils/memberStatus.js";
 
@@ -14,6 +15,7 @@ export async function createUser({
   fullName,
   email,
   password,
+  accessPin,
   phone,
   shopId,
   roleId,
@@ -45,6 +47,7 @@ export async function createUser({
   }
 
   const passwordHash = await hashPassword(password);
+  const normalizedPin = normalizeAccessPin(accessPin, { required: true });
 
   const user = await prisma.$transaction(async (tx) => {
     const createdUser = await tx.user.create({
@@ -52,6 +55,7 @@ export async function createUser({
         fullName,
         email,
         passwordHash,
+        accessPin: normalizedPin,
         phone: phone ?? null,
       },
     });
@@ -85,7 +89,7 @@ export async function createUser({
  */
 export async function updateUser(
   userId,
-  { fullName, email, password, phone },
+  { fullName, email, password, accessPin, phone },
 ) {
   const existing = await UserModel.findById(userId);
   if (!existing) {
@@ -112,6 +116,9 @@ export async function updateUser(
   }
   if (password !== undefined && password !== "") {
     data.passwordHash = await hashPassword(password);
+  }
+  if (accessPin !== undefined && accessPin !== "") {
+    data.accessPin = normalizeAccessPin(accessPin);
   }
 
   if (Object.keys(data).length === 0) {

@@ -8,9 +8,9 @@ import {
 
 async function start() {
   const { prisma } = await import("./config/database.js");
-  if (!prisma.repairDeviceIssue) {
+  if (!prisma.repairDeviceIssue || !prisma.repairDeviceSeries) {
     console.error(
-      "Prisma client is missing RepairDeviceIssue. Stop the server, run: npm run db:generate, then npm run dev",
+      "Prisma client is out of date (missing repair models). Stop the server, run: npm run db:generate && npm run db:migrate:deploy, then npm start",
     );
     process.exit(1);
   }

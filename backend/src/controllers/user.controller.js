@@ -11,12 +11,14 @@ import {
 
 export const UserController = {
   async create(req, res) {
-    const { fullName, email, password, phone, shopId, roleId, status } = req.body;
+    const { fullName, email, password, accessPin, phone, shopId, roleId, status } =
+      req.body;
 
     const user = await createUser({
       fullName,
       email,
       password,
+      accessPin,
       phone: phone || null,
       shopId,
       roleId: roleId ?? null,
@@ -50,12 +52,13 @@ export const UserController = {
   },
 
   async update(req, res) {
-    const { fullName, email, password, phone } = req.body;
+    const { fullName, email, password, accessPin, phone } = req.body;
 
     const user = await updateUser(req.params.id, {
       fullName,
       email,
       password,
+      accessPin,
       phone,
     });
 

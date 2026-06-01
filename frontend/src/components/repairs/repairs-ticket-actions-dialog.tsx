@@ -58,6 +58,12 @@ export function RepairsTicketActionsDialog({
       return;
     }
 
+    if (id === "email-ticket") {
+      onOpenChange(false);
+      onAction?.(id);
+      return;
+    }
+
     if (id === "new-sale") {
       if (typeof window !== "undefined") {
         window.sessionStorage.removeItem("repair-pos-current-ticket");

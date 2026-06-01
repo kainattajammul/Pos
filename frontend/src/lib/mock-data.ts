@@ -16,7 +16,68 @@ export const mockDashboardSummary: DashboardSummary = {
   activeRepairs: 316,
   lowStockProducts: 18,
   lowStockThreshold: 5,
+  totalRoles: 12,
+  totalCommissionAgents: 5,
+  commissionTodayTotal: "850",
 };
+
+/** Stat cards for the dashboard home page (values filled from API summary). */
+export function buildDashboardStatCards(summary: DashboardSummary): StatCardData[] {
+  const salesToday = Number(summary.salesTodayTotal) || 0;
+  const commissionToday = Number(summary.commissionTodayTotal) || 0;
+  const totalRoles = summary.totalRoles ?? 0;
+
+  return [
+    {
+      title: "Total Sales Today",
+      value: salesToday,
+      change: 40,
+      trend: "up",
+      sparkline: [12, 18, 14, 22, 28, 24, 32, 30, 38, 42],
+      accent: "red",
+    },
+    {
+      title: "Total Today Commission",
+      value: Number(summary.commissionTodayTotal) || 0,
+      change: 18,
+      trend: "up",
+      sparkline: [10, 14, 12, 18, 16, 22, 20, 26, 28, 32],
+      accent: "green",
+    },
+    {
+      title: "Stock In Today",
+      value: summary.stockInToday,
+      change: 10,
+      trend: "down",
+      sparkline: [30, 28, 26, 24, 22, 20, 18, 16, 14, 12],
+      accent: "yellow",
+    },
+    {
+      title: "Active Repairs",
+      value: summary.activeRepairs,
+      change: 20,
+      trend: "up",
+      sparkline: [8, 12, 10, 14, 18, 16, 22, 26, 24, 30],
+      accent: "green",
+    },
+    {
+      title: "Total Roles",
+      value: totalRoles,
+      change: 8,
+      trend: "up",
+      sparkline: [6, 8, 7, 10, 9, 11, 12, 11, 13, 14],
+      accent: "blue",
+    },
+    {
+      title: "Revenue Overview",
+      value: 18450,
+      change: 12,
+      trend: "up",
+      sparkline: [20, 22, 25, 24, 28, 30, 32, 35, 38, 40],
+      accent: "blue",
+    },
+  ];
+}
 
 export const mockStatCards: StatCardData[] = [
   {

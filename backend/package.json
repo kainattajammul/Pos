@@ -18,7 +18,12 @@
     "test:roles": "node scripts/test-roles-api.mjs",
     "db:test": "node scripts/test-db-connection.mjs"
   },
-  "keywords": ["pos", "express", "prisma", "supabase"],
+  "keywords": [
+    "pos",
+    "express",
+    "prisma",
+    "supabase"
+  ],
   "license": "MIT",
   "engines": {
     "node": ">=20.0.0"
@@ -33,7 +38,8 @@
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
-    "multer": "^1.4.5-lts.2"
+    "multer": "^1.4.5-lts.2",
+    "ws": "^8.21.0"
   },
   "devDependencies": {
     "prisma": "^6.8.2"

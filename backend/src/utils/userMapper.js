@@ -18,6 +18,7 @@ export function toPublicUser(user) {
     fullName: user.fullName,
     email: user.email,
     phone: user.phone,
+    accessPin: user.accessPin ?? null,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   };

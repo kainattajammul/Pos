@@ -16,11 +16,13 @@ import {
   useRecentActivities,
   useRepairReports,
 } from "@/hooks/use-dashboard";
-import { mockStatCards } from "@/lib/mock-data";
+import { buildDashboardStatCards, mockDashboardSummary } from "@/lib/mock-data";
 
 export default function DashboardPage() {
   const gridRef = useRef<HTMLDivElement>(null);
-  const { isLoading: summaryLoading } = useDashboardSummary();
+  const { data: summary = mockDashboardSummary, isLoading: summaryLoading } =
+    useDashboardSummary();
+  const statCards = buildDashboardStatCards(summary);
   const { data: monthlySales, isLoading: monthlyLoading } = useMonthlySales();
   const { data: activities, isLoading: activitiesLoading } = useRecentActivities();
   const { data: repairReport, isLoading: repairLoading } = useRepairReports();
@@ -31,13 +33,18 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!gridRef.current || initialLoading) return;
     void import("gsap").then(({ default: gsap }) => {
-      gsap.from(gridRef.current!.children, {
-        opacity: 0,
-        y: 18,
-        duration: 0.55,
-        stagger: 0.07,
-        ease: "power3.out",
-      });
+      gsap.fromTo(
+        gridRef.current!.children,
+        { opacity: 0, y: 18 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.55,
+          stagger: 0.07,
+          ease: "power3.out",
+          clearProps: "opacity,transform",
+        },
+      );
     });
   }, [initialLoading]);
 
@@ -48,8 +55,8 @@ export default function DashboardPage() {
   return (
     <ErrorBoundary fallbackTitle="Dashboard failed to load">
       <div ref={gridRef} className="space-y-6">
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {mockStatCards.map((card) => (
+        <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {statCards.map((card) => (
             <StatCard key={card.title} data={card} />
           ))}
         </section>

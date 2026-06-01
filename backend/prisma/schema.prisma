@@ -20,6 +20,7 @@ model User {
   fullName     String   @map("full_name")
   email        String   @unique
   passwordHash String   @map("password_hash")
+  accessPin    String?  @map("access_pin") @db.VarChar(4)
   phone        String?
 
   createdAt    DateTime @default(now()) @map("created_at")
@@ -371,4 +372,19 @@ model RepairDevicePart {
   @@index([repairDeviceId])
 
   @@map("repair_device_parts")
+}
+
+model SalesCommissionAgent {
+  id                     Int      @id @default(autoincrement())
+
+  name                   String
+  email                  String?
+  contactNumber          String?  @map("contact_number")
+  address                String?
+  salesCommissionPercent Decimal? @map("sales_commission_percent") @db.Decimal(5, 2)
+
+  createdAt              DateTime @default(now()) @map("created_at")
+  updatedAt              DateTime @updatedAt @map("updated_at")
+
+  @@map("sales_commission_agents")
 }

@@ -9,6 +9,9 @@ export const mockDashboardSummary = {
   activeRepairs: 316,
   lowStockProducts: 18,
   lowStockThreshold: 5,
+  totalRoles: 12,
+  totalCommissionAgents: 5,
+  commissionTodayTotal: "850",
 };
 
 export const mockMonthlySales = [

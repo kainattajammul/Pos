@@ -8,6 +8,10 @@ export const createUserRules = [
     .withMessage("Password must be at least 8 characters"),
   body("shopId").isInt({ min: 1 }).withMessage("shopId is required and must be a positive integer"),
   body("phone").optional({ values: "null" }).trim(),
+  body("accessPin")
+    .trim()
+    .matches(/^\d{4}$/)
+    .withMessage("Access PIN must be exactly 4 digits"),
   body("roleId").optional().isInt({ min: 1 }).withMessage("roleId must be a positive integer"),
   body("status")
     .optional()
@@ -29,9 +33,14 @@ export const updateUserRules = [
     .isLength({ min: 8 })
     .withMessage("Password must be at least 8 characters"),
   body("phone").optional({ values: "null" }).trim(),
+  body("accessPin")
+    .optional()
+    .trim()
+    .matches(/^\d{4}$/)
+    .withMessage("Access PIN must be exactly 4 digits"),
   body().custom((_value, { req }) => {
-    const { fullName, email, password, phone } = req.body;
-    const hasField = [fullName, email, password, phone].some(
+    const { fullName, email, password, accessPin, phone } = req.body;
+    const hasField = [fullName, email, password, accessPin, phone].some(
       (v) => v !== undefined && v !== null && v !== "",
     );
     if (!hasField) {
