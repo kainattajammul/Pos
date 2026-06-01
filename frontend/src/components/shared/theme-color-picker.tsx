@@ -126,7 +126,6 @@ export function ThemeColorPicker({
         className={cn(
           "flex items-center justify-center rounded border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary",
           layout === "compact" ? "size-5" : "size-7",
-          layout === "vertical" && "mt-auto",
         )}
         aria-label="Add custom color"
         title="Add custom color"

@@ -2,9 +2,9 @@
 
 import { ThemeColorPicker } from "@/components/shared/theme-color-picker";
 
-export function RepairsSideToolbar() {
+export function AppThemeToolbar() {
   return (
-    <aside className="hidden w-11 shrink-0 flex-col items-center overflow-y-auto border-l border-[#E5E7EB] bg-white py-3 xl:flex">
+    <aside className="sticky top-0 hidden h-screen w-11 shrink-0 flex-col items-center overflow-y-auto border-l border-border bg-background py-3 xl:flex">
       <ThemeColorPicker layout="vertical" className="h-full min-h-0" />
     </aside>
   );

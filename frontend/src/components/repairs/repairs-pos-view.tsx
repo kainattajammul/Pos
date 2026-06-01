@@ -62,7 +62,6 @@ import { REPAIR_DEVICES_FALLBACK } from "@/lib/repairs-devices-data";
 import { RepairsTopNav } from "@/components/repairs/repairs-top-nav";
 import { RepairsPosBar } from "@/components/repairs/repairs-pos-bar";
 import { RepairsCartPanel } from "@/components/repairs/repairs-cart-panel";
-import { RepairsSideToolbar } from "@/components/repairs/repairs-side-toolbar";
 import { DeleteUserDialog } from "@/components/users/delete-user-dialog";
 import type { RepairSearchSelection } from "@/types/repair-search";
 
@@ -729,7 +728,6 @@ function RepairsPosContent() {
               onSearchSelect={handleRepairSearchSelect}
             />
           </div>
-          <RepairsSideToolbar />
         </div>
       </RepairTicketProvider>
 

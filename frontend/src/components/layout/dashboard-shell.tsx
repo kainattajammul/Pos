@@ -7,6 +7,7 @@ import { setMobileSidebarOpen, setSidebarCollapsed } from "@/store/ui-slice";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { AppNavbar } from "./app-navbar";
 import { AppSidebar } from "./app-sidebar";
+import { AppThemeToolbar } from "./app-theme-toolbar";
 
 const REPAIRS_ROUTES = ["/repairs"];
 
@@ -68,6 +69,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8">{children}</main>
         </div>
       )}
+
+      <AppThemeToolbar />
     </div>
   );
 }
