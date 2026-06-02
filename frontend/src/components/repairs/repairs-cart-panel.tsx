@@ -25,7 +25,7 @@ export function RepairsCartPanel() {
     customerName,
     selectCustomer,
     ticketConfirmed,
-    cartLineItems,
+    displayCartLineItems,
     cartTotals,
     snapshot,
     selectedCategoryLabel,
@@ -66,12 +66,7 @@ export function RepairsCartPanel() {
   const initials = getCustomerInitials(customerName);
   const isWalkin = isWalkinCustomerName(customerName);
 
-  const displayRows =
-    ticketConfirmed && cartLineItems.length > 0
-      ? cartLineItems
-      : ticketConfirmed
-        ? []
-        : null;
+  const displayRows = displayCartLineItems;
 
   const emptyRowCount =
     displayRows === null
@@ -79,6 +74,8 @@ export function RepairsCartPanel() {
       : displayRows.length < VISIBLE_CART_LINES
         ? VISIBLE_CART_LINES - displayRows.length
         : 0;
+
+  const hasCartItems = (displayRows?.length ?? 0) > 0;
 
   return (
     <>
@@ -251,31 +248,25 @@ export function RepairsCartPanel() {
             <div className="flex justify-between">
               <dt>Total Items</dt>
               <dd className="font-medium text-[#111827]">
-                {ticketConfirmed ? cartTotals.itemCount : 0}
+                {hasCartItems ? cartTotals.itemCount : 0}
               </dd>
             </div>
             <div className="flex justify-between">
               <dt>Sub Total</dt>
               <dd className="font-medium text-[#111827]">
-                {ticketConfirmed
-                  ? formatCartMoney(cartTotals.subTotal)
-                  : formatCartMoney(0)}
+                {hasCartItems ? formatCartMoney(cartTotals.subTotal) : formatCartMoney(0)}
               </dd>
             </div>
             <div className="flex justify-between">
               <dt>Discount</dt>
               <dd className="font-medium text-[#111827]">
-                {ticketConfirmed
-                  ? formatCartMoney(cartTotals.discount)
-                  : formatCartMoney(0)}
+                {hasCartItems ? formatCartMoney(cartTotals.discount) : formatCartMoney(0)}
               </dd>
             </div>
             <div className="flex justify-between">
               <dt>Tax</dt>
               <dd className="font-medium text-[#111827]">
-                {ticketConfirmed
-                  ? formatCartMoney(cartTotals.tax)
-                  : formatCartMoney(0)}
+                {hasCartItems ? formatCartMoney(cartTotals.tax) : formatCartMoney(0)}
               </dd>
             </div>
             </dl>
@@ -285,9 +276,7 @@ export function RepairsCartPanel() {
             <span className="text-base font-semibold text-[#111827]">Total</span>
             <div className="flex items-center gap-2">
               <span className="text-xl font-bold text-[#111827]">
-                {ticketConfirmed
-                  ? formatCartMoney(cartTotals.total)
-                  : formatCartMoney(0)}
+                {hasCartItems ? formatCartMoney(cartTotals.total) : formatCartMoney(0)}
               </span>
               <span className="text-[#9CA3AF]" aria-hidden>
                 ▲

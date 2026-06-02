@@ -13,9 +13,12 @@ import { WALKIN_CUSTOMER_NAME } from "@/lib/repairs-customer-data";
 import {
   buildRepairCartLineItems,
   computeRepairCartTotals,
+  mergeRepairAndAddonCartLines,
+  sumCartLines,
   type RepairCartLineItem,
   type RepairCartTotals,
 } from "@/lib/repair-cart";
+import type { RepairAccessoryProduct } from "@/lib/repairs-products-data";
 import {
   REPAIR_DETAILS_DEFAULTS,
   type RepairDetailsFormValues,
@@ -41,7 +44,11 @@ interface RepairTicketContextValue {
   selectedCategoryLabel: string | null;
   ticketConfirmed: boolean;
   cartLineItems: RepairCartLineItem[];
+  addonCartLineItems: RepairCartLineItem[];
+  displayCartLineItems: RepairCartLineItem[] | null;
   cartTotals: RepairCartTotals;
+  getAddonProductQtyInCart: (productId: string) => number;
+  addProductToBooking: (product: RepairAccessoryProduct, qty: number) => void;
   confirmTicket: (values: RepairDetailsFormValues) => void;
   pdfDialogOpen: boolean;
   pdfKind: RepairTicketPdfKind | null;
@@ -86,6 +93,7 @@ export function RepairTicketProvider({
     useState<RepairDetailsFormValues>(REPAIR_DETAILS_DEFAULTS);
   const [ticketConfirmed, setTicketConfirmed] = useState(false);
   const [cartLineItems, setCartLineItems] = useState<RepairCartLineItem[]>([]);
+  const [addonCartLineItems, setAddonCartLineItems] = useState<RepairCartLineItem[]>([]);
 
   const selectCustomer = useCallback((customer: CustomerTableRow) => {
     setSelectedCustomer(customer);
@@ -148,9 +156,72 @@ export function RepairTicketProvider({
     ],
   );
 
-  const cartTotals = useMemo(
-    () => computeRepairCartTotals(cartLineItems, detailsForm),
-    [cartLineItems, detailsForm],
+  const displayCartLineItems = useMemo(
+    () => mergeRepairAndAddonCartLines(cartLineItems, addonCartLineItems, ticketConfirmed),
+    [cartLineItems, addonCartLineItems, ticketConfirmed],
+  );
+
+  const cartTotals = useMemo(() => {
+    const lines = displayCartLineItems ?? [];
+    if (!ticketConfirmed && addonCartLineItems.length > 0) {
+      return sumCartLines(lines);
+    }
+    if (ticketConfirmed && addonCartLineItems.length > 0) {
+      return computeRepairCartTotals(
+        [...cartLineItems, ...addonCartLineItems],
+        detailsForm,
+      );
+    }
+    return computeRepairCartTotals(cartLineItems, detailsForm);
+  }, [
+    displayCartLineItems,
+    ticketConfirmed,
+    addonCartLineItems,
+    cartLineItems,
+    detailsForm,
+  ]);
+
+  const getAddonProductQtyInCart = useCallback(
+    (productId: string) => {
+      const line = addonCartLineItems.find((l) => l.id === `product-${productId}`);
+      return line?.qty ?? 0;
+    },
+    [addonCartLineItems],
+  );
+
+  const addProductToBooking = useCallback(
+    (product: RepairAccessoryProduct, qty: number) => {
+      if (qty < 1) return;
+      const lineId = `product-${product.id}`;
+      setAddonCartLineItems((prev) => {
+        const existing = prev.find((l) => l.id === lineId);
+        if (existing) {
+          const nextQty = existing.qty + qty;
+          return prev.map((l) =>
+            l.id === lineId
+              ? {
+                  ...l,
+                  qty: nextQty,
+                  total: nextQty * l.price,
+                }
+              : l,
+          );
+        }
+        return [
+          ...prev,
+          {
+            id: lineId,
+            kind: "product",
+            qty,
+            name: product.name,
+            price: product.price,
+            tax: 0,
+            total: product.price * qty,
+          },
+        ];
+      });
+    },
+    [],
   );
 
   const confirmTicket = useCallback(
@@ -191,7 +262,11 @@ export function RepairTicketProvider({
       selectedCategoryLabel,
       ticketConfirmed,
       cartLineItems,
+      addonCartLineItems,
+      displayCartLineItems,
       cartTotals,
+      getAddonProductQtyInCart,
+      addProductToBooking,
       confirmTicket,
       pdfDialogOpen,
       pdfKind,
@@ -207,7 +282,11 @@ export function RepairTicketProvider({
       selectedCategoryLabel,
       ticketConfirmed,
       cartLineItems,
+      addonCartLineItems,
+      displayCartLineItems,
       cartTotals,
+      getAddonProductQtyInCart,
+      addProductToBooking,
       confirmTicket,
       pdfDialogOpen,
       pdfKind,

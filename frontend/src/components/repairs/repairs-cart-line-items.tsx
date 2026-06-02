@@ -22,6 +22,7 @@ const KIND_LABEL: Record<RepairCartLineKind, string> = {
   issue: "Issue",
   part: "Part",
   service: "Service",
+  product: "Product",
 };
 
 function LineKindLabel({ kind }: { kind: RepairCartLineKind }) {
@@ -96,8 +97,8 @@ export function RepairsCartLineItems({
                     >
                       {i === 0 ? (
                         <p className="text-xs leading-relaxed text-[#9CA3AF]">
-                          Confirm the repair ticket to show selected issues and
-                          parts.
+                          Confirm a repair ticket or add products from the
+                          Products tab to see items here.
                         </p>
                       ) : (
                         <div className="h-2 w-full max-w-[200px] rounded-full bg-[#F3F4F6]" />

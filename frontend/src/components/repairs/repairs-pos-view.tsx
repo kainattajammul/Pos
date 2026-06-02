@@ -75,6 +75,11 @@ import {
 import { RepairsTopNav } from "@/components/repairs/repairs-top-nav";
 import { RepairsPosBar } from "@/components/repairs/repairs-pos-bar";
 import { RepairsCartPanel } from "@/components/repairs/repairs-cart-panel";
+import { RepairsUnlockingPanel } from "@/components/repairs/repairs-unlocking-panel";
+import { RepairsProductsPanel } from "@/components/repairs/repairs-products-panel";
+import { RepairsTradeInPanel } from "@/components/repairs/repairs-tradein-panel";
+import { RepairsMiscPanel } from "@/components/repairs/repairs-misc-panel";
+import { RepairsPosTabPlaceholder } from "@/components/repairs/repairs-pos-tab-placeholder";
 import { DeleteUserDialog } from "@/components/users/delete-user-dialog";
 import type { RepairSearchSelection } from "@/types/repair-search";
 
@@ -821,66 +826,81 @@ function RepairsPosContent() {
         <div className="flex min-h-0 flex-1 overflow-hidden">
           <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden lg:flex-row">
             <RepairsCartPanel />
-            <RepairsWorkflowWithConfirm
-              categories={categories}
-              categoriesLoading={categoriesLoading}
-              selectedCategory={selectedCategory}
-              selectedCategoryId={selectedCategoryId}
-              activeStep={activeStep}
-              selectedManufacturerId={selectedManufacturerId}
-              selectedDeviceId={selectedDeviceId}
-              devices={devices}
-              devicesLoading={devicesLoading}
-              furthestStep={furthestStep}
-              onStepChange={handleStepChange}
-              onSelectCategory={handleSelectCategory}
-              onEditCategory={openEditCategory}
-              onDeleteCategory={handleDeleteCategory}
-              manufacturers={manufacturers}
-              manufacturersLoading={manufacturersLoading}
-              onSelectManufacturer={handleSelectManufacturer}
-              onEditManufacturer={openEditManufacturer}
-              onDeleteManufacturer={handleDeleteManufacturer}
-              onCreateSeries={openCreateSeries}
-              seriesModeByManufacturer={seriesModeByManufacturer}
-              onSeriesModeChange={handleSeriesModeChange}
-              deviceSeries={deviceSeries}
-              deviceSeriesLoading={deviceSeriesLoading}
-              onCreateSeriesFromDevices={() => {
-                const m = manufacturers.find(
-                  (item) => item.id === selectedManufacturerId && !item.isAdd,
-                );
-                if (m) openCreateSeries(m);
-              }}
-              onEditSeries={openEditSeries}
-              onDeleteSeries={handleDeleteSeries}
-              onAssignDevicesToSeries={setAssignSeriesTarget}
-              onRemoveDeviceFromSeries={handleRemoveDeviceFromSeries}
-              onAddDeviceToSeries={openAddDevice}
-              onSelectDevice={handleSelectDevice}
-              onAddDevice={() => openAddDevice()}
-              onEditDevice={openEditDevice}
-              onDeleteDevice={handleDeleteDevice}
-              problems={problems}
-              problemsLoading={problemsLoading}
-              selectedProblemIds={selectedProblemIds}
-              onToggleProblem={handleToggleProblem}
-              onProblemsNext={handleProblemsNext}
-              onAddIssue={openAddIssue}
-              onEditIssue={openEditIssue}
-              onDeleteIssue={handleDeleteIssue}
-              parts={parts}
-              partsLoading={partsLoading}
-              selectedPartIds={selectedPartIds}
-              onTogglePart={handleTogglePart}
-              onPartsNext={handlePartsNext}
-              onAddPart={openAddPart}
-              onEditPart={openEditPart}
-              onDeletePart={handleDeletePart}
-              initialRepairCharges={initialRepairCharges}
-              shopId={shopId}
-              onSearchSelect={handleRepairSearchSelect}
-            />
+            {activeTab === "Repairs" ? (
+              <RepairsWorkflowWithConfirm
+                categories={categories}
+                categoriesLoading={categoriesLoading}
+                selectedCategory={selectedCategory}
+                selectedCategoryId={selectedCategoryId}
+                activeStep={activeStep}
+                selectedManufacturerId={selectedManufacturerId}
+                selectedDeviceId={selectedDeviceId}
+                devices={devices}
+                devicesLoading={devicesLoading}
+                furthestStep={furthestStep}
+                onStepChange={handleStepChange}
+                onSelectCategory={handleSelectCategory}
+                onEditCategory={openEditCategory}
+                onDeleteCategory={handleDeleteCategory}
+                manufacturers={manufacturers}
+                manufacturersLoading={manufacturersLoading}
+                onSelectManufacturer={handleSelectManufacturer}
+                onEditManufacturer={openEditManufacturer}
+                onDeleteManufacturer={handleDeleteManufacturer}
+                onCreateSeries={openCreateSeries}
+                seriesModeByManufacturer={seriesModeByManufacturer}
+                onSeriesModeChange={handleSeriesModeChange}
+                deviceSeries={deviceSeries}
+                deviceSeriesLoading={deviceSeriesLoading}
+                onCreateSeriesFromDevices={() => {
+                  const m = manufacturers.find(
+                    (item) => item.id === selectedManufacturerId && !item.isAdd,
+                  );
+                  if (m) openCreateSeries(m);
+                }}
+                onEditSeries={openEditSeries}
+                onDeleteSeries={handleDeleteSeries}
+                onAssignDevicesToSeries={setAssignSeriesTarget}
+                onRemoveDeviceFromSeries={handleRemoveDeviceFromSeries}
+                onAddDeviceToSeries={openAddDevice}
+                onSelectDevice={handleSelectDevice}
+                onAddDevice={() => openAddDevice()}
+                onEditDevice={openEditDevice}
+                onDeleteDevice={handleDeleteDevice}
+                problems={problems}
+                problemsLoading={problemsLoading}
+                selectedProblemIds={selectedProblemIds}
+                onToggleProblem={handleToggleProblem}
+                onProblemsNext={handleProblemsNext}
+                onAddIssue={openAddIssue}
+                onEditIssue={openEditIssue}
+                onDeleteIssue={handleDeleteIssue}
+                parts={parts}
+                partsLoading={partsLoading}
+                selectedPartIds={selectedPartIds}
+                onTogglePart={handleTogglePart}
+                onPartsNext={handlePartsNext}
+                onAddPart={openAddPart}
+                onEditPart={openEditPart}
+                onDeletePart={handleDeletePart}
+                initialRepairCharges={initialRepairCharges}
+                shopId={shopId}
+                onSearchSelect={handleRepairSearchSelect}
+              />
+            ) : activeTab === "Unlocking" ? (
+              <RepairsUnlockingPanel />
+            ) : activeTab === "Products" ? (
+              <RepairsProductsPanel
+                selectedManufacturerId={selectedManufacturerId}
+                manufacturers={manufacturers}
+              />
+            ) : activeTab === "Trade In" ? (
+              <RepairsTradeInPanel />
+            ) : activeTab === "Miscellaneous" ? (
+              <RepairsMiscPanel />
+            ) : (
+              <RepairsPosTabPlaceholder tab={activeTab} />
+            )}
           </div>
         </div>
       </RepairTicketProvider>

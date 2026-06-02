@@ -2,7 +2,7 @@ import type { RepairPart } from "@/lib/repairs-parts-data";
 import type { RepairProblem } from "@/lib/repairs-problems-data";
 import type { RepairDetailsFormValues } from "@/lib/repairs-details-data";
 
-export type RepairCartLineKind = "issue" | "part" | "service";
+export type RepairCartLineKind = "issue" | "part" | "service" | "product";
 
 export interface RepairCartLineItem {
   id: string;
@@ -106,4 +106,30 @@ export function computeRepairCartTotals(
 
 export function formatCartMoney(amount: number): string {
   return `$${amount.toFixed(2)}`;
+}
+
+export function sumCartLines(lines: RepairCartLineItem[]): RepairCartTotals {
+  const itemCount = lines.reduce((sum, line) => sum + line.qty, 0);
+  const subTotal = lines.reduce((sum, line) => sum + line.total, 0);
+  const tax = lines.reduce((sum, line) => sum + line.tax, 0);
+  return {
+    itemCount,
+    subTotal,
+    discount: 0,
+    tax,
+    total: subTotal,
+  };
+}
+
+export function mergeRepairAndAddonCartLines(
+  repairLines: RepairCartLineItem[],
+  addonLines: RepairCartLineItem[],
+  ticketConfirmed: boolean,
+): RepairCartLineItem[] | null {
+  const repair = ticketConfirmed ? repairLines : [];
+  const combined = [...repair, ...addonLines];
+  if (combined.length === 0) {
+    return ticketConfirmed ? [] : null;
+  }
+  return combined;
 }
