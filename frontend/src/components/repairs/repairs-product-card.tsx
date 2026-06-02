@@ -115,8 +115,8 @@ export function RepairsProductCard({ product, qtyInCart, onAdd }: RepairsProduct
         </p>
 
         {canAdd ? (
-          <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
-            <div className="flex w-full items-center justify-center rounded-md border border-[#E5E7EB] bg-[#F9FAFB] sm:w-auto sm:justify-start">
+          <div className="mt-4 flex flex-col gap-2">
+            <div className="flex w-full items-center justify-center rounded-md border border-[#E5E7EB] bg-[#F9FAFB]">
               <button
                 type="button"
                 className="flex size-9 items-center justify-center text-[#6B7280] hover:bg-white hover:text-[#111827] disabled:opacity-40"
@@ -141,12 +141,14 @@ export function RepairsProductCard({ product, qtyInCart, onAdd }: RepairsProduct
             <Button
               type="button"
               onClick={handleAdd}
-              className="h-9 w-full flex-1 border-0 text-xs font-semibold text-(--repair-on-primary) shadow-sm hover:opacity-90 sm:w-auto"
+              className="h-9 w-full border-0 px-3 text-xs font-semibold text-(--repair-on-primary) shadow-sm hover:opacity-90"
               style={{
                 background: `linear-gradient(135deg, var(--repair-primary) 0%, var(--repair-accent-end) 100%)`,
               }}
             >
-              {qtyInCart > 0 ? `Add more (${qtyInCart} in cart)` : "Add to booking"}
+              <span className="block truncate">
+                {qtyInCart > 0 ? `Add more (${qtyInCart} in cart)` : "Add to booking"}
+              </span>
             </Button>
           </div>
         ) : (
