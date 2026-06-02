@@ -329,16 +329,16 @@ export function RepairsWorkflowPanel({
               onAssignDevices={onAssignDevicesToSeries}
             />
           ) : (
-            <RepairsDevicesStep
-              devices={devices}
-              categoryId={selectedCategoryId}
-              selectedDeviceId={selectedDeviceId}
+          <RepairsDevicesStep
+            devices={devices}
+            categoryId={selectedCategoryId}
+            selectedDeviceId={selectedDeviceId}
               devicesLoading={devicesLoading}
-              onSelectDevice={onSelectDevice}
+            onSelectDevice={onSelectDevice}
               onAddDevice={onAddDevice}
               onEditDevice={onEditDevice}
               onDeleteDevice={onDeleteDevice}
-            />
+          />
           )
         ) : activeStep === "Problems" ? (
           selectedDeviceId ? (

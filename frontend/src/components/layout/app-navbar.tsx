@@ -28,6 +28,7 @@ const routeTitles: Record<string, string> = {
   "/roles/create": "Add Role",
   "/customer": "Customers",
   "/products": "Products",
+  "/inventory/products": "Manage Products",
   "/repairs": "Repairs",
   "/settings": "Settings",
 };
@@ -40,6 +41,8 @@ function resolveNavbarTitle(pathname: string): string {
   if (pathname.endsWith("/edit")) return "Edit user";
   if (pathname.startsWith("/users/create")) return "Add user";
   if (pathname.startsWith("/users/")) return "Users";
+  if (pathname.startsWith("/inventory/products")) return "Manage Products";
+  if (pathname.startsWith("/inventory")) return "Manage Inventory";
   return "Dashboard";
 }
 

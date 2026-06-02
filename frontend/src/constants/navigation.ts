@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { MANAGE_INVENTORY_CHILDREN } from "@/constants/inventory-nav";
 import {
   BarChart3,
   Boxes,
@@ -16,7 +17,8 @@ import {
 
 export interface NavChild {
   title: string;
-  href: string;
+  href?: string;
+  children?: NavChild[];
 }
 
 export interface NavItem {
@@ -76,12 +78,14 @@ export const MAIN_NAV: NavItem[] = [
   },
   { title: "Reports", href: "/reports", icon: BarChart3 },
   {
+    title: "Manage Inventory",
+    icon: Boxes,
+    children: MANAGE_INVENTORY_CHILDREN,
+  },
+  {
     title: "Stock",
     icon: Boxes,
-    children: [
-      { title: "Inventory", href: "/inventory" },
-      { title: "Repairs", href: "/repairs" },
-    ],
+    children: [{ title: "Repairs", href: "/repairs" }],
   },
   { title: "Expenses", href: "/expenses", icon: Receipt },
   { title: "Settings", href: "/settings", icon: Settings },
