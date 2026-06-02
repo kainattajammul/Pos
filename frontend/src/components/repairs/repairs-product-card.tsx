@@ -68,11 +68,11 @@ export function RepairsProductCard({ product, qtyInCart, onAdd }: RepairsProduct
     <article
       className={cn(
         "flex h-full flex-col overflow-hidden rounded-xl border border-[#E5E7EB] bg-white shadow-sm transition-all",
-        canAdd && "hover:border-[var(--repair-primary)] hover:shadow-md",
+        canAdd && "hover:border-(--repair-primary) hover:shadow-md",
         outOfStock && "opacity-[0.92]",
       )}
     >
-      <div className="relative flex h-40 items-center justify-center bg-[#F3F4F6] p-4">
+      <div className="relative flex h-36 items-center justify-center bg-[#F3F4F6] p-3 sm:h-40 sm:p-4">
         {product.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -87,7 +87,7 @@ export function RepairsProductCard({ product, qtyInCart, onAdd }: RepairsProduct
               background: `linear-gradient(135deg, color-mix(in srgb, var(--repair-primary) 18%, white) 0%, color-mix(in srgb, var(--repair-accent-end) 12%, white) 100%)`,
             }}
           >
-            <Icon className="size-8 text-[var(--repair-primary)]" strokeWidth={1.5} aria-hidden />
+            <Icon className="size-8 text-(--repair-primary)" strokeWidth={1.5} aria-hidden />
           </div>
         )}
         <span
@@ -100,23 +100,23 @@ export function RepairsProductCard({ product, qtyInCart, onAdd }: RepairsProduct
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col p-4">
+      <div className="flex flex-1 flex-col p-3.5 sm:p-4">
         <p className="text-[11px] font-medium uppercase tracking-wide text-[#9CA3AF]">
           {product.category}
         </p>
-        <h3 className="mt-1 text-sm font-semibold leading-snug text-[#111827]">
+        <h3 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug text-[#111827]">
           {product.name}
         </h3>
         <p className="mt-1.5 line-clamp-2 flex-1 text-xs leading-relaxed text-[#6B7280]">
           {product.description}
         </p>
-        <p className="mt-3 text-lg font-bold tabular-nums text-[#111827]">
+        <p className="mt-2.5 text-base font-bold tabular-nums text-[#111827] sm:mt-3 sm:text-lg">
           {formatCartMoney(product.price)}
         </p>
 
         {canAdd ? (
-          <div className="mt-4 flex items-center gap-2">
-            <div className="flex items-center rounded-md border border-[#E5E7EB] bg-[#F9FAFB]">
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
+            <div className="flex w-full items-center justify-center rounded-md border border-[#E5E7EB] bg-[#F9FAFB] sm:w-auto sm:justify-start">
               <button
                 type="button"
                 className="flex size-9 items-center justify-center text-[#6B7280] hover:bg-white hover:text-[#111827] disabled:opacity-40"
@@ -126,7 +126,7 @@ export function RepairsProductCard({ product, qtyInCart, onAdd }: RepairsProduct
               >
                 <Minus className="size-4" />
               </button>
-              <span className="min-w-[2rem] text-center text-sm font-semibold tabular-nums text-[#111827]">
+              <span className="min-w-8 text-center text-sm font-semibold tabular-nums text-[#111827]">
                 {qty}
               </span>
               <button
@@ -141,7 +141,7 @@ export function RepairsProductCard({ product, qtyInCart, onAdd }: RepairsProduct
             <Button
               type="button"
               onClick={handleAdd}
-              className="h-9 flex-1 border-0 text-xs font-semibold text-[var(--repair-on-primary)] shadow-sm hover:opacity-90"
+              className="h-9 w-full flex-1 border-0 text-xs font-semibold text-(--repair-on-primary) shadow-sm hover:opacity-90 sm:w-auto"
               style={{
                 background: `linear-gradient(135deg, var(--repair-primary) 0%, var(--repair-accent-end) 100%)`,
               }}

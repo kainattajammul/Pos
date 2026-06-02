@@ -73,7 +73,7 @@ export function RepairsProductsPanel({
               background: `linear-gradient(135deg, var(--repair-primary) 0%, var(--repair-accent-end) 100%)`,
             }}
           >
-            <Package className="size-5 text-[var(--repair-on-primary)]" aria-hidden />
+            <Package className="size-5 text-(--repair-on-primary)" aria-hidden />
           </div>
           <div className="min-w-0 flex-1">
             <h2 className="text-lg font-semibold text-[#111827]">Related Products</h2>
@@ -82,7 +82,7 @@ export function RepairsProductsPanel({
               Products are optional add-ons to your repair booking.
             </p>
             {manufacturer ? (
-              <p className="mt-2 text-xs font-medium text-[var(--repair-primary)]">
+              <p className="mt-2 text-xs font-medium text-(--repair-primary)">
                 Showing accessories compatible with {manufacturer.name}
               </p>
             ) : (
@@ -104,7 +104,7 @@ export function RepairsProductsPanel({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search products..."
-              className="h-10 w-full rounded-md border border-[#E5E7EB] bg-white pr-3 pl-9 text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:border-[var(--repair-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--repair-primary)]"
+              className="h-10 w-full rounded-md border border-[#E5E7EB] bg-white pr-3 pl-9 text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:border-(--repair-primary) focus:outline-none focus:ring-1 focus:ring-(--repair-primary)"
             />
           </div>
         </div>
@@ -118,7 +118,7 @@ export function RepairsProductsPanel({
               className={cn(
                 "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
                 categoryFilter === cat
-                  ? "border-[var(--repair-primary)] bg-[color-mix(in_srgb,var(--repair-primary)_12%,white)] text-[var(--repair-primary)]"
+                  ? "border-(--repair-primary) bg-[color-mix(in_srgb,var(--repair-primary)_12%,white)] text-(--repair-primary)"
                   : "border-[#E5E7EB] bg-white text-[#6B7280] hover:border-[#D1D5DB]",
               )}
             >
@@ -133,7 +133,7 @@ export function RepairsProductsPanel({
             <p className="mt-1 text-xs text-[#6B7280]">Try a different search or category.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
             {filteredProducts.map((product) => (
               <RepairsProductCard
                 key={product.id}
