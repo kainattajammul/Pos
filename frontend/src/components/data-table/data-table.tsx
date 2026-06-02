@@ -2,6 +2,7 @@
 
 import { flexRender, type Table as TanstackTable } from "@tanstack/react-table";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -24,11 +25,16 @@ const PAGE_SIZE_OPTIONS = [10, 25, 50, 100] as const;
 
 export interface DataTableProps<TData> {
   table: TanstackTable<TData>;
-  /** Total row count before client pagination (for “Showing x–y of z”) */
+  /** Total row count before client pagination (for "Showing x–y of z") */
   totalFilteredRows: number;
   /** Column ids that allow wrapping (e.g. multiline cells) */
   wrapColumnIds?: readonly string[];
   emptyMessage?: string;
+  /**
+   * Custom content to render inside the "actions" column header cell.
+   * Used to inject the ColumnCustomizer gear icon.
+   */
+  actionsHeaderContent?: ReactNode;
 }
 
 export function DataTable<TData>({
@@ -36,6 +42,7 @@ export function DataTable<TData>({
   totalFilteredRows,
   wrapColumnIds = [],
   emptyMessage = "No results match your search.",
+  actionsHeaderContent,
 }: DataTableProps<TData>) {
   const pageIndex = table.getState().pagination.pageIndex;
   const pageSize = table.getState().pagination.pageSize;
@@ -58,9 +65,11 @@ export function DataTable<TData>({
                     key={header.id}
                     className="h-11 px-3 text-xs font-semibold uppercase tracking-wide text-neutral-600 first:pl-4 last:pr-4"
                   >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
+                    {header.id === "actions" && actionsHeaderContent
+                      ? actionsHeaderContent
+                      : header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 ))}
               </TableRow>

@@ -503,12 +503,12 @@ function RepairsPosContent() {
     }
 
     if (deleteTarget.type === "manufacturer") {
-      const manufacturer = deleteTarget.item;
-      if (!manufacturer.dbId) return;
+    const manufacturer = deleteTarget.item;
+    if (!manufacturer.dbId) return;
 
-      deleteManufacturer.mutate(manufacturer.dbId, {
-        onSuccess: () => {
-          setDeleteTarget(null);
+    deleteManufacturer.mutate(manufacturer.dbId, {
+      onSuccess: () => {
+        setDeleteTarget(null);
           const modeKey = getManufacturerSeriesModeKey(manufacturer);
           setSeriesModeByManufacturer((prev) => {
             if (!(modeKey in prev)) return prev;
@@ -517,14 +517,14 @@ function RepairsPosContent() {
             writeSeriesModeByManufacturer(next);
             return next;
           });
-          if (selectedManufacturerId === manufacturer.id) {
-            setSelectedManufacturerId(null);
-            setSelectedDeviceId(null);
-            setSelectedProblemIds([]);
-            setSelectedPartIds([]);
-            setActiveStep("Manufacturer");
-            setFurthestStep("Manufacturer");
-          }
+        if (selectedManufacturerId === manufacturer.id) {
+          setSelectedManufacturerId(null);
+          setSelectedDeviceId(null);
+          setSelectedProblemIds([]);
+          setSelectedPartIds([]);
+          setActiveStep("Manufacturer");
+          setFurthestStep("Manufacturer");
+        }
         },
       });
       return;
@@ -808,8 +808,8 @@ function RepairsPosContent() {
 
   return (
     <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[#F8FAFC]">
-      <RepairsTopNav />
-      <RepairsPosBar activeTab={activeTab} onTabChange={setActiveTab} />
+        <RepairsTopNav />
+        <RepairsPosBar activeTab={activeTab} onTabChange={setActiveTab} />
 
       <RepairTicketProvider
         selectedCategoryId={selectedCategoryId}
