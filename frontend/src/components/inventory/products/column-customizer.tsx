@@ -3,6 +3,7 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -20,7 +21,7 @@ export interface ColumnMeta {
 
 interface ColumnCustomizerProps {
   columns: ColumnMeta[];
-  /** ordered list of currently visible + hidden column ids */
+  /** Customizable column ids only (excludes select/actions), in display order */
   columnOrder: string[];
   /** set of hidden column ids */
   hiddenColumns: Set<string>;
@@ -43,13 +44,15 @@ export function ColumnCustomizer({
   const panelRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
-  // sync draft when opening
+  const customizableIds = useMemo(() => new Set(columns.map((c) => c.id)), [columns]);
+
+  // sync draft when opening — only customizable column ids
   useEffect(() => {
     if (open) {
-      setDraftOrder([...columnOrder]);
+      setDraftOrder(columnOrder.filter((id) => customizableIds.has(id)));
       setDraftHidden(new Set(hiddenColumns));
     }
-  }, [open, columnOrder, hiddenColumns]);
+  }, [open, columnOrder, hiddenColumns, customizableIds]);
 
   // close on outside click
   useEffect(() => {
@@ -68,18 +71,42 @@ export function ColumnCustomizer({
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
 
-  // --- drag-and-drop ---
+  // --- drag-and-drop (reorder on drop only; drag starts from grip handle) ---
   const dragIdRef = useRef<string | null>(null);
+  const dragGhostRef = useRef<HTMLDivElement | null>(null);
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
 
   const handleDragStart = useCallback(
-    (e: DragEvent<HTMLLIElement>, id: string) => {
+    (e: DragEvent<HTMLButtonElement>, id: string, label: string) => {
       dragIdRef.current = id;
       e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", id);
+
+      const ghost = document.createElement("div");
+      ghost.textContent = label;
+      ghost.className =
+        "rounded border border-primary/40 bg-white px-2 py-1 text-sm font-medium text-neutral-800 shadow-md";
+      ghost.style.position = "fixed";
+      ghost.style.top = "-1000px";
+      ghost.style.left = "-1000px";
+      ghost.style.pointerEvents = "none";
+      document.body.appendChild(ghost);
+      dragGhostRef.current = ghost;
+      e.dataTransfer.setDragImage(ghost, 8, 16);
     },
     [],
   );
 
   const handleDragOver = useCallback((e: DragEvent<HTMLLIElement>, id: string) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    const dragId = dragIdRef.current;
+    if (dragId && dragId !== id) {
+      setDragOverId(id);
+    }
+  }, []);
+
+  const handleDrop = useCallback((e: DragEvent<HTMLLIElement>, id: string) => {
     e.preventDefault();
     const dragId = dragIdRef.current;
     if (!dragId || dragId === id) return;
@@ -92,10 +119,16 @@ export function ColumnCustomizer({
       next.splice(to, 0, dragId);
       return next;
     });
+    setDragOverId(null);
   }, []);
 
   const handleDragEnd = useCallback(() => {
     dragIdRef.current = null;
+    setDragOverId(null);
+    if (dragGhostRef.current) {
+      dragGhostRef.current.remove();
+      dragGhostRef.current = null;
+    }
   }, []);
 
   // ordered list of non-fixed columns for the panel
@@ -159,28 +192,36 @@ export function ColumnCustomizer({
       {open && (
         <div
           ref={panelRef}
-          className="absolute right-0 top-full z-50 mt-1 w-52 rounded-lg border-2 border-primary/70 bg-white shadow-lg"
+          className="absolute right-0 top-full z-50 mt-1 w-52 overflow-hidden rounded-lg bg-white shadow-[0_14px_32px_rgba(15,23,42,0.18)]"
         >
-          {/* scrollable rows */}
-          <ul className="max-h-60 overflow-y-auto px-1 py-1.5">
+          <ul className="scrollbar-hide max-h-60 overflow-y-auto px-1 py-1.5">
             {orderedMeta.map((col) => {
               const visible = !draftHidden.has(col.id);
               return (
                 <li
                   key={col.id}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, col.id)}
                   onDragOver={(e) => handleDragOver(e, col.id)}
-                  onDragEnd={handleDragEnd}
+                  onDragLeave={() => {
+                    setDragOverId((current) => (current === col.id ? null : current));
+                  }}
+                  onDrop={(e) => handleDrop(e, col.id)}
                   className={cn(
-                    "group flex cursor-grab items-center gap-2 rounded px-2 py-1.5 text-sm transition-colors select-none",
-                    "hover:bg-primary/10 active:cursor-grabbing",
+                    "group flex items-center gap-2 rounded px-2 py-1.5 text-sm transition-colors",
+                    dragOverId === col.id && "bg-primary/10",
+                    "hover:bg-primary/5",
                   )}
                 >
-                  {/* drag handle */}
-                  <GripVertical className="size-3.5 shrink-0 text-neutral-300 group-hover:text-primary" />
+                  <button
+                    type="button"
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, col.id, col.label)}
+                    onDragEnd={handleDragEnd}
+                    aria-label={`Drag to reorder ${col.label}`}
+                    className="shrink-0 cursor-grab rounded p-0.5 text-neutral-300 transition-colors hover:text-primary active:cursor-grabbing"
+                  >
+                    <GripVertical className="size-3.5" />
+                  </button>
 
-                  {/* checkbox */}
                   <Checkbox
                     checked={visible}
                     onCheckedChange={() => toggleHidden(col.id)}
@@ -190,7 +231,7 @@ export function ColumnCustomizer({
 
                   <span
                     className={cn(
-                      "flex-1 truncate font-medium",
+                      "flex-1 truncate font-medium select-none",
                       visible ? "text-neutral-800" : "text-neutral-400 line-through",
                     )}
                   >
@@ -202,7 +243,7 @@ export function ColumnCustomizer({
           </ul>
 
           {/* Save footer */}
-          <div className="flex justify-end border-t border-neutral-100 px-3 py-2">
+          <div className="flex justify-end px-3 py-2">
             <button
               type="button"
               onClick={handleSave}

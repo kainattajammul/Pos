@@ -38,6 +38,36 @@ import type { InventoryProduct } from "@/types/inventory-product";
 
 type FormMode = "add" | "edit" | "view" | null;
 
+const CUSTOMIZABLE_COLUMNS: ColumnMeta[] = [
+  { id: "numericId", label: "ID" },
+  { id: "name", label: "Name" },
+  { id: "brand", label: "Brand" },
+  { id: "image", label: "Image" },
+  { id: "category", label: "Category" },
+  { id: "model", label: "Model" },
+  { id: "stockWarning", label: "Stock Warning" },
+  { id: "reorderLevel", label: "Reorder Level" },
+  { id: "stock", label: "On Hand" },
+  { id: "salePrice", label: "Price" },
+  { id: "costPrice", label: "Unit Cost" },
+];
+
+const CUSTOMIZABLE_COLUMN_IDS = new Set(CUSTOMIZABLE_COLUMNS.map((c) => c.id));
+
+const DEFAULT_COLUMN_ORDER: ColumnOrderState = [
+  "select",
+  ...CUSTOMIZABLE_COLUMNS.map((c) => c.id),
+  "actions",
+];
+
+function buildFullColumnOrder(customOrder: string[]): ColumnOrderState {
+  const ordered = customOrder.filter((id) => CUSTOMIZABLE_COLUMN_IDS.has(id));
+  for (const { id } of CUSTOMIZABLE_COLUMNS) {
+    if (!ordered.includes(id)) ordered.push(id);
+  }
+  return ["select", ...ordered, "actions"];
+}
+
 function matchesFilters(
   product: InventoryProduct,
   filters: ProductAdvancedFiltersState,
@@ -74,27 +104,6 @@ export function ProductsManagementView() {
   const [filtersPinned, setFiltersPinned] = useState(true);
   const [insightsOpen, setInsightsOpen] = useState(true);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-
-  // All customisable column ids in default display order (fixed cols excluded)
-  const CUSTOMIZABLE_COLUMNS: ColumnMeta[] = [
-    { id: "numericId", label: "ID" },
-    { id: "name", label: "Name" },
-    { id: "brand", label: "Brand" },
-    { id: "image", label: "Image" },
-    { id: "category", label: "Category" },
-    { id: "model", label: "Model" },
-    { id: "stockWarning", label: "Stock Warning" },
-    { id: "reorderLevel", label: "Reorder Level" },
-    { id: "stock", label: "On Hand" },
-    { id: "salePrice", label: "Price" },
-    { id: "costPrice", label: "Unit Cost" },
-  ];
-
-  const DEFAULT_COLUMN_ORDER: string[] = [
-    "select",
-    ...CUSTOMIZABLE_COLUMNS.map((c) => c.id),
-    "actions",
-  ];
 
   const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(DEFAULT_COLUMN_ORDER);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -148,12 +157,7 @@ export function ProductsManagementView() {
   });
 
   function handleColumnCustomizerSave(newOrder: string[], hidden: Set<string>) {
-    // rebuild full order preserving fixed cols at edges
-    const full: string[] = [
-      "select",
-      ...newOrder,
-      "actions",
-    ];
+    const full = buildFullColumnOrder(newOrder);
     setColumnOrder(full);
     // build visibility map: hidden → false, else omit (defaults to visible)
     const vis: VisibilityState = {};
@@ -303,7 +307,7 @@ export function ProductsManagementView() {
                 table={table}
                 customizerProps={{
                   columns: CUSTOMIZABLE_COLUMNS,
-                  columnOrder,
+                  columnOrder: columnOrder.filter((id) => CUSTOMIZABLE_COLUMN_IDS.has(id)),
                   hiddenColumns: new Set(
                     Object.entries(columnVisibility)
                       .filter(([, v]) => v === false)
