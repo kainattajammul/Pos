@@ -98,6 +98,13 @@ export function useUpdateRepairDeviceSeries(
     }) => updateRepairDeviceSeries(id, payload),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.repairDeviceSeries.all });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.repairDevices.list(
+          shopId,
+          repairCategoryId,
+          repairManufacturerId,
+        ),
+      });
       toast.success(`Series "${data.name}" updated successfully`);
     },
     onError: (error) => {

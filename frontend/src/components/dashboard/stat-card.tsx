@@ -2,7 +2,6 @@
 
 import { MoreHorizontal, TrendingDown, TrendingUp } from "lucide-react";
 import { useEffect, useRef } from "react";
-import gsap from "gsap";
 import { Sparkline } from "@/components/charts/sparkline";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";

@@ -125,7 +125,7 @@ export function ProductAdvancedFilters({
         <FilterField label="Category">
           <Select
             value={filters.category || "all"}
-            onValueChange={(v) => patch({ category: v === "all" ? "" : v })}
+            onValueChange={(v: string | null) => patch({ category: v === "all" || !v ? "" : v })}
           >
             <SelectTrigger className={fieldSelectClass}>
               <SelectValue placeholder="Select category" />
@@ -145,7 +145,7 @@ export function ProductAdvancedFilters({
         <FilterField label="Brand">
           <Select
             value={filters.brand || "all"}
-            onValueChange={(v) => patch({ brand: v === "all" ? "" : v })}
+            onValueChange={(v: string | null) => patch({ brand: v === "all" || !v ? "" : v })}
           >
             <SelectTrigger className={fieldSelectClass}>
               <SelectValue placeholder="Select brand" />
@@ -166,7 +166,7 @@ export function ProductAdvancedFilters({
         <FilterField label="Model">
           <Select
             value={filters.model || "all"}
-            onValueChange={(v) => patch({ model: v === "all" ? "" : v })}
+            onValueChange={(v: string | null) => patch({ model: v === "all" || !v ? "" : v })}
           >
             <SelectTrigger className={fieldSelectClass}>
               <SelectValue placeholder="Select model" />
@@ -211,7 +211,7 @@ export function ProductAdvancedFilters({
         <FilterField label="Supplier">
           <Select
             value={filters.supplier || "all"}
-            onValueChange={(v) => patch({ supplier: v === "all" ? "" : v })}
+            onValueChange={(v: string | null) => patch({ supplier: v === "all" || !v ? "" : v })}
           >
             <SelectTrigger className={fieldSelectClass}>
               <SelectValue placeholder="Select supplier" />
@@ -231,8 +231,8 @@ export function ProductAdvancedFilters({
         <FilterField label="Valuation Method">
           <Select
             value={filters.valuationMethod || "all"}
-            onValueChange={(v) =>
-              patch({ valuationMethod: v === "all" ? "" : v })
+            onValueChange={(v: string | null) =>
+              patch({ valuationMethod: v === "all" || !v ? "" : v })
             }
           >
             <SelectTrigger className={fieldSelectClass}>
@@ -253,7 +253,7 @@ export function ProductAdvancedFilters({
         <FilterField label="Criteria">
           <Select
             value={filters.criteria || "all"}
-            onValueChange={(v) => patch({ criteria: v === "all" ? "" : v })}
+            onValueChange={(v: string | null) => patch({ criteria: v === "all" || !v ? "" : v })}
           >
             <SelectTrigger className={fieldSelectClass}>
               <SelectValue placeholder="Select criteria" />

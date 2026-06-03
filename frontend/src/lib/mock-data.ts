@@ -24,7 +24,6 @@ export const mockDashboardSummary: DashboardSummary = {
 /** Stat cards for the dashboard home page (values filled from API summary). */
 export function buildDashboardStatCards(summary: DashboardSummary): StatCardData[] {
   const salesToday = Number(summary.salesTodayTotal) || 0;
-  const commissionToday = Number(summary.commissionTodayTotal) || 0;
   const totalRoles = summary.totalRoles ?? 0;
 
   return [

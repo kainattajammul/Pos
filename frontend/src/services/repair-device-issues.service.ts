@@ -8,6 +8,7 @@ import type {
   CreateRepairDeviceIssuePayload,
   IssueIconOption,
   UpdateRepairDeviceIssuePayload,
+  UploadRepairDeviceIssueImageResult,
 } from "@/types/repair-device-issue";
 
 export function mapApiRepairDeviceIssueToCard(
