@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   Bell,
   ChevronDown,
@@ -22,6 +23,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { RepairPriceCalculatorModal } from "@/components/repairs/repair-price-calculator/repair-price-calculator-modal";
+
+const REPAIR_PRICE_CALCULATOR_ITEM = "Repair Price Calculator v1.1" as const;
 
 const REPAIRS_DROPDOWN_ITEMS = [
   "Manage Invoices",
@@ -34,7 +38,9 @@ const REPAIRS_DROPDOWN_ITEMS = [
 
 const REPAIRS_DROPDOWN_ROUTES: Partial<Record<(typeof REPAIRS_DROPDOWN_ITEMS)[number], string>> =
   {
+    "Manage Invoices": "/repairs/manage-invoices",
     "Manage Tickets": "/repairs/manage-tickets",
+    "Manage Leads": "/repairs/manage-leads",
     "Manage Estimates": "/repairs/manage-estimates",
     "Manage Inquiries": "/repairs/manage-inquiries",
   };
@@ -75,8 +81,10 @@ function ProgressRing() {
 export function RepairsTopNav() {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const [calculatorOpen, setCalculatorOpen] = useState(false);
 
   return (
+    <>
     <header
       className="flex h-12 shrink-0 items-center justify-between px-3 text-white shadow-md md:px-4"
       style={{ backgroundColor: "var(--repair-primary-dark)" }}
@@ -128,6 +136,10 @@ export function RepairsTopNav() {
                     <DropdownMenuItem
                       key={dropdownItem}
                       onClick={() => {
+                        if (dropdownItem === REPAIR_PRICE_CALCULATOR_ITEM) {
+                          setCalculatorOpen(true);
+                          return;
+                        }
                         const targetRoute = REPAIRS_DROPDOWN_ROUTES[dropdownItem];
                         if (targetRoute) router.push(targetRoute);
                       }}
@@ -232,5 +244,7 @@ export function RepairsTopNav() {
         </button>
       </div>
     </header>
+    <RepairPriceCalculatorModal open={calculatorOpen} onOpenChange={setCalculatorOpen} />
+    </>
   );
 }
