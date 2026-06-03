@@ -40,7 +40,6 @@ const globalAgentFilter: FilterFn<SalesCommissionAgentTableRow> = (
   const haystack = [
     String(r.id),
     r.name,
-    r.lastName ?? "",
     r.email ?? "",
     r.contactNumber ?? "",
     r.address ?? "",

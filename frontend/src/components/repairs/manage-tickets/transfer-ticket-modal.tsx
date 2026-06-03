@@ -143,7 +143,6 @@ export function TransferTicketModal({
       permanentTransfer,
     };
     // Replace with API call when backend endpoint is ready.
-    // eslint-disable-next-line no-console
     console.log("transfer-ticket-payload", payload);
     handleOpenChange(false);
   };

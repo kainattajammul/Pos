@@ -59,8 +59,9 @@ function SortableHeader({
 export function createProductColumns(handlers: {
   onEdit: (product: InventoryProduct) => void;
   onDelete: (product: InventoryProduct) => void;
+  onAdjustInventory: (product: InventoryProduct) => void;
 }): ColumnDef<InventoryProduct>[] {
-  const { onEdit, onDelete } = handlers;
+  const { onEdit, onDelete, onAdjustInventory } = handlers;
 
   return [
     {
@@ -155,7 +156,13 @@ export function createProductColumns(handlers: {
       accessorKey: "stock",
       header: ({ column }) => <SortableHeader column={column} title="On Hand" />,
       cell: ({ row }) => (
-        <span className="tabular-nums font-medium text-neutral-800">{row.original.stock}</span>
+        <button
+          type="button"
+          className="tabular-nums font-medium text-neutral-800 underline-offset-2 hover:text-primary hover:underline"
+          onClick={() => onAdjustInventory(row.original)}
+        >
+          {row.original.stock}
+        </button>
       ),
     },
     {

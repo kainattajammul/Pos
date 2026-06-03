@@ -286,7 +286,6 @@ export function CreateInquiryModal({ open, onOpenChange, onCreateInquiry }: Crea
       },
     };
 
-    // eslint-disable-next-line no-console
     console.log("create-inquiry-payload", payload);
 
     const newInquiry: InquiryRecord = {

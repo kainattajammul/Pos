@@ -11,10 +11,12 @@ import {
 } from "@tanstack/react-table";
 import { ChevronRight, Package } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { createProductColumns } from "@/components/inventory/products/columns";
 import { DeleteProductDialog } from "@/components/inventory/products/delete-product-dialog";
+import { InventoryAdjustmentDialog } from "@/components/inventory/products/inventory-adjustment-dialog";
 import {
   DEFAULT_PRODUCT_ADVANCED_FILTERS,
   ProductAdvancedFilters,
@@ -25,6 +27,7 @@ import { ProductPageToolbar } from "@/components/inventory/products/product-page
 import { ProductSummaryCards } from "@/components/inventory/products/product-summary-cards";
 import { ProductTable } from "@/components/inventory/products/product-table";
 import type { ColumnMeta } from "@/components/inventory/products/column-customizer";
+import { RepairsTopNav } from "@/components/repairs/repairs-top-nav";
 import { EmptyState } from "@/components/shared/empty-state";
 import { DEMO_INVENTORY_PRODUCTS } from "@/lib/inventory-products-demo-data";
 import {
@@ -59,6 +62,7 @@ function matchesFilters(
 }
 
 export function ProductsManagementView() {
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [products, setProducts] = useState<InventoryProduct[]>(DEMO_INVENTORY_PRODUCTS);
   const [filters, setFilters] = useState<ProductAdvancedFiltersState>(
@@ -96,6 +100,7 @@ export function ProductsManagementView() {
   const [formMode, setFormMode] = useState<FormMode>(null);
   const [activeProduct, setActiveProduct] = useState<InventoryProduct | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<InventoryProduct | null>(null);
+  const [adjustmentTarget, setAdjustmentTarget] = useState<InventoryProduct | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -116,9 +121,13 @@ export function ProductsManagementView() {
     setDeleteTarget(product);
   }, []);
 
+  const onAdjustInventory = useCallback((product: InventoryProduct) => {
+    setAdjustmentTarget(product);
+  }, []);
+
   const columns = useMemo(
-    () => createProductColumns({ onEdit, onDelete }),
-    [onEdit, onDelete],
+    () => createProductColumns({ onEdit, onDelete, onAdjustInventory }),
+    [onEdit, onDelete, onAdjustInventory],
   );
 
   const table = useReactTable({
@@ -155,8 +164,7 @@ export function ProductsManagementView() {
   }
 
   const openAdd = () => {
-    setActiveProduct(null);
-    setFormMode("add");
+    router.push("/inventory/products/new");
   };
 
   const closeForm = () => {
@@ -173,7 +181,7 @@ export function ProductsManagementView() {
         setProducts((prev) => [created, ...prev]);
         toast.success("Product added", { description: created.name });
       } else if (formMode === "edit" && activeProduct) {
-        const updated = formValuesToProduct(values, activeProduct.id);
+        const updated = formValuesToProduct(values, activeProduct);
         setProducts((prev) =>
           prev.map((p) => (p.id === activeProduct.id ? updated : p)),
         );
@@ -191,90 +199,138 @@ export function ProductsManagementView() {
     setDeleteTarget(null);
   };
 
+  const handleInventoryAdjustment = (payload: {
+    productId: string;
+    adjustmentType: "increase" | "decrease";
+    adjustmentQuantity: number;
+    costPrice: number;
+    newOnHandQuantity: number;
+    notes: string;
+  }) => {
+    setProducts((prev) =>
+      prev.map((product) => {
+        if (product.id !== payload.productId) return product;
+        const nextStock = payload.newOnHandQuantity;
+        const nextStatus =
+          nextStock <= 0
+            ? "Out of Stock"
+            : nextStock <= product.lowStockAlert
+              ? "Low Stock"
+              : product.status === "Draft"
+                ? "Draft"
+                : "In Stock";
+        return {
+          ...product,
+          stock: nextStock,
+          costPrice: payload.costPrice,
+          stockWarning: nextStock <= product.lowStockAlert ? 1 : 0,
+          status: nextStatus,
+        };
+      }),
+    );
+    toast.success("Inventory adjusted", {
+      description: `${payload.adjustmentType === "increase" ? "Increased" : "Decreased"} by ${payload.adjustmentQuantity}`,
+    });
+  };
+
   if (!mounted) return null;
 
   return (
-    <div className="mx-auto max-w-[1600px] space-y-6">
-      <nav
-        className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground"
-        aria-label="Breadcrumb"
-      >
-        <Link href="/dashboard" className="transition-colors hover:text-foreground">
-          Dashboard
-        </Link>
-        <ChevronRight className="size-3.5 shrink-0" aria-hidden />
-        <span>Manage Inventory</span>
-        <ChevronRight className="size-3.5 shrink-0" aria-hidden />
-        <span className="font-medium text-foreground">Products</span>
-      </nav>
+    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[#F8FAFC]">
+      <RepairsTopNav />
+      <main className="flex-1 overflow-auto px-4 py-4 md:px-5">
+        <div className="mx-auto max-w-[1600px] space-y-6">
+          <nav
+            className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground"
+            aria-label="Breadcrumb"
+          >
+            <Link href="/dashboard" className="transition-colors hover:text-foreground">
+              Dashboard
+            </Link>
+            <ChevronRight className="size-3.5 shrink-0" aria-hidden />
+            <span>Manage Inventory</span>
+            <ChevronRight className="size-3.5 shrink-0" aria-hidden />
+            <span className="font-medium text-foreground">Products</span>
+          </nav>
 
-      <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <ProductPageToolbar onAddProduct={openAdd} />
-      </header>
+          <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <ProductPageToolbar onAddProduct={openAdd} />
+          </header>
 
-      <ProductSummaryCards products={filteredProducts} />
+          <ProductSummaryCards products={filteredProducts} />
 
-      <section className="space-y-3 rounded border border-neutral-200 bg-[#f7f9fa] p-3 shadow-sm md:p-4">
-        <ProductAdvancedFilters
-          filters={filters}
-          pinned={filtersPinned}
-          onPinnedChange={setFiltersPinned}
-          onChange={setFilters}
-          onSearch={() => {
-            setActiveFilters(filters);
-            table.setPageIndex(0);
-          }}
-          onReset={() => {
-            setFilters(DEFAULT_PRODUCT_ADVANCED_FILTERS);
-            setActiveFilters(DEFAULT_PRODUCT_ADVANCED_FILTERS);
-            table.setPageIndex(0);
-          }}
-        />
+          <section className="space-y-3 rounded border border-neutral-200 bg-[#f7f9fa] p-3 shadow-sm md:p-4">
+            <ProductAdvancedFilters
+              filters={filters}
+              pinned={filtersPinned}
+              onPinnedChange={setFiltersPinned}
+              onChange={setFilters}
+              onSearch={() => {
+                setActiveFilters(filters);
+                table.setPageIndex(0);
+              }}
+              onReset={() => {
+                setFilters(DEFAULT_PRODUCT_ADVANCED_FILTERS);
+                setActiveFilters(DEFAULT_PRODUCT_ADVANCED_FILTERS);
+                table.setPageIndex(0);
+              }}
+            />
 
-        {products.length === 0 ? (
-          <EmptyState
-            icon={Package}
-            title="No products yet"
-            description="Add your first product to start managing inventory."
-            actionLabel="Add Product"
-            onAction={openAdd}
-          />
-        ) : (
-          <ProductTable
-            table={table}
-            customizerProps={{
-              columns: CUSTOMIZABLE_COLUMNS,
-              columnOrder,
-              hiddenColumns: new Set(
-                Object.entries(columnVisibility)
-                  .filter(([, v]) => v === false)
-                  .map(([k]) => k),
-              ),
-              onSave: handleColumnCustomizerSave,
+            {products.length === 0 ? (
+              <EmptyState
+                icon={Package}
+                title="No products yet"
+                description="Add your first product to start managing inventory."
+                actionLabel="Add Product"
+                onAction={openAdd}
+              />
+            ) : (
+              <ProductTable
+                table={table}
+                customizerProps={{
+                  columns: CUSTOMIZABLE_COLUMNS,
+                  columnOrder,
+                  hiddenColumns: new Set(
+                    Object.entries(columnVisibility)
+                      .filter(([, v]) => v === false)
+                      .map(([k]) => k),
+                  ),
+                  onSave: handleColumnCustomizerSave,
+                }}
+              />
+            )}
+          </section>
+
+          <ProductFormDialog
+            open={formMode != null}
+            onOpenChange={(open) => {
+              if (!open) closeForm();
             }}
+            mode={formMode === "view" ? "view" : formMode === "edit" ? "edit" : "add"}
+            product={activeProduct}
+            isSubmitting={isSaving}
+            onSave={handleSave}
           />
-        )}
-      </section>
 
-      <ProductFormDialog
-        open={formMode != null}
-        onOpenChange={(open) => {
-          if (!open) closeForm();
-        }}
-        mode={formMode === "view" ? "view" : formMode === "edit" ? "edit" : "add"}
-        product={activeProduct}
-        isSubmitting={isSaving}
-        onSave={handleSave}
-      />
+          <DeleteProductDialog
+            open={deleteTarget != null}
+            onOpenChange={(open) => {
+              if (!open) setDeleteTarget(null);
+            }}
+            productLabel={deleteTarget?.name ?? ""}
+            onConfirm={handleDeleteConfirm}
+          />
 
-      <DeleteProductDialog
-        open={deleteTarget != null}
-        onOpenChange={(open) => {
-          if (!open) setDeleteTarget(null);
-        }}
-        productLabel={deleteTarget?.name ?? ""}
-        onConfirm={handleDeleteConfirm}
-      />
+          <InventoryAdjustmentDialog
+            open={adjustmentTarget != null}
+            onOpenChange={(open) => {
+              if (!open) setAdjustmentTarget(null);
+            }}
+            product={adjustmentTarget}
+            onSubmit={handleInventoryAdjustment}
+          />
+        </div>
+      </main>
     </div>
   );
 }

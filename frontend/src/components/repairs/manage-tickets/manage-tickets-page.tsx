@@ -207,7 +207,6 @@ export function ManageTicketsPage() {
         onOpenChange={setHistoryModalOpen}
         onSaveComment={({ ticketId, to, via, subject, comment }) => {
           const payload = { ticketId, to, via, subject, comment };
-          // eslint-disable-next-line no-console
           console.log("ticket-history-comment-payload", payload);
           setHistoryByTicket((prev) => {
             const current = prev[ticketId] ?? [];

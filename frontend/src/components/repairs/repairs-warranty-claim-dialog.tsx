@@ -145,7 +145,12 @@ export function RepairsWarrantyClaimDialog({
             <Label className="text-xs font-medium text-[#374151]">
               Warranty type
             </Label>
-            <Select value={warrantyType} onValueChange={setWarrantyType}>
+            <Select
+              value={warrantyType}
+              onValueChange={(v: string | null) => {
+                if (v) setWarrantyType(v);
+              }}
+            >
               <SelectTrigger className={fieldClass}>
                 <SelectValue placeholder="Select warranty type" />
               </SelectTrigger>

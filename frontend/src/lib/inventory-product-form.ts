@@ -93,31 +93,40 @@ export function mapProductToFormValues(product: InventoryProduct): InventoryProd
 
 export function formValuesToProduct(
   values: InventoryProductFormValues,
-  id?: string,
+  existingProduct?: InventoryProduct,
 ): InventoryProduct {
   const stock = Number(values.quantity);
   const lowStockAlert = Number(values.lowStockAlert);
   const status = deriveProductStatus(stock, lowStockAlert, values.status);
   const nextNumericId = Number(String(Date.now()).slice(-4));
+  const resolvedImageUrl =
+    values.imageFileName && values.imageFileName !== "uploaded"
+      ? values.imageFileName
+      : existingProduct?.imageUrl;
 
   return {
-    id: id ?? `prod-${Date.now()}`,
-    numericId: nextNumericId,
+    id: existingProduct?.id ?? `prod-${Date.now()}`,
+    numericId: existingProduct?.numericId ?? nextNumericId,
     name: values.name.trim(),
     sku: values.sku.trim(),
     barcode: values.barcode.trim(),
     category: values.category,
     brand: values.brand.trim(),
-    model: values.name.trim(),
+    model: existingProduct?.model ?? values.name.trim(),
     type: values.productType,
     stockWarning: stock <= lowStockAlert ? 1 : 0,
-    reorderLevel: lowStockAlert,
+    reorderLevel: existingProduct?.reorderLevel ?? lowStockAlert,
     stock,
     lowStockAlert,
     costPrice: Number(values.costPrice),
     salePrice: Number(values.salePrice),
     status,
     description: values.description.trim() || undefined,
-    imageUrl: values.imageFileName ? values.imageFileName : undefined,
+    imageUrl: resolvedImageUrl,
+    imei: existingProduct?.imei,
+    serial: existingProduct?.serial,
+    supplier: existingProduct?.supplier,
+    valuationMethod: existingProduct?.valuationMethod,
+    inPurchaseOrder: existingProduct?.inPurchaseOrder,
   };
 }
