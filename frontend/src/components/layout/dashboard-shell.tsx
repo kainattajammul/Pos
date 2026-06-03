@@ -9,11 +9,14 @@ import { AppNavbar } from "./app-navbar";
 import { AppSidebar } from "./app-sidebar";
 import { AppThemeToolbar } from "./app-theme-toolbar";
 
-const REPAIR_STORE_ROUTES = ["/repairs", "/inventory/products"];
-
 function isRepairsRoute(pathname: string) {
-  return REPAIR_STORE_ROUTES.some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`),
+  return (
+    pathname === "/repairs" ||
+    pathname.startsWith("/repairs/") ||
+    pathname === "/inventory" ||
+    pathname.startsWith("/inventory/") ||
+    pathname === "/purchases" ||
+    pathname.startsWith("/purchases/")
   );
 }
 

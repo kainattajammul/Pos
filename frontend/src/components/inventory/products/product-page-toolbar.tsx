@@ -20,16 +20,27 @@ import { cn } from "@/lib/utils";
 
 interface ProductPageToolbarProps {
   onAddProduct: () => void;
-  onNewFilter?: () => void;
+  filtersOpen?: boolean;
+  onToggleFilters?: () => void;
+  onClearFilters?: () => void;
+  insightsOpen?: boolean;
+  onToggleInsights?: () => void;
 }
 
 const outlineBtn =
   "h-9 gap-1.5 rounded border border-neutral-200 bg-white px-3 text-sm font-medium text-neutral-700 shadow-sm hover:bg-neutral-50";
 
-export function ProductPageToolbar({ onAddProduct, onNewFilter }: ProductPageToolbarProps) {
+export function ProductPageToolbar({
+  onAddProduct,
+  filtersOpen = true,
+  onToggleFilters,
+  onClearFilters,
+  insightsOpen = true,
+  onToggleInsights,
+}: ProductPageToolbarProps) {
   return (
-    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-      <h1 className="text-xl font-semibold text-neutral-800 md:text-[22px]">
+    <div className="flex w-full flex-wrap items-center justify-between gap-x-4 gap-y-3">
+      <h1 className="shrink-0 text-xl font-semibold text-neutral-800 md:text-[22px]">
         Manage Products
       </h1>
 
@@ -37,14 +48,41 @@ export function ProductPageToolbar({ onAddProduct, onNewFilter }: ProductPageToo
         <Button
           type="button"
           variant="outline"
-          className={cn(outlineBtn, "border-primary/40 text-primary")}
-          onClick={onNewFilter}
+          className={cn(
+            outlineBtn,
+            "border-primary/40 text-primary",
+            filtersOpen && "bg-primary/5",
+          )}
+          onClick={onToggleFilters}
         >
           New Filter
-          <X className="size-3.5 opacity-70" />
+          <span
+            role="button"
+            tabIndex={0}
+            className="inline-flex rounded-sm p-0.5 hover:bg-primary/10"
+            aria-label="Clear filters"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClearFilters?.();
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                e.stopPropagation();
+                onClearFilters?.();
+              }
+            }}
+          >
+            <X className="size-3.5 opacity-70" />
+          </span>
         </Button>
 
-        <Button type="button" variant="outline" className={outlineBtn}>
+        <Button
+          type="button"
+          variant="outline"
+          className={cn(outlineBtn, insightsOpen && "bg-neutral-50")}
+          onClick={onToggleInsights}
+        >
           <Lightbulb className="size-4 text-neutral-500" />
           Insights
         </Button>
@@ -52,12 +90,12 @@ export function ProductPageToolbar({ onAddProduct, onNewFilter }: ProductPageToo
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <Button type="button" variant="outline" className={outlineBtn}>
-                Import/Export
-                <ChevronDown className="size-4 text-neutral-500" />
-              </Button>
+              <Button type="button" variant="outline" className={outlineBtn} />
             }
-          />
+          >
+            Import/Export
+            <ChevronDown className="size-4 text-neutral-500" />
+          </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-44">
             <DropdownMenuItem>
               <Upload className="size-4" />
@@ -71,13 +109,13 @@ export function ProductPageToolbar({ onAddProduct, onNewFilter }: ProductPageToo
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <Button type="button" variant="outline" className={outlineBtn}>
-                <Settings2 className="size-4 text-neutral-500" />
-                Actions
-                <ChevronDown className="size-4 text-neutral-500" />
-              </Button>
+              <Button type="button" variant="outline" className={outlineBtn} />
             }
-          />
+          >
+            <Settings2 className="size-4 text-neutral-500" />
+            Actions
+            <ChevronDown className="size-4 text-neutral-500" />
+          </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem>Bulk update prices</DropdownMenuItem>
             <DropdownMenuItem>Print barcodes</DropdownMenuItem>

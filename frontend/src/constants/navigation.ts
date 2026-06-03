@@ -1,5 +1,4 @@
 import type { LucideIcon } from "lucide-react";
-import { MANAGE_INVENTORY_CHILDREN } from "@/constants/inventory-nav";
 import {
   BarChart3,
   Boxes,
@@ -77,11 +76,6 @@ export const MAIN_NAV: NavItem[] = [
     children: [{ title: "Purchases", href: "/purchases" }],
   },
   { title: "Reports", href: "/reports", icon: BarChart3 },
-  {
-    title: "Manage Inventory",
-    icon: Boxes,
-    children: MANAGE_INVENTORY_CHILDREN,
-  },
   {
     title: "Stock",
     icon: Boxes,

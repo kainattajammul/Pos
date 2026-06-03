@@ -72,6 +72,7 @@ export function ProductsManagementView() {
     DEFAULT_PRODUCT_ADVANCED_FILTERS,
   );
   const [filtersPinned, setFiltersPinned] = useState(true);
+  const [insightsOpen, setInsightsOpen] = useState(true);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   // All customisable column ids in default display order (fixed cols excluded)
@@ -253,13 +254,25 @@ export function ProductsManagementView() {
             <span className="font-medium text-foreground">Products</span>
           </nav>
 
-          <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <ProductPageToolbar onAddProduct={openAdd} />
+          <header>
+            <ProductPageToolbar
+              onAddProduct={openAdd}
+              filtersOpen={filtersPinned}
+              onToggleFilters={() => setFiltersPinned((v) => !v)}
+              onClearFilters={() => {
+                setFilters(DEFAULT_PRODUCT_ADVANCED_FILTERS);
+                setActiveFilters(DEFAULT_PRODUCT_ADVANCED_FILTERS);
+                table.setPageIndex(0);
+              }}
+              insightsOpen={insightsOpen}
+              onToggleInsights={() => setInsightsOpen((v) => !v)}
+            />
           </header>
 
-          <ProductSummaryCards products={filteredProducts} />
+          {insightsOpen ? <ProductSummaryCards products={filteredProducts} /> : null}
 
           <section className="space-y-3 rounded border border-neutral-200 bg-[#f7f9fa] p-3 shadow-sm md:p-4">
+            {filtersPinned ? (
             <ProductAdvancedFilters
               filters={filters}
               pinned={filtersPinned}
@@ -275,6 +288,7 @@ export function ProductsManagementView() {
                 table.setPageIndex(0);
               }}
             />
+            ) : null}
 
             {products.length === 0 ? (
               <EmptyState

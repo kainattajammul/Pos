@@ -121,7 +121,6 @@ export function SidebarNav({ collapsed, onNavigate }: SidebarNavProps) {
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
     "User Management": true,
     Customer: true,
-    "Manage Inventory": true,
     Stock: true,
     "0:Manage Services": true,
   });
@@ -133,15 +132,6 @@ export function SidebarNav({ collapsed, onNavigate }: SidebarNavProps) {
       { opacity: 1, x: 0, duration: 0.4, stagger: 0.03, ease: "power2.out" },
     );
   }, []);
-
-  useEffect(() => {
-    if (pathname.startsWith("/inventory")) {
-      setOpenGroups((prev) => ({
-        ...prev,
-        "Manage Inventory": true,
-      }));
-    }
-  }, [pathname]);
 
   const toggleGroup = (title: string) => {
     setOpenGroups((prev) => ({ ...prev, [title]: !prev[title] }));
