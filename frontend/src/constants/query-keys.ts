@@ -11,6 +11,18 @@ export const queryKeys = {
     all: ["products"] as const,
     list: (params: Record<string, unknown>) => ["products", "list", params] as const,
   },
+  inventoryCounts: {
+    all: ["inventory-counts"] as const,
+    list: (shopId: number) => ["inventory-counts", "list", shopId] as const,
+  },
+  refurbishmentBatches: {
+    all: ["refurbishment-batches"] as const,
+    list: (shopId: number) => ["refurbishment-batches", "list", shopId] as const,
+  },
+  purchaseOrders: {
+    all: ["purchase-orders"] as const,
+    list: (shopId: number) => ["purchase-orders", "list", shopId] as const,
+  },
   auth: {
     me: ["auth", "me"] as const,
   },
