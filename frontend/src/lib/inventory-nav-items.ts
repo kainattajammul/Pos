@@ -112,6 +112,21 @@ export function isInventoryMenuItemActive(pathname: string, href: string): boole
       pathname.startsWith("/inventory/products/")
     );
   }
+  if (href === "/inventory/count") {
+    return (
+      pathname === "/inventory/count" ||
+      pathname.startsWith("/inventory/count/")
+    );
+  }
+  if (href === "/inventory/refurbishment") {
+    return (
+      pathname === "/inventory/refurbishment" ||
+      pathname.startsWith("/inventory/refurbishment/")
+    );
+  }
+  if (href === "/purchases") {
+    return pathname === "/purchases" || pathname.startsWith("/purchases/");
+  }
   if (href.length > 1 && pathname.startsWith(`${href}/`)) return true;
   return false;
 }
