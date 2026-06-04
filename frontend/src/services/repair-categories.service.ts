@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/axios";
+import { uploadImage } from "@/services/upload.service";
 import { resolveRepairCategoryIcon } from "@/lib/repair-category-icons";
 import { Plus } from "lucide-react";
 import type { RepairCategoryCard } from "@/lib/repairs-pos-data";
@@ -59,16 +60,8 @@ export async function uploadRepairCategoryImage(
   shopId: number,
   file: File,
 ): Promise<UploadRepairCategoryImageResult> {
-  const form = new FormData();
-  form.append("shopId", String(shopId));
-  form.append("image", file);
-
-  const { data } = await apiClient.post<
-    ApiSuccessResponse<UploadRepairCategoryImageResult>
-  >("/repair-categories/upload-image", form, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-  return data.data;
+  const uploaded = await uploadImage(file, { prefix: `shop-${shopId}` });
+  return { url: uploaded.url, path: uploaded.path };
 }
 
 export async function createRepairCategory(

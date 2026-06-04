@@ -1,9 +1,25 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
 import { env } from "./config/env.js";
 import routes from "./routes/index.js";
 import { errorHandler, notFoundHandler } from "./middleware/error.middleware.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+/** URL path segment for serving local uploads (derived from PUBLIC_UPLOAD_URL). */
+function getLocalUploadUrlPath() {
+  if (!env.publicUploadUrl) return "/uploads";
+  try {
+    const pathname = new URL(env.publicUploadUrl).pathname;
+    return pathname.endsWith("/") ? pathname.slice(0, -1) : pathname || "/uploads";
+  } catch {
+    return "/uploads";
+  }
+}
 
 /**
  * Express application setup — middleware and API routes.
@@ -46,6 +62,17 @@ export function createApp() {
   );
   app.use(express.json());
   app.use(cookieParser());
+
+  /** Serve files from UPLOAD_DIR when using local/cPanel storage */
+  if (env.storageDriver === "local") {
+    const uploadDir =
+      env.uploadDir || path.join(path.resolve(__dirname, ".."), "uploads");
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    const staticPath = getLocalUploadUrlPath();
+    app.use(staticPath, express.static(uploadDir, { maxAge: "7d", index: false }));
+  }
 
   app.get("/", (_req, res) => {
     res.json({

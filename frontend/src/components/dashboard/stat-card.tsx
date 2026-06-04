@@ -29,9 +29,12 @@ export function StatCard({ data, className }: StatCardProps) {
 
   useEffect(() => {
     if (!valueRef.current) return;
-    const tween = animateCounter(valueRef.current, data.value);
+    let tween: { kill: () => void } | undefined;
+    void animateCounter(valueRef.current, data.value).then((t) => {
+      tween = t;
+    });
     return () => {
-      tween.kill();
+      tween?.kill();
     };
   }, [data.value]);
 

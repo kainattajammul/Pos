@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useEffect, useRef } from "react";
-import gsap from "gsap";
 import { APP_CONFIG } from "@/constants/config";
 import { useAuth } from "@/hooks/use-auth";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -11,8 +11,12 @@ import { toggleSidebar } from "@/store/ui-slice";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { BrandLogo } from "./brand-logo";
-import { SidebarNav } from "./sidebar-nav";
 import { SidebarSignOutButton } from "./sidebar-sign-out-button";
+
+const SidebarNav = dynamic(
+  () => import("./sidebar-nav").then((m) => m.SidebarNav),
+  { ssr: false, loading: () => <div className="min-h-0 flex-1" /> },
+);
 
 type SidebarVariant = "default" | "repairs";
 
@@ -43,10 +47,12 @@ export function AppSidebar({
 
   useEffect(() => {
     if (!ref.current || mobile) return;
-    gsap.to(ref.current, {
-      width: collapsed ? collapsedWidth : APP_CONFIG.sidebarWidth,
-      duration: 0.35,
-      ease: "power3.inOut",
+    void import("gsap").then(({ default: gsap }) => {
+      gsap.to(ref.current, {
+        width: collapsed ? collapsedWidth : APP_CONFIG.sidebarWidth,
+        duration: 0.35,
+        ease: "power3.inOut",
+      });
     });
   }, [collapsed, mobile, collapsedWidth]);
 

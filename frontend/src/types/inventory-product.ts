@@ -23,5 +23,11 @@ export interface InventoryProduct {
   inPurchaseOrder?: number;
   status: ProductStockStatus;
   description?: string;
+  /** Public URL returned by POST /api/v1/upload */
   imageUrl?: string;
+  /** Storage path/key (not the binary) */
+  imagePath?: string;
+  imageStorageProvider?: "supabase" | "local";
+  imageMimeType?: string;
+  imageSize?: number;
 }

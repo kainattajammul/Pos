@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { ActivityTimeline } from "@/components/dashboard/activity-timeline";
-import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton";
-import { RecentActivitySection } from "@/components/dashboard/recent-activity-section";
-import { RepairReportsSection } from "@/components/dashboard/repair-reports-section";
-import { SalesChannelsSection } from "@/components/dashboard/sales-channels-section";
-import { StatCard } from "@/components/dashboard/stat-card";
-import { StockStatusSection } from "@/components/dashboard/stock-status-section";
-import { ProductsTable } from "@/components/tables/products-table";
+import {
+  ActivityTimelineLazy,
+  ProductsTableLazy,
+  RecentActivitySectionLazy,
+  RepairReportsSectionLazy,
+  SalesChannelsSectionLazy,
+  StatCardLazy,
+  StockStatusSectionLazy,
+} from "@/components/dashboard/dashboard-lazy";
+import { StatCardsSkeleton } from "@/components/dashboard/stat-cards-skeleton";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import {
   useDashboardSummary,
@@ -27,11 +29,10 @@ export default function DashboardPage() {
   const { data: activities, isLoading: activitiesLoading } = useRecentActivities();
   const { data: repairReport, isLoading: repairLoading } = useRepairReports();
 
-  const initialLoading =
-    summaryLoading && monthlyLoading && activitiesLoading && repairLoading;
+  const statsReady = !summaryLoading;
 
   useEffect(() => {
-    if (!gridRef.current || initialLoading) return;
+    if (!gridRef.current || !statsReady) return;
     void import("gsap").then(({ default: gsap }) => {
       gsap.fromTo(
         gridRef.current!.children,
@@ -46,34 +47,43 @@ export default function DashboardPage() {
         },
       );
     });
-  }, [initialLoading]);
-
-  if (initialLoading) {
-    return <DashboardSkeleton />;
-  }
+  }, [statsReady]);
 
   return (
     <ErrorBoundary fallbackTitle="Dashboard failed to load">
       <div ref={gridRef} className="space-y-6">
-        <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {statCards.map((card) => (
-            <StatCard key={card.title} data={card} />
-          ))}
+        {statsReady ? (
+          <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {statCards.map((card) => (
+              <StatCardLazy key={card.title} data={card} />
+            ))}
+          </section>
+        ) : (
+          <StatCardsSkeleton />
+        )}
+
+        <section className="grid gap-6 lg:grid-cols-2">
+          <StockStatusSectionLazy />
+          <RecentActivitySectionLazy
+            data={monthlySales}
+            isLoading={monthlyLoading}
+          />
         </section>
 
         <section className="grid gap-6 lg:grid-cols-2">
-          <StockStatusSection />
-          <RecentActivitySection data={monthlySales} isLoading={monthlyLoading} />
-        </section>
-
-        <section className="grid gap-6 lg:grid-cols-2">
-          <SalesChannelsSection />
-          <RepairReportsSection report={repairReport} isLoading={repairLoading} />
+          <SalesChannelsSectionLazy />
+          <RepairReportsSectionLazy
+            report={repairReport}
+            isLoading={repairLoading}
+          />
         </section>
 
         <section className="grid gap-6 xl:grid-cols-[1fr_360px]">
-          <ProductsTable />
-          <ActivityTimeline items={activities} isLoading={activitiesLoading} />
+          <ProductsTableLazy />
+          <ActivityTimelineLazy
+            items={activities}
+            isLoading={activitiesLoading}
+          />
         </section>
       </div>
     </ErrorBoundary>

@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton";
+import { AuthLoadingFallback } from "@/components/layout/auth-loading-fallback";
 import { useAppSelector } from "@/store/hooks";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
@@ -16,11 +16,11 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   }, [hydrated, isAuthenticated, router]);
 
   if (!hydrated) {
-    return <DashboardSkeleton />;
+    return <AuthLoadingFallback />;
   }
 
   if (!isAuthenticated) {
-    return <DashboardSkeleton />;
+    return <AuthLoadingFallback />;
   }
 
   return <>{children}</>;

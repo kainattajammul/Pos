@@ -4,6 +4,8 @@ import { RepairCategoryModel } from "../models/repairCategory.model.js";
 import { ShopModel } from "../models/shop.model.js";
 import { slugify } from "../utils/slugify.js";
 import { searchRepairCategoryIcons } from "../data/repairCategoryIcons.js";
+import { deleteStoredImageIfReplaced } from "./storage/deleteImage.js";
+import { purgeRepairCategoryImages } from "./storage/repairImageCleanup.js";
 
 const DEFAULT_CATEGORIES = [
   { name: "Mobile Repair", slug: "mobile", iconKey: "smartphone", sortOrder: 1, isDefault: true },
@@ -133,7 +135,9 @@ export async function updateRepairCategory(id, { name, iconKey, imageUrl, sortOr
   }
 
   if (imageUrl !== undefined) {
-    data.imageUrl = imageUrl?.trim() || null;
+    const nextImageUrl = imageUrl?.trim() || null;
+    await deleteStoredImageIfReplaced(category.imageUrl, nextImageUrl);
+    data.imageUrl = nextImageUrl;
   }
 
   if (sortOrder !== undefined) {
@@ -153,5 +157,6 @@ export async function deleteRepairCategory(id) {
     throw new ApiError(HTTP.NOT_FOUND, "Repair category not found");
   }
 
+  await purgeRepairCategoryImages(id);
   await RepairCategoryModel.delete(id);
 }

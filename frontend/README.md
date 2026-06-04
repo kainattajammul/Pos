@@ -31,6 +31,21 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+Uses **Turbopack** by default (`next dev --turbopack`). After changing `next.config.ts`, env files that affect the bundler, or when dev compile times look stuck or wrong, clear the cache and restart:
+
+```bash
+npm run dev:clean
+```
+
+`dev:clean` deletes `.next` and starts dev with Turbopack. Use `npm run dev:webpack` for the classic webpack dev server.
+
+### Fast local workflow
+
+- Prefer **`npm run dev`** (keeps the `.next` cache). Avoid **`npm run dev:clean`** unless manifests are corrupt (ENOENT under `.next`) or you changed bundler config.
+- Run **one** dev server (port 3000). A second instance on 3001 forces a cold cache and looks much slower.
+- First visit to a route compiles on demand (~seconds in dev); **revisit the same route** to stay near ~200ms.
+- For demos or prod-like speed, use **`npm run build`** then **`npm run start`**.
+
 ### Mock mode (default)
 
 With `NEXT_PUBLIC_USE_MOCK=true`, the dashboard uses local mock data when the API is unavailable. On the login page, click **Continue with mock data** to enter the dashboard without a running backend.
@@ -43,10 +58,12 @@ With `NEXT_PUBLIC_USE_MOCK=true`, the dashboard uses local mock data when the AP
 
 ## Scripts
 
-| Command        | Description              |
-|----------------|--------------------------|
-| `npm run dev`  | Development server       |
-| `npm run build`| Production build         |
+| Command           | Description                                      |
+|-------------------|--------------------------------------------------|
+| `npm run dev`     | Dev server (Turbopack)                           |
+| `npm run dev:clean` | Remove `.next`, then dev (use after config changes) |
+| `npm run dev:webpack` | Dev server (webpack, no Turbopack)            |
+| `npm run build`   | Production build                                 |
 | `npm run start`| Start production server  |
 | `npm run lint` | ESLint                   |
 

@@ -19,18 +19,16 @@ export function getSupabaseAdmin() {
 
 export function isSupabaseStorageConfigured() {
   return Boolean(
-    env.supabaseUrl &&
-      env.supabaseServiceRoleKey &&
-      env.repairCategoryStorageBucket,
+    env.supabaseUrl && env.supabaseServiceRoleKey && env.supabaseBucket,
   );
 }
 
 /** Ensures the repair category bucket exists and is public so card images load in the browser. */
 export async function ensureRepairCategoryStorageBucket() {
   const supabase = getSupabaseAdmin();
-  if (!supabase || !env.repairCategoryStorageBucket) return false;
+  if (!supabase || !env.supabaseBucket) return false;
 
-  const bucketName = env.repairCategoryStorageBucket;
+  const bucketName = env.supabaseBucket;
   const { data: existing } = await supabase.storage.getBucket(bucketName);
 
   if (!existing) {

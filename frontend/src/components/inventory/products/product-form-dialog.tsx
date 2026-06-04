@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import Image from "next/image";
+import { toast } from "sonner";
+import { useUploadImage } from "@/hooks/use-upload-image";
 import {
   Dialog,
   DialogContent,
@@ -55,6 +58,8 @@ export function ProductFormDialog({
   onSave,
 }: ProductFormDialogProps) {
   const readOnly = mode === "view";
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const uploadImage = useUploadImage("inventory/products");
 
   const {
     register,
@@ -76,10 +81,28 @@ export function ProductFormDialog({
     if (!open) return;
     if ((mode === "edit" || mode === "view") && product) {
       reset(mapProductToFormValues(product));
+      setImagePreview(product.imageUrl ?? null);
     } else {
       reset(INVENTORY_PRODUCT_FORM_DEFAULTS);
+      setImagePreview(null);
     }
   }, [open, mode, product, reset]);
+
+  async function handleImageFile(file: File | undefined) {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Only JPEG, PNG, or WebP images are allowed.");
+      return;
+    }
+    const uploaded = await uploadImage.mutateAsync({ file });
+    setValue("imageUrl", uploaded.url);
+    setValue("imagePath", uploaded.path);
+    setValue("imageStorageProvider", uploaded.provider);
+    setValue("imageMimeType", uploaded.mimeType);
+    setValue("imageSize", uploaded.size);
+    setImagePreview(uploaded.url);
+    toast.success("Image uploaded");
+  }
 
   const title =
     mode === "add" ? "Add Product" : mode === "edit" ? "Edit Product" : "View Product";
@@ -305,14 +328,28 @@ export function ProductFormDialog({
               <Input
                 id="product-image"
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp"
                 className={inputClass}
-                disabled={isSubmitting || readOnly}
+                disabled={isSubmitting || readOnly || uploadImage.isPending}
                 onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  setValue("imageFileName", file?.name ?? "");
+                  void handleImageFile(e.target.files?.[0]);
+                  e.target.value = "";
                 }}
               />
+              {uploadImage.isPending ? (
+                <p className="text-xs text-muted-foreground">Uploading image…</p>
+              ) : null}
+              {imagePreview ? (
+                <div className="relative mt-2 size-20 overflow-hidden rounded border border-neutral-200">
+                  <Image
+                    src={imagePreview}
+                    alt="Product preview"
+                    fill
+                    className="object-contain"
+                    unoptimized
+                  />
+                </div>
+              ) : null}
             </div>
           </div>
 

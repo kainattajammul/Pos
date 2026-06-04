@@ -41,7 +41,11 @@ export const inventoryProductFormSchema = z.object({
     }),
   description: z.string(),
   status: z.enum(productStockStatuses),
-  imageFileName: z.string(),
+  imageUrl: z.string().optional(),
+  imagePath: z.string().optional(),
+  imageStorageProvider: z.enum(["supabase", "local"]).optional(),
+  imageMimeType: z.string().optional(),
+  imageSize: z.number().optional(),
 });
 
 export type InventoryProductFormValues = z.infer<typeof inventoryProductFormSchema>;
@@ -59,7 +63,8 @@ export const INVENTORY_PRODUCT_FORM_DEFAULTS: InventoryProductFormValues = {
   lowStockAlert: "5",
   description: "",
   status: "In Stock",
-  imageFileName: "",
+  imageUrl: "",
+  imagePath: "",
 };
 
 export function deriveProductStatus(
@@ -87,7 +92,11 @@ export function mapProductToFormValues(product: InventoryProduct): InventoryProd
     lowStockAlert: String(product.lowStockAlert),
     description: product.description ?? "",
     status: product.status,
-    imageFileName: product.imageUrl ? "uploaded" : "",
+    imageUrl: product.imageUrl ?? "",
+    imagePath: product.imagePath ?? "",
+    imageStorageProvider: product.imageStorageProvider,
+    imageMimeType: product.imageMimeType,
+    imageSize: product.imageSize,
   };
 }
 
@@ -99,10 +108,8 @@ export function formValuesToProduct(
   const lowStockAlert = Number(values.lowStockAlert);
   const status = deriveProductStatus(stock, lowStockAlert, values.status);
   const nextNumericId = Number(String(Date.now()).slice(-4));
-  const resolvedImageUrl =
-    values.imageFileName && values.imageFileName !== "uploaded"
-      ? values.imageFileName
-      : existingProduct?.imageUrl;
+  const imageUrl = values.imageUrl?.trim() || existingProduct?.imageUrl;
+  const imagePath = values.imagePath?.trim() || existingProduct?.imagePath;
 
   return {
     id: existingProduct?.id ?? `prod-${Date.now()}`,
@@ -122,7 +129,11 @@ export function formValuesToProduct(
     salePrice: Number(values.salePrice),
     status,
     description: values.description.trim() || undefined,
-    imageUrl: resolvedImageUrl,
+    imageUrl: imageUrl || undefined,
+    imagePath: imagePath || undefined,
+    imageStorageProvider: values.imageStorageProvider ?? existingProduct?.imageStorageProvider,
+    imageMimeType: values.imageMimeType ?? existingProduct?.imageMimeType,
+    imageSize: values.imageSize ?? existingProduct?.imageSize,
     imei: existingProduct?.imei,
     serial: existingProduct?.serial,
     supplier: existingProduct?.supplier,

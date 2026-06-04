@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown } from "lucide-react";
-import { useEffect, useState } from "react";
-import gsap from "gsap";
+import { useEffect, useRef, useState } from "react";
 import { MAIN_NAV, type NavChild } from "@/constants/navigation";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -34,6 +33,7 @@ function SidebarNavChildLinks({
   depth = 0,
   openGroups,
   toggleGroup,
+  prefetchRoutes,
 }: {
   items: NavChild[];
   pathname: string;
@@ -41,6 +41,7 @@ function SidebarNavChildLinks({
   depth?: number;
   openGroups: Record<string, boolean>;
   toggleGroup: (key: string) => void;
+  prefetchRoutes: boolean;
 }) {
   return (
     <div className={cn("space-y-0.5", depth === 0 ? "pl-9" : "pl-3", depth > 0 && "pt-0.5")}>
@@ -78,14 +79,15 @@ function SidebarNavChildLinks({
                 )}
               >
                 <div className="min-h-0">
-                  <SidebarNavChildLinks
-                    items={child.children!}
-                    pathname={pathname}
-                    onNavigate={onNavigate}
-                    depth={depth + 1}
-                    openGroups={openGroups}
-                    toggleGroup={toggleGroup}
-                  />
+                    <SidebarNavChildLinks
+                      items={child.children!}
+                      pathname={pathname}
+                      onNavigate={onNavigate}
+                      depth={depth + 1}
+                      openGroups={openGroups}
+                      toggleGroup={toggleGroup}
+                      prefetchRoutes={prefetchRoutes}
+                    />
                 </div>
               </div>
             </div>
@@ -100,6 +102,7 @@ function SidebarNavChildLinks({
           <Link
             key={child.href}
             href={child.href}
+            prefetch={prefetchRoutes}
             onClick={onNavigate}
             className={cn(
               "block rounded-lg px-3 py-2 text-sm transition-colors",
@@ -118,6 +121,16 @@ function SidebarNavChildLinks({
 
 export function SidebarNav({ collapsed, onNavigate }: SidebarNavProps) {
   const pathname = usePathname() ?? "";
+  const prevPathRef = useRef(pathname);
+  const [prefetchRoutes, setPrefetchRoutes] = useState(false);
+
+  useEffect(() => {
+    if (prevPathRef.current !== pathname) {
+      setPrefetchRoutes(true);
+      prevPathRef.current = pathname;
+    }
+  }, [pathname]);
+
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
     "User Management": true,
     Customer: true,
@@ -126,11 +139,13 @@ export function SidebarNav({ collapsed, onNavigate }: SidebarNavProps) {
   });
 
   useEffect(() => {
-    gsap.fromTo(
-      "[data-nav-item]",
-      { opacity: 0, x: -8 },
-      { opacity: 1, x: 0, duration: 0.4, stagger: 0.03, ease: "power2.out" },
-    );
+    void import("gsap").then(({ default: gsap }) => {
+      gsap.fromTo(
+        "[data-nav-item]",
+        { opacity: 0, x: -8 },
+        { opacity: 1, x: 0, duration: 0.4, stagger: 0.03, ease: "power2.out" },
+      );
+    });
   }, []);
 
   const toggleGroup = (title: string) => {
@@ -185,6 +200,7 @@ export function SidebarNav({ collapsed, onNavigate }: SidebarNavProps) {
                       onNavigate={onNavigate}
                       openGroups={openGroups}
                       toggleGroup={toggleGroup}
+                      prefetchRoutes={prefetchRoutes}
                     />
                   </div>
                 </div>
@@ -196,6 +212,7 @@ export function SidebarNav({ collapsed, onNavigate }: SidebarNavProps) {
             <Link
               key={item.title}
               href={item.href ?? "#"}
+              prefetch={prefetchRoutes && Boolean(item.href)}
               data-nav-item
               onClick={onNavigate}
               title={collapsed ? item.title : undefined}

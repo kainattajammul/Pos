@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import {
   Bell,
@@ -23,9 +24,23 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { InventoryNavDropdown } from "@/components/repairs/inventory-nav-dropdown";
-import { RepairPriceCalculatorModal } from "@/components/repairs/repair-price-calculator/repair-price-calculator-modal";
 import { isAnyInventoryPage } from "@/lib/inventory-nav-items";
+
+const InventoryNavDropdown = dynamic(
+  () =>
+    import("@/components/repairs/inventory-nav-dropdown").then(
+      (m) => m.InventoryNavDropdown,
+    ),
+  { ssr: false },
+);
+
+const RepairPriceCalculatorModal = dynamic(
+  () =>
+    import("@/components/repairs/repair-price-calculator/repair-price-calculator-modal").then(
+      (m) => m.RepairPriceCalculatorModal,
+    ),
+  { ssr: false },
+);
 
 const REPAIR_PRICE_CALCULATOR_ITEM = "Repair Price Calculator v1.1" as const;
 

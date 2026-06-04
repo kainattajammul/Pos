@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/axios";
+import { uploadImage } from "@/services/upload.service";
 import type { RepairManufacturer } from "@/lib/repairs-pos-data";
 import type { ApiSuccessResponse } from "@/types/api";
 import type {
@@ -59,17 +60,10 @@ export async function uploadRepairManufacturerImage(
   repairCategoryId: number,
   file: File,
 ): Promise<UploadRepairManufacturerImageResult> {
-  const form = new FormData();
-  form.append("shopId", String(shopId));
-  form.append("repairCategoryId", String(repairCategoryId));
-  form.append("image", file);
-
-  const { data } = await apiClient.post<
-    ApiSuccessResponse<UploadRepairManufacturerImageResult>
-  >("/repair-manufacturers/upload-image", form, {
-    headers: { "Content-Type": "multipart/form-data" },
+  const uploaded = await uploadImage(file, {
+    prefix: `shop-${shopId}/category-${repairCategoryId}/manufacturers`,
   });
-  return data.data;
+  return { url: uploaded.url, path: uploaded.path };
 }
 
 export async function createRepairManufacturer(

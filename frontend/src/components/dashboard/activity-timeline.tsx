@@ -2,7 +2,6 @@
 
 import { Package, ShoppingCart, Wrench } from "lucide-react";
 import { useEffect, useRef } from "react";
-import gsap from "gsap";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { ActivityItem } from "@/types/dashboard";
@@ -26,12 +25,14 @@ export function ActivityTimeline({ items = [], isLoading }: ActivityTimelineProp
 
   useEffect(() => {
     if (!listRef.current || !items.length) return;
-    gsap.from(listRef.current.children, {
-      opacity: 0,
-      x: 12,
-      duration: 0.45,
-      stagger: 0.08,
-      ease: "power2.out",
+    void import("gsap").then(({ default: gsap }) => {
+      gsap.from(listRef.current!.children, {
+        opacity: 0,
+        x: 12,
+        duration: 0.45,
+        stagger: 0.08,
+        ease: "power2.out",
+      });
     });
   }, [items]);
 

@@ -9,6 +9,9 @@ node_modules/
 # Keep example env files
 !.env.example
 
+# Local uploaded files (STORAGE_DRIVER=local)
+backend/uploads/
+
 # Build / cache
 dist/
 build/

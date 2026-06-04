@@ -11,6 +11,8 @@ import {
   sortOrderForDeviceName,
   sortRepairDevices,
 } from "../utils/repairDeviceSort.js";
+import { deleteStoredImageIfReplaced } from "./storage/deleteImage.js";
+import { purgeRepairDeviceImages } from "./storage/repairImageCleanup.js";
 
 async function syncManufacturerDeviceSortOrders(shopId, repairManufacturerId) {
   const devices = await RepairDeviceModel.findByManufacturer(
@@ -239,7 +241,9 @@ export async function updateRepairDevice(id, payload) {
   }
 
   if (payload.imageUrl !== undefined) {
-    data.imageUrl = payload.imageUrl;
+    const nextImageUrl = payload.imageUrl?.trim() || null;
+    await deleteStoredImageIfReplaced(device.imageUrl, nextImageUrl);
+    data.imageUrl = nextImageUrl;
   }
 
   if (payload.iconVariant !== undefined) {
@@ -301,6 +305,7 @@ export async function deleteRepairDevice(id) {
     throw new ApiError(HTTP.NOT_FOUND, "Repair device not found");
   }
   const { shopId, repairManufacturerId } = device;
+  await purgeRepairDeviceImages(id);
   await RepairDeviceModel.delete(id);
   await syncManufacturerDeviceSortOrders(shopId, repairManufacturerId);
 }

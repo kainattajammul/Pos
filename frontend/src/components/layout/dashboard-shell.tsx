@@ -1,13 +1,22 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setMobileSidebarOpen, setSidebarCollapsed } from "@/store/ui-slice";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { AppNavbar } from "./app-navbar";
-import { AppSidebar } from "./app-sidebar";
 import { AppThemeToolbar } from "./app-theme-toolbar";
+
+const AppNavbar = dynamic(
+  () => import("./app-navbar").then((m) => m.AppNavbar),
+  { ssr: false },
+);
+
+const AppSidebar = dynamic(
+  () => import("./app-sidebar").then((m) => m.AppSidebar),
+  { ssr: false, loading: () => <aside className="hidden w-[72px] shrink-0 lg:block" /> },
+);
 
 function isRepairsRoute(pathname: string) {
   return (

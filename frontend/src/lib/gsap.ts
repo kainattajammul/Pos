@@ -1,15 +1,14 @@
-import gsap from "gsap";
-
 export const easings = {
   smooth: "power3.out",
   bounce: "back.out(1.2)",
   snap: "power2.inOut",
 } as const;
 
-export function fadeUp(
-  targets: gsap.TweenTarget,
-  options?: gsap.TweenVars,
+export async function fadeUp(
+  targets: string | object | Element | null,
+  options?: Record<string, unknown>,
 ) {
+  const { default: gsap } = await import("gsap");
   return gsap.fromTo(
     targets,
     { opacity: 0, y: 24 },
@@ -24,11 +23,12 @@ export function fadeUp(
   );
 }
 
-export function staggerChildren(
-  parent: gsap.TweenTarget,
+export async function staggerChildren(
+  parent: string | object | Element | null,
   childSelector: string,
-  options?: gsap.TweenVars,
+  options?: Record<string, unknown>,
 ) {
+  const { default: gsap } = await import("gsap");
   return gsap.from(`${typeof parent === "string" ? parent : ""} ${childSelector}`, {
     opacity: 0,
     y: 16,
@@ -39,11 +39,12 @@ export function staggerChildren(
   });
 }
 
-export function animateCounter(
+export async function animateCounter(
   element: HTMLElement,
   endValue: number,
   duration = 1.2,
 ) {
+  const { default: gsap } = await import("gsap");
   const obj = { value: 0 };
   return gsap.to(obj, {
     value: endValue,

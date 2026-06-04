@@ -10,6 +10,7 @@ import {
   DEFAULT_REPAIR_DEVICE_PARTS,
   REPAIR_PART_IMAGE_VARIANTS,
 } from "../data/defaultRepairDeviceParts.js";
+import { deleteStoredImage, deleteStoredImageIfReplaced } from "./storage/deleteImage.js";
 
 async function ensureShopExists(shopId) {
   const shop = await ShopModel.findById(shopId);
@@ -208,7 +209,9 @@ export async function updateRepairDevicePart(id, payload) {
   }
 
   if (payload.imageUrl !== undefined) {
-    data.imageUrl = payload.imageUrl;
+    const nextImageUrl = payload.imageUrl?.trim() || null;
+    await deleteStoredImageIfReplaced(part.imageUrl, nextImageUrl);
+    data.imageUrl = nextImageUrl;
   }
 
   if (payload.sortOrder !== undefined) {
@@ -234,6 +237,9 @@ export async function deleteRepairDevicePart(id) {
   const part = await RepairDevicePartModel.findById(id);
   if (!part) {
     throw new ApiError(HTTP.NOT_FOUND, "Repair device part not found");
+  }
+  if (part.imageUrl) {
+    await deleteStoredImage(part.imageUrl);
   }
   await RepairDevicePartModel.delete(id);
 }

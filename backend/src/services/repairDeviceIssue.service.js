@@ -11,6 +11,7 @@ import {
   REPAIR_DEVICE_ISSUE_ICON_KEYS,
   searchRepairDeviceIssueIcons,
 } from "../data/defaultRepairDeviceIssues.js";
+import { deleteStoredImage, deleteStoredImageIfReplaced } from "./storage/deleteImage.js";
 
 async function ensureShopExists(shopId) {
   const shop = await ShopModel.findById(shopId);
@@ -197,7 +198,9 @@ export async function updateRepairDeviceIssue(id, payload) {
   }
 
   if (payload.imageUrl !== undefined) {
-    data.imageUrl = payload.imageUrl;
+    const nextImageUrl = payload.imageUrl?.trim() || null;
+    await deleteStoredImageIfReplaced(issue.imageUrl, nextImageUrl);
+    data.imageUrl = nextImageUrl;
   }
 
   if (payload.sortOrder !== undefined) {
@@ -223,6 +226,9 @@ export async function deleteRepairDeviceIssue(id) {
   const issue = await RepairDeviceIssueModel.findById(id);
   if (!issue) {
     throw new ApiError(HTTP.NOT_FOUND, "Repair device issue not found");
+  }
+  if (issue.imageUrl) {
+    await deleteStoredImage(issue.imageUrl);
   }
   await RepairDeviceIssueModel.delete(id);
 }

@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/axios";
+import { uploadImage } from "@/services/upload.service";
 import { normalizeRepairProblemIcon } from "@/lib/repair-issue-icons";
 import type { RepairProblem } from "@/lib/repairs-problems-data";
 import { REPAIR_PROBLEMS_FALLBACK } from "@/lib/repairs-problems-data";
@@ -77,19 +78,10 @@ export async function uploadRepairDeviceIssueImage(
   repairDeviceId: number,
   file: File,
 ): Promise<UploadRepairDeviceIssueImageResult> {
-  const form = new FormData();
-  form.append("shopId", String(shopId));
-  form.append("repairCategoryId", String(repairCategoryId));
-  form.append("repairManufacturerId", String(repairManufacturerId));
-  form.append("repairDeviceId", String(repairDeviceId));
-  form.append("image", file);
-
-  const { data } = await apiClient.post<
-    ApiSuccessResponse<UploadRepairDeviceIssueImageResult>
-  >("/repair-device-issues/upload-image", form, {
-    headers: { "Content-Type": "multipart/form-data" },
+  const uploaded = await uploadImage(file, {
+    prefix: `shop-${shopId}/category-${repairCategoryId}/manufacturer-${repairManufacturerId}/device-${repairDeviceId}/issues`,
   });
-  return data.data;
+  return { url: uploaded.url, path: uploaded.path };
 }
 
 export async function createRepairDeviceIssue(

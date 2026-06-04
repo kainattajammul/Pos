@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import Image from "next/image";
+import { useUploadImage } from "@/hooks/use-upload-image";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -201,7 +203,10 @@ export function NewProductPageView() {
   const [openDescription, setOpenDescription] = useState(false);
   const [openAdditionalDetails, setOpenAdditionalDetails] = useState(true);
   const [selectedImageName, setSelectedImageName] = useState<string>("");
+  const [productImageUrl, setProductImageUrl] = useState<string>("");
+  const [productImagePath, setProductImagePath] = useState<string>("");
   const imageRef = useRef<HTMLInputElement>(null);
+  const uploadImage = useUploadImage("inventory/products");
 
   const {
     register,
@@ -250,15 +255,19 @@ export function NewProductPageView() {
       toast.error("UPC must be unique.");
       return;
     }
+    if (productImageUrl) {
+      // Image metadata (productImagePath) ready when product create API is wired.
+      void productImagePath;
+    }
     toast.success(mode === "save-add-new" ? "Product saved. Ready for next one." : "Product saved.");
   };
 
   const onPickImage = () => imageRef.current?.click();
-  const onImageChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+  const onImageChange: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      toast.error("Only image files are allowed.");
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      toast.error("Only JPEG, PNG, or WebP images are allowed.");
       e.currentTarget.value = "";
       return;
     }
@@ -267,7 +276,16 @@ export function NewProductPageView() {
       e.currentTarget.value = "";
       return;
     }
-    setSelectedImageName(file.name);
+    try {
+      const uploaded = await uploadImage.mutateAsync({ file });
+      setSelectedImageName(file.name);
+      setProductImageUrl(uploaded.url);
+      setProductImagePath(uploaded.path);
+      toast.success("Image uploaded");
+    } catch {
+      /* toast from hook */
+    }
+    e.currentTarget.value = "";
   };
 
   return (
@@ -495,16 +513,38 @@ export function NewProductPageView() {
                       </div>
                       <div className="space-y-1.5">
                         <Label>Images</Label>
-                        <input ref={imageRef} type="file" accept="image/*" className="hidden" onChange={onImageChange} />
+                        <input
+                          ref={imageRef}
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp"
+                          className="hidden"
+                          onChange={onImageChange}
+                        />
                         <button
                           type="button"
                           onClick={onPickImage}
-                          className="flex h-20 w-full flex-col items-center justify-center rounded-md border border-dashed border-neutral-300 bg-neutral-50 text-neutral-600 hover:bg-neutral-100"
+                          disabled={uploadImage.isPending}
+                          className="flex h-20 w-full flex-col items-center justify-center rounded-md border border-dashed border-neutral-300 bg-neutral-50 text-neutral-600 hover:bg-neutral-100 disabled:opacity-60"
                         >
                           <ImagePlus className="mb-1 size-4" />
-                          <span className="text-xs font-medium">{selectedImageName || "Add Image"}</span>
-                          <span className="text-[11px] text-neutral-400">5MB</span>
+                          <span className="text-xs font-medium">
+                            {uploadImage.isPending
+                              ? "Uploading…"
+                              : selectedImageName || "Add Image"}
+                          </span>
+                          <span className="text-[11px] text-neutral-400">JPEG, PNG, WebP · 5MB</span>
                         </button>
+                        {productImageUrl ? (
+                          <div className="relative mt-2 size-20 overflow-hidden rounded border border-neutral-200">
+                            <Image
+                              src={productImageUrl}
+                              alt="Product preview"
+                              fill
+                              className="object-contain"
+                              unoptimized
+                            />
+                          </div>
+                        ) : null}
                       </div>
                     </div>
                   </div>

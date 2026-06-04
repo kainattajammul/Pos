@@ -6,6 +6,8 @@ import { ShopModel } from "../models/shop.model.js";
 import { slugify } from "../utils/slugify.js";
 import { searchRepairManufacturerBrands } from "../data/repairManufacturerBrands.js";
 import { DEFAULT_REPAIR_MANUFACTURERS } from "../data/defaultRepairManufacturers.js";
+import { deleteStoredImageIfReplaced } from "./storage/deleteImage.js";
+import { purgeRepairManufacturerImages } from "./storage/repairImageCleanup.js";
 
 async function ensureShopExists(shopId) {
   const shop = await ShopModel.findById(shopId);
@@ -164,7 +166,9 @@ export async function updateRepairManufacturer(
   }
 
   if (imageUrl !== undefined) {
-    data.imageUrl = imageUrl?.trim() || null;
+    const nextImageUrl = imageUrl?.trim() || null;
+    await deleteStoredImageIfReplaced(manufacturer.imageUrl, nextImageUrl);
+    data.imageUrl = nextImageUrl;
   }
 
   if (logoSlug !== undefined) {
@@ -188,5 +192,6 @@ export async function deleteRepairManufacturer(id) {
     throw new ApiError(HTTP.NOT_FOUND, "Repair manufacturer not found");
   }
 
+  await purgeRepairManufacturerImages(id);
   await RepairManufacturerModel.delete(id);
 }

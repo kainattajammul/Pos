@@ -23,6 +23,19 @@ export const env = {
   devAuthBypass: process.env.ENABLE_DEV_AUTH_BYPASS === "true" && process.env.NODE_ENV !== "production",
   supabaseUrl: process.env.SUPABASE_URL ?? "",
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
+  /** Bucket for STORAGE_DRIVER=supabase (SUPABASE_BUCKET aliases legacy name). */
+  supabaseBucket:
+    process.env.SUPABASE_BUCKET ??
+    process.env.REPAIR_CATEGORY_STORAGE_BUCKET ??
+    "repair-category-images",
   repairCategoryStorageBucket:
-    process.env.REPAIR_CATEGORY_STORAGE_BUCKET ?? "repair-category-images",
+    process.env.REPAIR_CATEGORY_STORAGE_BUCKET ??
+    process.env.SUPABASE_BUCKET ??
+    "repair-category-images",
+  /** supabase | local (cPanel) */
+  storageDriver: (process.env.STORAGE_DRIVER ?? "supabase").toLowerCase(),
+  /** Absolute path for local uploads, e.g. /home/user/public_html/uploads */
+  uploadDir: process.env.UPLOAD_DIR ?? "",
+  /** Public base URL for local files, e.g. https://yourdomain.com/uploads */
+  publicUploadUrl: process.env.PUBLIC_UPLOAD_URL ?? "",
 };

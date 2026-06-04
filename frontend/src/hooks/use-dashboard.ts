@@ -49,6 +49,7 @@ export function useRevenueAnalytics(days = 30) {
     queryKey: queryKeys.dashboard.revenue(days),
     queryFn: () =>
       resolveDashboardData(() => fetchRevenueAnalytics(days), mockRevenue),
+    staleTime: 5 * 60 * 1000,
   });
 }
 
@@ -57,6 +58,7 @@ export function useMonthlySales(year = new Date().getFullYear()) {
     queryKey: queryKeys.dashboard.monthlySales(year),
     queryFn: () =>
       resolveDashboardData(() => fetchMonthlySales(year), mockMonthlySales),
+    staleTime: 5 * 60 * 1000,
   });
 }
 
@@ -65,6 +67,7 @@ export function useRepairReports() {
     queryKey: queryKeys.dashboard.repairReports,
     queryFn: () =>
       resolveDashboardData(fetchRepairReports, mockRepairReport),
+    staleTime: 5 * 60 * 1000,
   });
 }
 
@@ -73,5 +76,6 @@ export function useRecentActivities(limit = 8) {
     queryKey: queryKeys.dashboard.activities(limit),
     queryFn: () =>
       resolveDashboardData(() => fetchRecentActivities(limit), mockActivities),
+    staleTime: 5 * 60 * 1000,
   });
 }

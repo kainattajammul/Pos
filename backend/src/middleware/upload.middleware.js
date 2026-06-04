@@ -7,7 +7,11 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024, files: 1 },
 });
 
-export const repairCategoryImageUpload = upload.single("image");
+/** Memory storage — works for Supabase (buffer upload) and local (write from buffer). */
+export const imageUpload = upload.single("image");
+
+/** @deprecated Use imageUpload — kept for existing repair route imports */
+export const repairCategoryImageUpload = imageUpload;
 
 export function handleMulterError(err, _req, _res, next) {
   if (!err) return next();

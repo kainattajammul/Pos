@@ -24,16 +24,20 @@ async function start() {
         .then((ok) => {
           if (ok) {
             console.log(
-              `Supabase storage: bucket "${env.repairCategoryStorageBucket}" ready (public)`,
+              `Supabase storage: bucket "${env.supabaseBucket}" ready (public)`,
             );
           }
         })
         .catch((err) => {
           console.warn("Supabase storage setup failed:", err.message);
         });
+    } else if (env.storageDriver === "local") {
+      console.log(
+        `Local storage: files saved under UPLOAD_DIR, served at ${env.publicUploadUrl || "(set PUBLIC_UPLOAD_URL)"}`,
+      );
     } else {
       console.warn(
-        "Supabase storage: not configured — set SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, and create the storage bucket. Restart the server after updating .env.",
+        "Supabase storage: not configured — set SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_BUCKET. Or use STORAGE_DRIVER=local.",
       );
     }
   });

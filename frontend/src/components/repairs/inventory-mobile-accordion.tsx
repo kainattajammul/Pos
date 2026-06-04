@@ -7,7 +7,6 @@ import { useState } from "react";
 import {
   type InventoryExpandableSection,
   type InventoryMegaMenuItem,
-  type InventoryMenuRow,
   getMenuLayout,
   isAnyInventoryPage,
 } from "@/lib/inventory-nav-items";

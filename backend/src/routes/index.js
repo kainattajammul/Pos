@@ -12,6 +12,7 @@ import repairDevicePartRoutes from "./repairDevicePart.routes.js";
 import salesCommissionAgentRoutes from "./salesCommissionAgent.routes.js";
 import repairSearchRoutes from "./repairSearch.routes.js";
 import dashboardRoutes from "./dashboard.routes.js";
+import uploadRoutes from "./upload.routes.js";
 
 const router = Router();
 
@@ -35,11 +36,13 @@ router.get("/", (_req, res) => {
         salesCommissionAgents: "/api/v1/sales-commission-agents",
         repairs: "/api/v1/repairs",
         dashboard: "/api/v1/dashboard",
+        upload: "/api/v1/upload",
       },
     },
   });
 });
 
+router.use("/upload", uploadRoutes);
 router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
 router.use("/roles", roleRoutes);
