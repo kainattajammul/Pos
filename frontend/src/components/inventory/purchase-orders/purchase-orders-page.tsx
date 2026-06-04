@@ -91,15 +91,11 @@ export function PurchaseOrdersPage() {
       <RepairsTopNav />
       <main className="flex-1 overflow-auto">
         <div className="mx-auto w-full max-w-[1600px] space-y-4 p-4 md:p-5">
-          <header className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <h1 className="text-xl font-semibold text-[#111827] md:text-[22px]">
-              Manage Purchase Orders
-            </h1>
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6 lg:justify-end">
-              <PurchaseOrderSummary
-                totalValue={summary.totalValue}
-                amountPayable={summary.amountPayable}
-              />
+          <header className="space-y-4">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <h1 className="text-xl font-semibold text-[#111827] md:text-[22px]">
+                Manage Purchase Orders
+              </h1>
               <PurchaseOrderPageToolbar
                 filtersPinned={filtersPinned}
                 onToggleFilters={handleNewFilter}
@@ -107,6 +103,10 @@ export function PurchaseOrdersPage() {
                 onExport={handleExport}
               />
             </div>
+            <PurchaseOrderSummary
+              totalValue={summary.totalValue}
+              amountPayable={summary.amountPayable}
+            />
           </header>
 
           <PurchaseOrderFilters
