@@ -1,5 +1,19 @@
 import type { Metadata } from "next";
-import { ProductsManagementView } from "@/components/inventory/products/products-management-view";
+import dynamic from "next/dynamic";
+
+const ProductsManagementView = dynamic(
+  () =>
+    import("@/components/inventory/products/products-management-view").then(
+      (m) => m.ProductsManagementView,
+    ),
+  {
+    loading: () => (
+      <div className="flex min-h-[320px] items-center justify-center bg-[#F8FAFC] text-sm text-[#6B7280]">
+        Loading products…
+      </div>
+    ),
+  },
+);
 
 export const metadata: Metadata = {
   title: "Manage Products",

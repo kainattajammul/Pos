@@ -15,6 +15,18 @@ async function start() {
     process.exit(1);
   }
 
+  try {
+    await connectDatabase();
+    console.log("Database connected");
+  } catch (err) {
+    console.warn("Database offline:", err.message);
+    if (env.devAuthBypass) {
+      console.warn("ENABLE_DEV_AUTH_BYPASS=true — login works without Postgres (dev only).");
+    } else {
+      console.warn("Set DATABASE_URL in .env or ENABLE_DEV_AUTH_BYPASS=true for local dev.");
+    }
+  }
+
   const app = createApp();
   const server = app.listen(env.port, () => {
     console.log(`POS API listening on http://localhost:${env.port}`);
@@ -41,17 +53,6 @@ async function start() {
       );
     }
   });
-
-  connectDatabase()
-    .then(() => console.log("Database connected"))
-    .catch((err) => {
-      console.warn("Database offline:", err.message);
-      if (env.devAuthBypass) {
-        console.warn("ENABLE_DEV_AUTH_BYPASS=true — login works without Postgres (dev only).");
-      } else {
-        console.warn("Set DATABASE_URL in .env or ENABLE_DEV_AUTH_BYPASS=true for local dev.");
-      }
-    });
 
   const shutdown = async () => {
     console.log("Shutting down...");

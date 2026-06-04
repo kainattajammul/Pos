@@ -39,12 +39,18 @@ npm run dev:clean
 
 `dev:clean` deletes `.next` and starts dev with Turbopack. Use `npm run dev:webpack` for the classic webpack dev server.
 
-### Fast local workflow
+### Fast local dev (avoid false “slow UX”)
 
-- Prefer **`npm run dev`** (keeps the `.next` cache). Avoid **`npm run dev:clean`** unless manifests are corrupt (ENOENT under `.next`) or you changed bundler config.
-- Run **one** dev server (port 3000). A second instance on 3001 forces a cold cache and looks much slower.
-- First visit to a route compiles on demand (~seconds in dev); **revisit the same route** to stay near ~200ms.
-- For demos or prod-like speed, use **`npm run build`** then **`npm run start`**.
+- **One** dev server on **port 3000**. On Windows if Next picks 3001: `$env:PORT='3000'; npm run dev`
+- **Do not** run `npm run build` while `npm run dev` is running — corrupts `.next` (`ENOENT`, `_buildManifest.js.tmp`).
+- **`npm run dev:clean`** only when the cache is broken or after ENOENT; not for everyday use.
+- **Judge user-facing speed** with `npm run build` then **`npm run start`** (production). Use dev **2nd GET** in the terminal for warm dev speed — not the first compile.
+- **Cold dev first hit** (~15s for `/dashboard` and `/repairs`) is Turbopack on-demand compile — **not** production UX.
+- If port 3000 is busy, stop the other `node` process before measuring; two servers cause misleading timings and cache errors.
+- After auth hydrates, **AuthGuard** idle-prefetches `/dashboard` and `/repairs`; the sidebar also prefetches key manage routes after mount.
+- Optional: exclude `frontend/.next` from real-time antivirus scanning if ENOENT or slow compiles persist on Windows.
+
+**Browser sign-off (production):** `npm run start` on :3000, then Chrome/Edge repeat visit. Optional script: `npx playwright install` (once) and `node scripts/browser-tti.mjs` (uses system Edge).
 
 ### Mock mode (default)
 

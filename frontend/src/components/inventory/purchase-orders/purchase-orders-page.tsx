@@ -16,7 +16,6 @@ import {
   matchesPurchaseOrderFilters,
   type PurchaseOrderDateTab,
   type PurchaseOrderFiltersState,
-  type PurchaseOrderRecord,
 } from "@/components/inventory/purchase-orders/purchase-order-types";
 import { APP_CONFIG } from "@/constants/config";
 import { usePurchaseOrders } from "@/hooks/use-purchase-orders";

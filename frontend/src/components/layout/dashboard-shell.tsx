@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setMobileSidebarOpen, setSidebarCollapsed } from "@/store/ui-slice";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
@@ -29,11 +29,27 @@ function isRepairsRoute(pathname: string) {
   );
 }
 
+const IDLE_PREFETCH_ROUTES = ["/dashboard", "/repairs", "/users", "/roles"] as const;
+
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const mobileOpen = useAppSelector((s) => s.ui.mobileSidebarOpen);
   const repairsLayout = isRepairsRoute(pathname);
+
+  useEffect(() => {
+    const prefetch = () => {
+      for (const href of IDLE_PREFETCH_ROUTES) {
+        router.prefetch(href);
+      }
+    };
+    if (typeof requestIdleCallback !== "undefined") {
+      const id = requestIdleCallback(prefetch, { timeout: 2000 });
+      return () => cancelIdleCallback(id);
+    }
+    prefetch();
+  }, [router]);
 
   useEffect(() => {
     if (!repairsLayout) return;

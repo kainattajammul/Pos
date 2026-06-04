@@ -4,7 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import type { PosTab } from "@/lib/repairs-pos-data";
 import { RepairTicketProvider } from "@/contexts/repair-ticket-context";
-import { RepairsTopNav } from "@/components/repairs/repairs-top-nav";
+
+const RepairsTopNav = dynamic(
+  () => import("@/components/repairs/repairs-top-nav").then((m) => m.RepairsTopNav),
+  { ssr: false },
+);
 import { RepairsPosBar } from "@/components/repairs/repairs-pos-bar";
 import type { RepairWorkspaceProviderProps } from "@/components/repairs/repairs-pos-provider-types";
 
@@ -82,13 +86,18 @@ function RepairsPanelSkeleton() {
 function RepairsMainPanel({
   activeTab,
   providerProps,
+  workspaceReady,
   onProviderPropsChange,
 }: {
   activeTab: PosTab;
   providerProps: RepairWorkspaceProviderProps;
+  workspaceReady: boolean;
   onProviderPropsChange: (props: RepairWorkspaceProviderProps) => void;
 }) {
   if (activeTab === "Repairs") {
+    if (!workspaceReady) {
+      return <RepairsPanelSkeleton />;
+    }
     return <RepairsPosRepairWorkspace onProviderPropsChange={onProviderPropsChange} />;
   }
   if (activeTab === "Unlocking") {
@@ -115,6 +124,7 @@ export function RepairsPosView() {
   const [activeTab, setActiveTab] = useState<PosTab>("Repairs");
   const [providerProps, setProviderProps] =
     useState<RepairWorkspaceProviderProps>(EMPTY_PROVIDER_PROPS);
+  const [workspaceReady, setWorkspaceReady] = useState(false);
   const [showCart, setShowCart] = useState(false);
   const onProviderPropsChangeRef = useRef<(props: RepairWorkspaceProviderProps) => void>(
     setProviderProps,
@@ -126,8 +136,35 @@ export function RepairsPosView() {
   };
 
   useEffect(() => {
-    setShowCart(true);
-  }, []);
+    if (activeTab !== "Repairs") {
+      setWorkspaceReady(true);
+      setShowCart(true);
+      return;
+    }
+
+    setWorkspaceReady(false);
+    setShowCart(false);
+
+    const enableWorkspace = () => setWorkspaceReady(true);
+    if (typeof requestIdleCallback !== "undefined") {
+      const id = requestIdleCallback(enableWorkspace, { timeout: 200 });
+      return () => cancelIdleCallback(id);
+    }
+    const t = window.setTimeout(enableWorkspace, 0);
+    return () => window.clearTimeout(t);
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (activeTab !== "Repairs" || !workspaceReady) {
+      if (activeTab !== "Repairs") {
+        setShowCart(true);
+      }
+      return;
+    }
+    void import("@/components/repairs/repairs-pos-workspace-core").then(() => {
+      setShowCart(true);
+    });
+  }, [activeTab, workspaceReady]);
 
   return (
     <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[#F8FAFC]">
@@ -148,6 +185,7 @@ export function RepairsPosView() {
             <RepairsMainPanel
               activeTab={activeTab}
               providerProps={providerProps}
+              workspaceReady={workspaceReady}
               onProviderPropsChange={handleProviderPropsChange}
             />
           </div>

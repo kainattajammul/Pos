@@ -12,7 +12,19 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (hydrated && !isAuthenticated) {
       router.replace("/login");
+      return;
     }
+    if (!hydrated || !isAuthenticated) return;
+
+    const prefetch = () => {
+      router.prefetch("/dashboard");
+      router.prefetch("/repairs");
+    };
+    if (typeof requestIdleCallback !== "undefined") {
+      const id = requestIdleCallback(prefetch, { timeout: 1500 });
+      return () => cancelIdleCallback(id);
+    }
+    prefetch();
   }, [hydrated, isAuthenticated, router]);
 
   if (!hydrated) {

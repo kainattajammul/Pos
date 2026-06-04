@@ -1,5 +1,19 @@
 import type { Metadata } from "next";
-import { SalesCommissionAgentsManagementView } from "@/components/sales-commission-agents/sales-commission-agents-management-view";
+import dynamic from "next/dynamic";
+
+const SalesCommissionAgentsManagementView = dynamic(
+  () =>
+    import("@/components/sales-commission-agents/sales-commission-agents-management-view").then(
+      (m) => m.SalesCommissionAgentsManagementView,
+    ),
+  {
+    loading: () => (
+      <div className="flex min-h-[320px] items-center justify-center text-sm text-muted-foreground">
+        Loading agents…
+      </div>
+    ),
+  },
+);
 
 export const metadata: Metadata = {
   title: "Sales Commission Agents",

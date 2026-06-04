@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import {
   getCoreRowModel,
   getPaginationRowModel,
@@ -15,17 +16,40 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { createProductColumns } from "@/components/inventory/products/columns";
-import { DeleteProductDialog } from "@/components/inventory/products/delete-product-dialog";
-import { InventoryAdjustmentDialog } from "@/components/inventory/products/inventory-adjustment-dialog";
 import {
   DEFAULT_PRODUCT_ADVANCED_FILTERS,
   ProductAdvancedFilters,
   type ProductAdvancedFiltersState,
 } from "@/components/inventory/products/product-advanced-filters";
-import { ProductFormDialog } from "@/components/inventory/products/product-form-dialog";
 import { ProductPageToolbar } from "@/components/inventory/products/product-page-toolbar";
 import { ProductSummaryCards } from "@/components/inventory/products/product-summary-cards";
-import { ProductTable } from "@/components/inventory/products/product-table";
+
+const DeleteProductDialog = dynamic(
+  () =>
+    import("@/components/inventory/products/delete-product-dialog").then(
+      (m) => m.DeleteProductDialog,
+    ),
+  { ssr: false },
+);
+const InventoryAdjustmentDialog = dynamic(
+  () =>
+    import("@/components/inventory/products/inventory-adjustment-dialog").then(
+      (m) => m.InventoryAdjustmentDialog,
+    ),
+  { ssr: false },
+);
+const ProductFormDialog = dynamic(
+  () =>
+    import("@/components/inventory/products/product-form-dialog").then(
+      (m) => m.ProductFormDialog,
+    ),
+  { ssr: false },
+);
+const ProductTable = dynamic(
+  () =>
+    import("@/components/inventory/products/product-table").then((m) => m.ProductTable),
+  { ssr: false, loading: () => <div className="min-h-[200px] animate-pulse rounded-md bg-muted/40" /> },
+);
 import type { ColumnMeta } from "@/components/inventory/products/column-customizer";
 import { RepairsTopNav } from "@/components/repairs/repairs-top-nav";
 import { EmptyState } from "@/components/shared/empty-state";

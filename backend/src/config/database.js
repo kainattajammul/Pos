@@ -18,8 +18,11 @@ function isRetryableConnectionError(error) {
   }
 
   const message = String(error?.message ?? "");
-  return /connection reset|forcibly closed|can't reach database|econnreset|etimedout|broken pipe/i.test(
-    message,
+  return (
+    /engine is not yet connected/i.test(message) ||
+    /connection reset|forcibly closed|can't reach database|econnreset|etimedout|broken pipe/i.test(
+      message,
+    )
   );
 }
 
@@ -29,6 +32,9 @@ const prisma = basePrisma.$extends({
     $allModels: {
       async $allOperations({ args, query }) {
         try {
+          if (!connected) {
+            await connectDatabase(3);
+          }
           return await query(args);
         } catch (error) {
           if (isRetryableConnectionError(error)) {

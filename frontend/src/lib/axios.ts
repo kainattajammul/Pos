@@ -79,7 +79,7 @@ export function getApiErrorMessage(error: unknown, fallback = "Something went wr
       return "Server error — ensure the POS backend is running on the correct port.";
     }
     if (error.code === "ERR_NETWORK") {
-      return "Cannot reach API — start the backend or use mock login.";
+      return `Cannot reach API at ${APP_CONFIG.apiUrl} — start the backend (port 4000) or use mock login on /login.`;
     }
     return error.message || fallback;
   }
