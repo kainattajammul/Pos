@@ -20,11 +20,13 @@ const TICKET_ACTIONS = [
 ] as const;
 
 interface TicketActionsDropdownProps {
+  onView?: () => void;
   onTransferTicket?: () => void;
   onViewAddComment?: () => void;
 }
 
 export function TicketActionsDropdown({
+  onView,
   onTransferTicket,
   onViewAddComment,
 }: TicketActionsDropdownProps) {
@@ -67,6 +69,7 @@ export function TicketActionsDropdown({
             <DropdownMenuItem
               key={action}
               onClick={() => {
+                if (action === "View") onView?.();
                 if (action === "Transfer Ticket") onTransferTicket?.();
                 if (action === "View / Add Comment") onViewAddComment?.();
               }}

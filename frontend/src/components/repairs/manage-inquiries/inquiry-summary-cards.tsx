@@ -9,6 +9,7 @@ import {
   FolderOpen,
   ScrollText,
 } from "lucide-react";
+import { formatCurrency } from "@/utils/format";
 
 interface SummaryCard {
   id: string;
@@ -26,10 +27,6 @@ interface InquirySummaryCardsProps {
   cancelledInquiries: number;
   totalValueCreated: number;
   totalValueClosed: number;
-}
-
-function money(amount: number) {
-  return `£${amount.toFixed(2)}`;
 }
 
 export function InquirySummaryCards({
@@ -73,7 +70,7 @@ export function InquirySummaryCards({
       id: "createdValue",
       title: "Total Value of All Inquiries",
       subtitle: "Inquiries Created (0)",
-      value: money(totalValueCreated),
+      value: formatCurrency(totalValueCreated),
       icon: BarChart3,
       iconColor: "text-[#3AAE5A]",
     },
@@ -81,7 +78,7 @@ export function InquirySummaryCards({
       id: "closedValue",
       title: "Inquiries Closed",
       subtitle: "Inquiries Closed (0)",
-      value: money(totalValueClosed),
+      value: formatCurrency(totalValueClosed),
       icon: ScrollText,
       iconColor: "text-[#1C9BD9]",
     },

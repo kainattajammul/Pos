@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   CalendarDays,
   ChevronDown,
@@ -12,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { RepairsTopNav } from "@/components/repairs/repairs-top-nav";
 import { DateFilterTabs } from "@/components/repairs/manage-tickets/date-filter-tabs";
+import { MOCK_TICKETS } from "@/components/repairs/manage-tickets/ticket-mock-data";
 import {
   TicketTable,
   type TicketRow,
@@ -21,59 +23,6 @@ import {
   TicketHistoryModal,
   type TicketHistoryEntry,
 } from "@/components/repairs/manage-tickets/ticket-history-modal";
-
-const MOCK_TICKETS: TicketRow[] = [
-  {
-    id: "T-4",
-    device: "iPhone 15",
-    location: "---",
-    service: ["Back Camera Replacement", "Battery Replacement"],
-    ticketItems: "front camera",
-    customer: "Walkin Customer",
-    taskType: "In-Store",
-    assignedTo: "Faisal She",
-    dueAt: "July 24, 2025 at 6:29 PM",
-    createdAt: "July 24, 2025 at 5:32 PM",
-    last: "July at 1",
-    highlighted: true,
-  },
-  {
-    id: "T-2",
-    device: "iPhone 15 Pro Max",
-    location: "---",
-    service: ["Back Camera Replacement"],
-    customer: "Walkin Customer",
-    taskType: "On-Site",
-    assignedTo: "Faisal She",
-    dueAt: "July 24, 2025 at 2:30 PM",
-    createdAt: "July 24, 2025 at 1:17 PM",
-    last: "July at 1",
-    highlighted: true,
-  },
-  {
-    id: "T-1",
-    device: "iPhone 15",
-    location: "---",
-    service: ["Back Camera Replacement"],
-    ticketItems: "front camera",
-    customer: "Walkin Customer",
-    taskType: "In-Store",
-    assignedTo: "Faisal She",
-    dueAt: "July 24, 2025 at 1:04 PM",
-    createdAt: "July 24, 2025 at 12:01 PM",
-    last: "July at 1",
-    highlighted: true,
-  },
-  {
-    id: "T-3",
-    device: "",
-    location: "",
-    service: [],
-    customer: "Walkin Customer",
-    createdAt: "July 24, 2025 at 2:43 PM",
-    draft: true,
-  },
-];
 
 const MOCK_HISTORY_BY_TICKET: Record<string, TicketHistoryEntry[]> = {
   "T-4": [
@@ -116,6 +65,15 @@ const MOCK_HISTORY_BY_TICKET: Record<string, TicketHistoryEntry[]> = {
     },
   ],
   "T-3": [],
+  "T-5": [
+    {
+      id: "h6",
+      userName: "Faisal Sheikh",
+      message:
+        "created ticket iPhone 15 Pro Max - Screen (Digitizer + LCD) Replacement",
+      createdAt: "2025-07-25 13:49:43",
+    },
+  ],
 };
 
 function ToolbarButton({
@@ -144,11 +102,16 @@ function ToolbarButton({
 }
 
 export function ManageTicketsPage() {
+  const router = useRouter();
   const [transferModalOpen, setTransferModalOpen] = useState(false);
   const [historyModalOpen, setHistoryModalOpen] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<TicketRow | null>(null);
   const [historyByTicket, setHistoryByTicket] =
     useState<Record<string, TicketHistoryEntry[]>>(MOCK_HISTORY_BY_TICKET);
+
+  const handleViewClick = (row: TicketRow) => {
+    router.push(`/repairs/manage-tickets/${encodeURIComponent(row.id)}`);
+  };
 
   const handleTransferClick = (row: TicketRow) => {
     setSelectedTicket(row);
@@ -190,6 +153,7 @@ export function ManageTicketsPage() {
           <DateFilterTabs active="7 DAYS" />
           <TicketTable
             rows={MOCK_TICKETS}
+            onView={handleViewClick}
             onTransferTicket={handleTransferClick}
             onViewAddComment={handleViewAddCommentClick}
           />

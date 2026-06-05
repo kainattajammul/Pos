@@ -17,9 +17,7 @@ function parseTaxRate(label: string): number {
   return match ? Number.parseFloat(match[1]) / 100 : 0;
 }
 
-export function formatCurrency(amount: number): string {
-  return `$${amount.toFixed(2)}`;
-}
+export { formatCurrency } from "@/utils/format";
 
 export function calculateRepairPrice(form: CalculatorFormState): CalculatorResult {
   const cost = Number.parseFloat(form.cost) || 0;

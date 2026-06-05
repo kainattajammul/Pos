@@ -98,7 +98,7 @@ export const INVENTORY_RIGHT_MENU: InventoryMegaMenuItem[] = [
   { id: "goods-received", label: "Goods Received Note", href: "/inventory/goods-received" },
   { id: "rma", label: "RMA", href: "/inventory/rma" },
   { id: "low-stock", label: "Low Stock Report", href: "/inventory/low-stock" },
-  { id: "summary", label: "Inventory Summary", href: "/inventory" },
+  { id: "summary", label: "Inventory Summary", href: "/inventory/summary" },
 ];
 
 export function isInventoryMenuItemActive(pathname: string, href: string): boolean {
@@ -122,6 +122,18 @@ export function isInventoryMenuItemActive(pathname: string, href: string): boole
     return (
       pathname === "/inventory/refurbishment" ||
       pathname.startsWith("/inventory/refurbishment/")
+    );
+  }
+  if (href === "/inventory/low-stock") {
+    return (
+      pathname === "/inventory/low-stock" ||
+      pathname.startsWith("/inventory/low-stock/")
+    );
+  }
+  if (href === "/inventory/summary") {
+    return (
+      pathname === "/inventory/summary" ||
+      pathname.startsWith("/inventory/summary/")
     );
   }
   if (href === "/purchases") {

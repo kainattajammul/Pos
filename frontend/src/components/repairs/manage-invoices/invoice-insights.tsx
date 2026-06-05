@@ -4,10 +4,7 @@ import { Pin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { InvoiceDonutChartPlaceholder } from "@/components/repairs/manage-invoices/invoice-donut-chart-placeholder";
 import type { InvoiceStats } from "@/components/repairs/manage-invoices/manage-invoices-types";
-
-function money(amount: number) {
-  return `£${amount.toFixed(2)}`;
-}
+import { formatCurrency } from "@/utils/format";
 
 function LegendItem({ color, label }: { color: string; label: string }) {
   return (
@@ -36,16 +33,16 @@ export function InvoiceInsights({ stats, insightsPinned, onTogglePin }: InvoiceI
             <ul className="space-y-2">
               <LegendItem
                 color="bg-[#FCD34D]"
-                label={`Total Sales: ${money(stats.totalSales)}`}
+                label={`Total Sales: ${formatCurrency(stats.totalSales)}`}
               />
               <LegendItem
                 color="bg-[#FDBA74]"
-                label={`Payment Received( Tax excluded): ${money(0)}`}
+                label={`Payment Received( Tax excluded): ${formatCurrency(0)}`}
               />
-              <LegendItem color="bg-[#FEF08A]" label={`Unpaid: ${money(0)}`} />
+              <LegendItem color="bg-[#FEF08A]" label={`Unpaid: ${formatCurrency(0)}`} />
               <LegendItem
                 color="bg-[#D6B08A]"
-                label={`Total Refund: ${money(stats.totalRefunds)}`}
+                label={`Total Refund: ${formatCurrency(stats.totalRefunds)}`}
               />
             </ul>
           </div>

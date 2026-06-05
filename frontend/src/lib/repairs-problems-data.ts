@@ -1,4 +1,5 @@
 import type { RepairProblemIcon } from "@/lib/repair-issue-icons";
+import { formatCurrency } from "@/utils/format";
 
 export type { RepairProblemIcon } from "@/lib/repair-issue-icons";
 
@@ -88,7 +89,7 @@ export const DEFAULT_REPAIR_PROBLEMS: RepairProblem[] = [
 ];
 
 export function formatRepairProblemPrice(price: number): string {
-  return `$${price.toFixed(2)}`;
+  return formatCurrency(price);
 }
 
 export function isAddProblemId(problemId: string): boolean {

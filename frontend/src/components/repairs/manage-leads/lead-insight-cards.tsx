@@ -3,10 +3,7 @@
 import { ChevronDown } from "lucide-react";
 import { LeadDonutChartPlaceholder } from "@/components/repairs/manage-leads/lead-donut-chart-placeholder";
 import type { LeadStats } from "@/components/repairs/manage-leads/manage-leads-types";
-
-function money(amount: number) {
-  return `£${amount.toFixed(2)}`;
-}
+import { formatCurrency } from "@/utils/format";
 
 function LegendItem({ color, label }: { color: string; label: string }) {
   return (
@@ -39,15 +36,15 @@ export function LeadInsightCards({ stats }: LeadInsightCardsProps) {
         <div className="flex flex-wrap items-center gap-4">
           <LeadDonutChartPlaceholder />
           <ul className="space-y-1.5">
-            <LegendItem color="bg-[#FCD34D]" label={`Won: ${money(stats.won)}`} />
-            <LegendItem color="bg-[#FB923C]" label={`Lost: ${money(stats.lost)}`} />
-            <LegendItem color="bg-[#86EFAC]" label={`Open Leads: ${money(stats.openLeads)}`} />
+            <LegendItem color="bg-[#FCD34D]" label={`Won: ${formatCurrency(stats.won)}`} />
+            <LegendItem color="bg-[#FB923C]" label={`Lost: ${formatCurrency(stats.lost)}`} />
+            <LegendItem color="bg-[#86EFAC]" label={`Open Leads: ${formatCurrency(stats.openLeads)}`} />
             <LegendItem
               color="bg-[#93C5FD]"
-              label={`In progress: ${money(stats.inProgress)}`}
+              label={`In progress: ${formatCurrency(stats.inProgress)}`}
             />
-            <LegendItem color="bg-[#FDE047]" label={`Expired: ${money(stats.expired)}`} />
-            <LegendItem color="bg-[#F9A8D4]" label={`Canceled: ${money(stats.canceled)}`} />
+            <LegendItem color="bg-[#FDE047]" label={`Expired: ${formatCurrency(stats.expired)}`} />
+            <LegendItem color="bg-[#F9A8D4]" label={`Canceled: ${formatCurrency(stats.canceled)}`} />
           </ul>
         </div>
         <InsightCardFooter label="LEADS" />
@@ -80,12 +77,12 @@ export function LeadInsightCards({ stats }: LeadInsightCardsProps) {
         <div className="flex flex-1 flex-col justify-center rounded-sm border border-[#E5E7EB] bg-white px-4 py-5">
           <p className="text-xs text-[#6B7280]">Total value of all Leads</p>
           <p className="mt-1 text-xl font-bold text-[#111827]">
-            {money(stats.totalValueAllLeads)}
+            {formatCurrency(stats.totalValueAllLeads)}
           </p>
         </div>
         <div className="flex flex-1 flex-col justify-center rounded-sm border border-[#E5E7EB] bg-white px-4 py-5">
           <p className="text-xs text-[#6B7280]">Leads Won</p>
-          <p className="mt-1 text-xl font-bold text-[#111827]">{money(stats.leadsWonValue)}</p>
+          <p className="mt-1 text-xl font-bold text-[#111827]">{formatCurrency(stats.leadsWonValue)}</p>
         </div>
       </article>
     </div>

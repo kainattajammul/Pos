@@ -3,14 +3,7 @@
 import { Info } from "lucide-react";
 import type { InventoryProduct } from "@/types/inventory-product";
 import { cn } from "@/lib/utils";
-
-function formatMoney(amount: number) {
-  return new Intl.NumberFormat(undefined, {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-  }).format(amount);
-}
+import { formatCurrency } from "@/utils/format";
 
 function SummaryCard({
   label,
@@ -53,12 +46,12 @@ export function ProductSummaryCards({ products }: { products: InventoryProduct[]
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
       <SummaryCard
         label="Stock Retail Value"
-        value={formatMoney(stockRetailValue)}
+        value={formatCurrency(stockRetailValue)}
         valueClassName="text-primary"
       />
       <SummaryCard
         label="Stock Cost Value"
-        value={formatMoney(stockCostValue)}
+        value={formatCurrency(stockCostValue)}
         valueClassName="text-primary"
       />
       <SummaryCard

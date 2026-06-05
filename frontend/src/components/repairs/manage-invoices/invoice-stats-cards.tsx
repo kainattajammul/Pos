@@ -2,10 +2,7 @@
 
 import { Info } from "lucide-react";
 import type { InvoiceStats } from "@/components/repairs/manage-invoices/manage-invoices-types";
-
-function money(amount: number) {
-  return `£${amount.toFixed(2)}`;
-}
+import { formatCurrency } from "@/utils/format";
 
 function StatCard({
   title,
@@ -36,17 +33,17 @@ export function InvoiceStatsCards({ stats }: InvoiceStatsCardsProps) {
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Total Sales" value={money(stats.totalSales)} />
+        <StatCard title="Total Sales" value={formatCurrency(stats.totalSales)} />
         <StatCard title="Total Invoices" value={String(stats.totalInvoices)} />
-        <StatCard title="Total Tax" value={money(stats.totalTax)} />
-        <StatCard title="Total Refunds" value={money(stats.totalRefunds)} />
+        <StatCard title="Total Tax" value={formatCurrency(stats.totalTax)} />
+        <StatCard title="Total Refunds" value={formatCurrency(stats.totalRefunds)} />
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Account Receivable" value={money(stats.accountReceivable)} />
+        <StatCard title="Account Receivable" value={formatCurrency(stats.accountReceivable)} />
         <StatCard
           title="Total Account Receivable"
           subtitle="As of Today"
-          value={money(stats.totalAccountReceivable)}
+          value={formatCurrency(stats.totalAccountReceivable)}
         />
       </div>
     </div>

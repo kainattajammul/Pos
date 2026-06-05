@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { InventoryProduct } from "@/types/inventory-product";
+import { formatCurrency } from "@/utils/format";
 
 type AdjustmentType = "increase" | "decrease";
 
@@ -40,14 +41,6 @@ function formatAdjustmentDate(date: Date) {
     hour12: true,
   }).format(date);
   return formatted.replace("AM", "am").replace("PM", "pm");
-}
-
-function formatMoney(amount: number) {
-  return new Intl.NumberFormat(undefined, {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-  }).format(amount);
 }
 
 const inputClass = "h-10 border-neutral-200 bg-white text-sm shadow-sm";
@@ -189,7 +182,7 @@ export function InventoryAdjustmentDialog({
           </div>
 
           <p className="text-sm font-semibold text-emerald-600">
-            Adjustment Value = {formatMoney(Number.isFinite(adjustmentValue) ? adjustmentValue : 0)}
+            Adjustment Value = {formatCurrency(Number.isFinite(adjustmentValue) ? adjustmentValue : 0)}
           </p>
 
           <div className="space-y-2">

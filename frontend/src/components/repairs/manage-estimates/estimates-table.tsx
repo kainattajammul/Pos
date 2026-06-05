@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatCurrency } from "@/utils/format";
 
 interface EstimatesTableProps {
   rows: EstimateRecord[];
@@ -85,7 +86,7 @@ export function EstimatesTable({
                 <TableCell>{row.customer}</TableCell>
                 <TableCell>{row.ticketLeadReference}</TableCell>
                 <TableCell>{row.createdDate}</TableCell>
-                <TableCell>£{row.total.toFixed(2)}</TableCell>
+                <TableCell>{formatCurrency(row.total)}</TableCell>
                 <TableCell>{row.status}</TableCell>
                 <TableCell>...</TableCell>
               </TableRow>

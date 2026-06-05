@@ -37,7 +37,9 @@ Uses **Turbopack** by default (`next dev --turbopack`). After changing `next.con
 npm run dev:clean
 ```
 
-`dev:clean` deletes `.next` and starts dev with Turbopack. Use `npm run dev:webpack` for the classic webpack dev server.
+`dev:clean` and `npm run dev:reset` delete `.next` and start dev with Turbopack. Use `npm run dev:webpack` for the classic webpack dev server.
+
+**Internal Server Error on refresh?** See [DEV-TROUBLESHOOTING.md](./DEV-TROUBLESHOOTING.md) (ENOENT / `app-build-manifest.json` / `_buildManifest.js.tmp`).
 
 ### Fast local dev (avoid false “slow UX”)
 
@@ -67,7 +69,8 @@ With `NEXT_PUBLIC_USE_MOCK=true`, the dashboard uses local mock data when the AP
 | Command           | Description                                      |
 |-------------------|--------------------------------------------------|
 | `npm run dev`     | Dev server (Turbopack)                           |
-| `npm run dev:clean` | Remove `.next`, then dev (use after config changes) |
+| `npm run dev:reset` | Remove `.next`, then dev (fix ENOENT / 500 on refresh) |
+| `npm run dev:clean` | Same as `dev:reset`                             |
 | `npm run dev:webpack` | Dev server (webpack, no Turbopack)            |
 | `npm run build`   | Production build                                 |
 | `npm run start`| Start production server  |

@@ -9,6 +9,7 @@ import { getApiErrorMessage } from "@/lib/axios";
 import { queryKeys } from "@/constants/query-keys";
 import { fetchRepairBookingContext } from "@/services/repair-search.service";
 import { APP_CONFIG } from "@/constants/config";
+import { formatCurrency } from "@/utils/format";
 import type { RepairsWorkspaceCategoryDataSnapshot } from "@/components/repairs/repairs-workspace-category-data";
 import type { RepairsWorkspaceManufacturerDataSnapshot } from "@/components/repairs/repairs-workspace-manufacturer-data";
 import type { RepairsWorkspaceDevicesDataSnapshot } from "@/components/repairs/repairs-workspace-devices-data";
@@ -1332,7 +1333,7 @@ function RepairsWorkflowWithConfirm(props: RepairsWorkflowWithConfirmProps) {
       onConfirmDetails={(values) => {
         confirmTicket(values);
         toast.success("Repair ticket confirmed", {
-          description: `Total $${values.repairCharges} · Assigned to ${values.assignedTo}. See the cart on the left.`,
+          description: `Total ${formatCurrency(Number.parseFloat(values.repairCharges) || 0)} · Assigned to ${values.assignedTo}. See the cart on the left.`,
         });
       }}
     />

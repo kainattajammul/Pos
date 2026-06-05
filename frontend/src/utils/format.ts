@@ -10,6 +10,15 @@ export function formatCurrency(
   }).format(value);
 }
 
+/** Compact GBP for summary cards (e.g. £1.5k). */
+export function formatCompactCurrency(value: number): string {
+  if (value >= 1000) {
+    const compact = value / 1000;
+    return `£${Number.isInteger(compact) ? compact : compact.toFixed(1)}k`;
+  }
+  return formatCurrency(value);
+}
+
 export function formatNumber(value: number, locale = "en-GB"): string {
   return new Intl.NumberFormat(locale).format(value);
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown, DollarSign, Plus } from "lucide-react";
+import { ChevronDown, Plus, PoundSterling } from "lucide-react";
 import { RepairsCustomerSearch } from "@/components/repairs/repairs-customer-search";
 import { RepairsNewCustomerDialog } from "@/components/repairs/repairs-new-customer-dialog";
 import { useRepairTicket } from "@/contexts/repair-ticket-context";
@@ -230,7 +230,7 @@ export function RepairsCartPanel() {
               }}
               disabled={!ticketConfirmed}
             >
-              <DollarSign className="size-3.5" />
+              <PoundSterling className="size-3.5" />
               Advance Search
             </Button>
           </div>

@@ -1,3 +1,5 @@
+import { formatCompactCurrency, formatCurrency } from "@/utils/format";
+
 export interface TradeinRecord {
   itemId: string;
   transactionId: string;
@@ -160,13 +162,9 @@ export function computeTradeinSummary(rows: TradeinRecord[]): TradeinSummary {
 }
 
 export function formatCompactMoney(amount: number): string {
-  if (amount >= 1000) {
-    const compact = amount / 1000;
-    return `£${Number.isInteger(compact) ? compact : compact.toFixed(1)}k`;
-  }
-  return `£${amount.toFixed(2)}`;
+  return formatCompactCurrency(amount);
 }
 
 export function formatTableMoney(amount: number): string {
-  return `£${amount.toFixed(2)}`;
+  return formatCurrency(amount);
 }

@@ -2,18 +2,11 @@
 
 import { BarChart3, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { formatCurrency } from "@/utils/format";
 
 interface PurchaseOrderSummaryProps {
   totalValue: number;
   amountPayable: number;
-}
-
-function money(amount: number) {
-  return new Intl.NumberFormat("en-GB", {
-    style: "currency",
-    currency: "GBP",
-    minimumFractionDigits: 2,
-  }).format(amount);
 }
 
 /** Fixed palette — not tied to app theme swatch or dark mode */
@@ -148,13 +141,13 @@ export function PurchaseOrderSummary({
     >
       <SummaryStatCard
         label="Total Value"
-        value={money(totalValue)}
+        value={formatCurrency(totalValue)}
         variant="green"
         icon={BarChart3}
       />
       <SummaryStatCard
         label="Amount Payable"
-        value={money(amountPayable)}
+        value={formatCurrency(amountPayable)}
         variant="red"
         icon={Wallet}
       />

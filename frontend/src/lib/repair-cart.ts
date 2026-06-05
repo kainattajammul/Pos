@@ -1,6 +1,7 @@
 import type { RepairPart } from "@/lib/repairs-parts-data";
 import type { RepairProblem } from "@/lib/repairs-problems-data";
 import type { RepairDetailsFormValues } from "@/lib/repairs-details-data";
+import { formatCurrency } from "@/utils/format";
 
 export type RepairCartLineKind = "issue" | "part" | "service" | "product";
 
@@ -105,7 +106,7 @@ export function computeRepairCartTotals(
 }
 
 export function formatCartMoney(amount: number): string {
-  return `$${amount.toFixed(2)}`;
+  return formatCurrency(amount);
 }
 
 export function sumCartLines(lines: RepairCartLineItem[]): RepairCartTotals {

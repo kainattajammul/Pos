@@ -1,3 +1,5 @@
+import { formatCurrency } from "@/utils/format";
+
 export type InventoryCountStatus = "PAUSED" | "IN_PROGRESS" | "COMPLETED" | "DRAFT";
 
 export interface InventoryCountRecord {
@@ -54,7 +56,7 @@ export const SAMPLE_INVENTORY_COUNT: InventoryCountRecord = {
 export const MOCK_INVENTORY_COUNTS: InventoryCountRecord[] = [SAMPLE_INVENTORY_COUNT];
 
 export function formatCostVariance(amount: number): string {
-  return `£${amount.toFixed(2)}`;
+  return formatCurrency(amount);
 }
 
 export function matchesInventoryCountFilters(

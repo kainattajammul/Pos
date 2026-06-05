@@ -1,4 +1,5 @@
 import type { RepairTicketSnapshot } from "@/lib/repair-ticket-snapshot";
+import { formatCurrency } from "@/utils/format";
 
 export type RepairRecordStatus =
   | "Open"
@@ -175,10 +176,7 @@ export function invoiceRecordToSnapshot(
 }
 
 export function formatRecordMoney(amount: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(amount);
+  return formatCurrency(amount);
 }
 
 export function formatRecordDate(date: Date): string {

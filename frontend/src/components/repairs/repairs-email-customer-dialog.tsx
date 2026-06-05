@@ -15,6 +15,7 @@ import {
 } from "@/lib/repair-ticket-snapshot";
 import type { RepairTicketSnapshot } from "@/lib/repair-ticket-snapshot";
 import { cn } from "@/lib/utils";
+import { formatCurrency } from "@/utils/format";
 import { toast } from "sonner";
 
 const fieldClass =
@@ -29,7 +30,7 @@ function buildDefaultEmailBody(snapshot: RepairTicketSnapshot): string {
     `Device: ${snapshot.deviceTitle}`,
     `Service: ${snapshot.serviceName}`,
     `${snapshot.imeiSerialLabel}: ${snapshot.imeiSerialValue}`,
-    `Estimated total: $${snapshot.repairCharges}`,
+    `Estimated total: ${formatCurrency(Number.parseFloat(snapshot.repairCharges) || 0)}`,
     "",
     snapshot.diagnosticNote
       ? `Notes: ${snapshot.diagnosticNote}`

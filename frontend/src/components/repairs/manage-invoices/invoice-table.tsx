@@ -15,10 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-function money(amount: number) {
-  return `£${amount.toFixed(2)}`;
-}
+import { formatCurrency } from "@/utils/format";
 
 interface InvoiceTableProps {
   rows: InvoiceRecord[];
@@ -71,10 +68,10 @@ export function InvoiceTable({ rows, activeDateTab, onDateTabChange }: InvoiceTa
                     <TableCell className="text-sm text-[#374151]">{row.customer}</TableCell>
                     <TableCell className="text-sm text-[#374151]">{row.organization}</TableCell>
                     <TableCell className="text-sm text-[#374151]">{row.invoiceStatus}</TableCell>
-                    <TableCell className="text-sm text-[#374151]">{money(row.paid)}</TableCell>
-                    <TableCell className="text-sm text-[#374151]">{money(row.due)}</TableCell>
+                    <TableCell className="text-sm text-[#374151]">{formatCurrency(row.paid)}</TableCell>
+                    <TableCell className="text-sm text-[#374151]">{formatCurrency(row.due)}</TableCell>
                     <TableCell className="text-sm font-medium text-[#374151]">
-                      {money(row.total)}
+                      {formatCurrency(row.total)}
                     </TableCell>
                     <TableCell>
                       <InvoiceActions invoiceId={row.id} />

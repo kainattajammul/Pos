@@ -11,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatCurrency } from "@/utils/format";
 
 interface InquiryResultsTableProps {
   rows: InquiryRecord[];
@@ -84,7 +85,7 @@ export function InquiryResultsTable({
                 <TableCell className="font-medium text-[#374151]">{row.id}</TableCell>
                 <TableCell>{row.customerName}</TableCell>
                 <TableCell>{row.reference}</TableCell>
-                <TableCell>£{row.inquiryValue.toFixed(2)}</TableCell>
+                <TableCell>{formatCurrency(row.inquiryValue)}</TableCell>
                 <TableCell>{row.assignedTo}</TableCell>
                 <TableCell>{row.createdDate}</TableCell>
                 <TableCell>{row.status}</TableCell>

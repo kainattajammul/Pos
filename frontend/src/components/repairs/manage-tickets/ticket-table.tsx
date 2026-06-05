@@ -30,12 +30,14 @@ export interface TicketRow {
 
 interface TicketTableProps {
   rows: TicketRow[];
+  onView?: (row: TicketRow) => void;
   onTransferTicket?: (row: TicketRow) => void;
   onViewAddComment?: (row: TicketRow) => void;
 }
 
 export function TicketTable({
   rows,
+  onView,
   onTransferTicket,
   onViewAddComment,
 }: TicketTableProps) {
@@ -129,6 +131,7 @@ export function TicketTable({
               </TableCell>
               <TableCell className="text-right">
                 <TicketActionsDropdown
+                  onView={() => onView?.(row)}
                   onTransferTicket={() => onTransferTicket?.(row)}
                   onViewAddComment={() => onViewAddComment?.(row)}
                 />

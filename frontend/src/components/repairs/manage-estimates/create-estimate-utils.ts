@@ -1,4 +1,5 @@
 import type { EstimateLineItem } from "@/components/repairs/manage-estimates/create-estimate-types";
+import { formatCurrency } from "@/utils/format";
 
 const TAX_RATES: Record<string, number> = {
   Standard: 0.2,
@@ -26,7 +27,7 @@ export function formatEstimateDate(d = new Date()): string {
 }
 
 export function formatMoney(amount: number): string {
-  return `£${amount.toFixed(2)}`;
+  return formatCurrency(amount);
 }
 
 export function createEmptyLineItem(): EstimateLineItem {

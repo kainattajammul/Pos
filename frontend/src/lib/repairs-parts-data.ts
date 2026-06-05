@@ -1,3 +1,5 @@
+import { formatCurrency } from "@/utils/format";
+
 export type RepairPartImageVariant =
   | "screen"
   | "lcd-panel"
@@ -186,5 +188,5 @@ export const DEFAULT_REPAIR_PARTS: RepairPart[] = [
 ];
 
 export function formatRepairPartPrice(price: number): string {
-  return `$${price.toFixed(2)}`;
+  return formatCurrency(price);
 }

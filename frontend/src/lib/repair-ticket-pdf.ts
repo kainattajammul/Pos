@@ -3,6 +3,7 @@ import {
   formatLabelDate,
   formatReceiptDateTime,
 } from "@/lib/repair-ticket-snapshot";
+import { formatCurrency } from "@/utils/format";
 
 export type RepairTicketPdfKind = "thermal" | "label";
 
@@ -107,7 +108,8 @@ function generateThermalPdf(
     { align: "center" },
   );
   y += 5;
-  doc.text(`Total: $${snapshot.repairCharges}`, centerX, y, { align: "center" });
+  const total = Number.parseFloat(snapshot.repairCharges) || 0;
+  doc.text(`Total: ${formatCurrency(total)}`, centerX, y, { align: "center" });
 
   return doc.output("blob");
 }

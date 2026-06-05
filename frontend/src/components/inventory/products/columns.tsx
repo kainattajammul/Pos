@@ -13,13 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import type { InventoryProduct } from "@/types/inventory-product";
-
-function formatMoney(amount: number) {
-  return new Intl.NumberFormat(undefined, {
-    style: "currency",
-    currency: "USD",
-  }).format(amount);
-}
+import { formatCurrency } from "@/utils/format";
 
 function SortableHeader({
   column,
@@ -168,12 +162,12 @@ export function createProductColumns(handlers: {
     {
       accessorKey: "salePrice",
       header: ({ column }) => <SortableHeader column={column} title="Price" />,
-      cell: ({ row }) => <span className="tabular-nums text-neutral-700">{formatMoney(row.original.salePrice)}</span>,
+      cell: ({ row }) => <span className="tabular-nums text-neutral-700">{formatCurrency(row.original.salePrice)}</span>,
     },
     {
       accessorKey: "costPrice",
       header: ({ column }) => <SortableHeader column={column} title="Unit Cost" />,
-      cell: ({ row }) => <span className="tabular-nums text-neutral-700">{formatMoney(row.original.costPrice)}</span>,
+      cell: ({ row }) => <span className="tabular-nums text-neutral-700">{formatCurrency(row.original.costPrice)}</span>,
     },
     {
       id: "actions",

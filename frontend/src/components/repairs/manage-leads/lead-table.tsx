@@ -12,10 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-
-function money(amount: number) {
-  return `£${amount.toFixed(2)}`;
-}
+import { formatCurrency } from "@/utils/format";
 
 interface LeadTableProps {
   rows: LeadRecord[];
@@ -68,10 +65,10 @@ export function LeadTable({ rows, activeDateTab, onDateTabChange }: LeadTablePro
                     <TableCell className="text-sm text-[#374151]">{row.customer}</TableCell>
                     <TableCell className="text-sm text-[#374151]">{row.organization}</TableCell>
                     <TableCell className="text-sm text-[#374151]">{row.invoiceStatus}</TableCell>
-                    <TableCell className="text-sm text-[#374151]">{money(row.paid)}</TableCell>
-                    <TableCell className="text-sm text-[#374151]">{money(row.due)}</TableCell>
+                    <TableCell className="text-sm text-[#374151]">{formatCurrency(row.paid)}</TableCell>
+                    <TableCell className="text-sm text-[#374151]">{formatCurrency(row.due)}</TableCell>
                     <TableCell className="text-sm font-medium text-[#374151]">
-                      {money(row.total)}
+                      {formatCurrency(row.total)}
                     </TableCell>
                     <TableCell>
                       <Button
