@@ -92,7 +92,7 @@ export function PricingGuidelinesCard({
           </Button>
           <button
             type="button"
-            className="flex size-8 items-center justify-center rounded-sm border border-[#E5E7EB] bg-white text-[#6B7280] hover:bg-[#F9FAFB]"
+            className="flex size-8 items-center justify-center rounded-sm border border-[#E5E7EB] bg-white text-[#6B7280] hover:bg-pos-page"
             aria-label="More options"
           >
             <ChevronDown className="size-4" />
@@ -209,7 +209,7 @@ export function PricingGuidelinesCard({
           <Button
             type="button"
             variant="outline"
-            className="h-9 rounded-sm border-[#E5E7EB] bg-white px-5 text-sm font-medium text-[#374151] hover:bg-[#F9FAFB]"
+            className="h-9 rounded-sm border-[#E5E7EB] bg-white px-5 text-sm font-medium text-[#374151] hover:bg-pos-page"
             onClick={onReset}
           >
             Reset

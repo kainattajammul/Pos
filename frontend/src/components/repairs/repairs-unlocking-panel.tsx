@@ -190,7 +190,7 @@ export function RepairsUnlockingPanel() {
               </div>
             </div>
 
-            <div className="rounded-lg border border-[#E5E7EB] bg-[#F9FAFB] px-4 py-3.5">
+            <div className="rounded-lg border border-[#E5E7EB] bg-pos-page px-4 py-3.5">
               <p className="text-sm font-medium text-[#374151]">
                 Price will be confirmed after checking your device details.
               </p>

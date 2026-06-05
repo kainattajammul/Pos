@@ -67,7 +67,7 @@ export function InventorySummaryReportActions({
       <Button
         type="button"
         variant="outline"
-        className="h-8 gap-1.5 rounded-sm border-[#E5E7EB] bg-white px-3 text-xs font-medium text-[#374151] hover:bg-[#F9FAFB]"
+        className="h-8 gap-1.5 rounded-sm border-[#E5E7EB] bg-white px-3 text-xs font-medium text-[#374151] hover:bg-pos-page"
         onClick={() => toast.message("Excel export — coming soon")}
       >
         <FileSpreadsheet className="size-3.5 text-[#22C55E]" />
@@ -76,7 +76,7 @@ export function InventorySummaryReportActions({
       <Button
         type="button"
         variant="outline"
-        className="h-8 gap-1.5 rounded-sm border-[#E5E7EB] bg-white px-3 text-xs font-medium text-[#374151] hover:bg-[#F9FAFB]"
+        className="h-8 gap-1.5 rounded-sm border-[#E5E7EB] bg-white px-3 text-xs font-medium text-[#374151] hover:bg-pos-page"
         onClick={() => {
           if (rows.length === 0) {
             toast.error("No data to export. Run the report first.");

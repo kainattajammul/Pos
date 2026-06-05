@@ -265,7 +265,7 @@ export function ProductsManagementView() {
   if (!mounted) return null;
 
   return (
-    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[#F8FAFC]">
+    <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden">
       <RepairsTopNav />
       <main className="flex-1 overflow-auto px-4 py-4 md:px-5">
         <div className="mx-auto max-w-[1600px] space-y-6">
@@ -299,7 +299,7 @@ export function ProductsManagementView() {
 
           {insightsOpen ? <ProductSummaryCards products={filteredProducts} /> : null}
 
-          <section className="space-y-3 rounded border border-neutral-200 bg-[#f7f9fa] p-3 shadow-sm md:p-4">
+          <section className="pos-table-shell space-y-3 p-3 md:p-4">
             {filtersPinned ? (
             <ProductAdvancedFilters
               filters={filters}

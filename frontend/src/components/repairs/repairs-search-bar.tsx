@@ -76,13 +76,13 @@ export function RepairsSearchBar({ shopId, onSelect, className }: RepairsSearchB
     <div ref={rootRef} className={cn("relative w-full min-w-0", className)}>
       <div
         className={cn(
-          "flex items-center gap-3 border-b border-[#D1D5DB] pb-2 transition-colors",
+          "flex items-center gap-3 border-b border-pos-strong pb-2 transition-colors",
           "focus-within:border-[var(--repair-primary)]",
         )}
       >
         <button
           type="button"
-          className="shrink-0 text-[#9CA3AF] transition-colors hover:text-[var(--repair-primary)]"
+          className="shrink-0 text-pos-subtle transition-colors hover:text-[var(--repair-primary)]"
           aria-label="Focus search"
           onClick={() => inputRef.current?.focus()}
         >
@@ -98,7 +98,7 @@ export function RepairsSearchBar({ shopId, onSelect, className }: RepairsSearchB
           }}
           onFocus={() => setOpen(true)}
           placeholder="Search..."
-          className="min-w-0 flex-1 border-0 bg-transparent text-sm text-[#111827] outline-none placeholder:text-[#9CA3AF] sm:text-base"
+          className="min-w-0 flex-1 border-0 bg-transparent text-sm text-pos outline-none placeholder:text-pos-subtle sm:text-base"
           aria-label="Search device or repair"
           aria-controls="repair-search-results"
           autoComplete="off"
@@ -115,20 +115,20 @@ export function RepairsSearchBar({ shopId, onSelect, className }: RepairsSearchB
         <div
           id="repair-search-results"
           role="listbox"
-          className="absolute top-[calc(100%+8px)] left-0 right-0 z-50 max-h-[min(70vh,420px)] overflow-y-auto rounded-lg border border-[#E5E7EB] bg-white shadow-lg"
+          className="pos-dropdown absolute top-[calc(100%+8px)] left-0 right-0 z-50 max-h-[min(70vh,420px)] overflow-y-auto rounded-lg"
         >
           {loading ? (
-            <div className="flex items-center justify-center gap-2 px-4 py-8 text-sm text-[#6B7280]">
+            <div className="flex items-center justify-center gap-2 px-4 py-8 text-sm text-pos-muted">
               <Loader2 className="size-4 animate-spin text-[var(--repair-primary)]" />
               Searching repairs…
             </div>
           ) : results.length === 0 ? (
-            <p className="px-4 py-8 text-center text-sm text-[#6B7280]">No repairs found</p>
+            <p className="px-4 py-8 text-center text-sm text-pos-muted">No repairs found</p>
           ) : (
             <div className="py-2">
               {results.map((group) => (
-                <div key={group.device_id} className="border-b border-[#F3F4F6] last:border-0">
-                  <p className="bg-[#F9FAFB] px-4 py-2.5 text-center text-sm font-bold text-[#111827]">
+                <div key={group.device_id} className="border-b border-pos last:border-0">
+                  <p className="bg-pos-muted px-4 py-2.5 text-center text-sm font-bold text-pos">
                     {group.device_name}
                   </p>
                   <ul>
@@ -139,15 +139,16 @@ export function RepairsSearchBar({ shopId, onSelect, className }: RepairsSearchB
                           role="option"
                           aria-selected={false}
                           className={cn(
-                            "flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left text-sm transition hover:bg-[color-mix(in_srgb,var(--repair-primary)_6%,white)]",
-                            index % 2 === 0 ? "bg-white" : "bg-[#F9FAFB]",
+                            "pos-row-hover flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left text-sm transition",
+                            index % 2 === 0 ? "pos-row-zebra-even" : "pos-row-zebra-odd",
+                            "hover:bg-[color-mix(in_srgb,var(--repair-primary)_6%,var(--pos-surface))]",
                           )}
                           onClick={() => handleSelect(group, repair)}
                         >
-                          <span className="min-w-0 flex-1 text-[#374151]">
+                          <span className="min-w-0 flex-1 text-pos-secondary">
                             {repair.repair_name}
                           </span>
-                          <span className="shrink-0 tabular-nums font-medium text-[#111827]">
+                          <span className="shrink-0 tabular-nums font-medium text-pos">
                             {formatRepairSearchPrice(repair.price)}
                           </span>
                         </button>

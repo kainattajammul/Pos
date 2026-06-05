@@ -11,7 +11,7 @@ export function SettingsLayoutShell({ children }: { children: React.ReactNode })
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   return (
-    <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[#EEF1F4]">
+    <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden">
       <RepairsTopNav />
       <SettingsNotificationBanner />
       <div className="flex min-h-0 flex-1 overflow-hidden">
@@ -20,12 +20,12 @@ export function SettingsLayoutShell({ children }: { children: React.ReactNode })
           onMobileClose={() => setMobileSidebarOpen(false)}
         />
         <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-          <div className="flex items-center border-b border-[#E5E7EB] bg-white px-4 py-2 md:hidden">
+          <div className="flex items-center border-b border-pos bg-pos-surface px-4 py-2 md:hidden">
             <Button
               type="button"
               variant="outline"
               size="sm"
-              className="h-8 gap-1.5 rounded-sm border-[#E5E7EB]"
+              className="h-8 gap-1.5 rounded-sm border-pos"
               onClick={() => setMobileSidebarOpen(true)}
             >
               <Menu className="size-4" />

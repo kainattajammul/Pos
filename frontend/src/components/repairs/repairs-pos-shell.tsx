@@ -77,7 +77,7 @@ const RepairsPosTabPlaceholder = dynamic(
 
 function RepairsPanelSkeleton() {
   return (
-    <div className="flex min-h-0 min-w-0 flex-1 items-center justify-center bg-white text-sm text-[#6B7280]">
+    <div className="flex min-h-0 min-w-0 flex-1 items-center justify-center bg-pos-surface text-sm text-pos-muted">
       Loading…
     </div>
   );
@@ -167,7 +167,7 @@ export function RepairsPosView() {
   }, [activeTab, workspaceReady]);
 
   return (
-    <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[#F8FAFC]">
+    <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden">
       <RepairsTopNav />
       <RepairsPosBar activeTab={activeTab} onTabChange={setActiveTab} />
 

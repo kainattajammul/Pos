@@ -86,7 +86,7 @@ export function TicketViewPage({ ticketId }: TicketViewPageProps) {
 
   if (!detail) {
     return (
-      <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[#F9FAFB]">
+      <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-pos-page">
         <RepairsTopNav />
         <div className="flex flex-1 flex-col items-center justify-center gap-4 p-8">
           <p className="text-lg font-medium text-[#374151]">Ticket {ticketId} not found</p>
@@ -114,7 +114,7 @@ export function TicketViewPage({ ticketId }: TicketViewPageProps) {
     : "—";
 
   return (
-    <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[#F9FAFB]">
+    <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-pos-page">
       <RepairsTopNav />
 
       <div className="min-h-0 flex-1 overflow-auto p-4 md:p-5">
@@ -228,7 +228,7 @@ export function TicketViewPage({ ticketId }: TicketViewPageProps) {
                 </div>
 
                 <div className="flex flex-col gap-3 p-3 sm:flex-row sm:items-start">
-                  <div className="flex size-16 shrink-0 items-center justify-center rounded-md border border-[#E5E7EB] bg-[#F9FAFB]">
+                  <div className="flex size-16 shrink-0 items-center justify-center rounded-md border border-[#E5E7EB] bg-pos-page">
                     <Smartphone className="size-8 text-[#9CA3AF]" />
                   </div>
                   <div className="min-w-0 flex-1 space-y-2">
@@ -291,7 +291,7 @@ export function TicketViewPage({ ticketId }: TicketViewPageProps) {
                     detail.assetIssues.map((issue) => (
                       <span
                         key={issue}
-                        className="inline-flex items-center gap-1 rounded border border-[#E5E7EB] bg-[#F9FAFB] px-2 py-1 text-xs text-[#374151]"
+                        className="inline-flex items-center gap-1 rounded border border-[#E5E7EB] bg-pos-page px-2 py-1 text-xs text-[#374151]"
                       >
                         {issue}
                         <Plus className="size-3 text-(--repair-primary)" />

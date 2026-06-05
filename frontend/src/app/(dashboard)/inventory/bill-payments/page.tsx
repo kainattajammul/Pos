@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function InventoryBillPaymentsRoutePage() {
   return (
-    <Suspense fallback={<div className="min-h-[40vh] animate-pulse bg-[#F8FAFC]" />}>
+    <Suspense fallback={<div className="min-h-[40vh] animate-pulse bg-pos-page" />}>
       <BillPaymentsPage />
     </Suspense>
   );

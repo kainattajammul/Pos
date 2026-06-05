@@ -29,7 +29,7 @@ export function EstimateDateTabs({ activeTab, onTabChange }: EstimateDateTabsPro
             "rounded-md border px-2.5 py-1 text-xs font-medium transition-colors",
             activeTab === tab
               ? "border-(--repair-primary) bg-(--repair-primary) text-(--repair-on-primary)"
-              : "border-[#E5E7EB] bg-[#F8FAFC] text-[#6B7280] hover:bg-[#F3F4F6]",
+              : "border-[#E5E7EB] bg-pos-page text-[#6B7280] hover:bg-[#F3F4F6]",
           )}
         >
           {tab}

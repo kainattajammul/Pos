@@ -80,7 +80,7 @@ export function RepairsCustomerSearch() {
 
   return (
     <div ref={rootRef} className="relative min-w-0 flex-1">
-      <Search className="pointer-events-none absolute top-1/2 left-2.5 z-10 size-3.5 -translate-y-1/2 text-[#9CA3AF]" />
+      <Search className="pointer-events-none absolute top-1/2 left-2.5 z-10 size-3.5 -translate-y-1/2 text-pos-subtle" />
       <Input
         value={query}
         onChange={(e) => {
@@ -92,7 +92,7 @@ export function RepairsCustomerSearch() {
         }}
         onKeyDown={handleKeyDown}
         placeholder="Search by email or phone"
-        className="h-8 border-[#E5E7EB] pl-8 text-xs"
+        className="h-8 border-pos pl-8 text-xs focus-visible:ring-[var(--repair-primary)]/20"
         aria-label="Search customer by email or phone"
         aria-expanded={showDropdown}
         aria-autocomplete="list"
@@ -103,12 +103,12 @@ export function RepairsCustomerSearch() {
       {showDropdown ? (
         <ul
           role="listbox"
-          className="absolute top-full right-0 left-0 z-50 mt-1 max-h-[220px] overflow-y-auto rounded-md border border-[#E5E7EB] bg-white py-1 shadow-lg"
+          className="pos-dropdown absolute top-full right-0 left-0 z-50 mt-1 max-h-[220px] overflow-y-auto rounded-md py-1"
         >
           {isLoading ? (
-            <li className="px-3 py-2 text-xs text-[#6B7280]">Loading customers…</li>
+            <li className="px-3 py-2 text-xs text-pos-muted">Loading customers…</li>
           ) : results.length === 0 ? (
-            <li className="px-3 py-2 text-xs text-[#6B7280]">
+            <li className="px-3 py-2 text-xs text-pos-muted">
               No customers match this email or phone number.
             </li>
           ) : (
@@ -119,17 +119,17 @@ export function RepairsCustomerSearch() {
                   className={cn(
                     "flex w-full flex-col gap-0.5 px-3 py-2 text-left text-xs transition-colors",
                     index === highlightIndex
-                      ? "bg-[var(--repair-primary-light)] text-[#111827]"
-                      : "hover:bg-[#F9FAFB]",
+                      ? "bg-[var(--repair-primary-light)] text-pos"
+                      : "pos-row-hover hover:bg-pos-hover",
                   )}
                   onMouseEnter={() => setHighlightIndex(index)}
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => handleSelect(customer)}
                 >
-                  <span className="font-semibold text-[#111827]">
+                  <span className="font-semibold text-pos">
                     {customer.displayName}
                   </span>
-                  <span className="text-[#6B7280]">
+                  <span className="text-pos-muted">
                     {[customer.email, customer.phone].filter(Boolean).join(" · ")}
                   </span>
                 </button>

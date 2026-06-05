@@ -98,7 +98,7 @@ export function createCustomerManagementColumns(handlers: {
       cell: ({ row }) => (
         <a
           href={`mailto:${row.original.email}`}
-          className="block max-w-[200px] truncate text-sm font-medium text-blue-600 underline-offset-2 hover:text-blue-700 hover:underline"
+          className="pos-link block max-w-[200px] truncate text-sm"
           title={row.original.email}
         >
           {row.original.email || "—"}

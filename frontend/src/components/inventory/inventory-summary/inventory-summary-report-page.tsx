@@ -62,27 +62,22 @@ export function InventorySummaryReportPage() {
   };
 
   return (
-    <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[#F8FAFC]">
+    <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden">
       <RepairsTopNav />
       <main className="flex-1 overflow-auto">
         <div className="mx-auto w-full max-w-[1600px] space-y-4 p-4 md:p-5">
-          <nav className="text-sm text-[#6B7280]" aria-label="Breadcrumb">
-            <Link
-              href="/dashboard"
-              className="font-medium text-[#31A5A6] transition-colors hover:text-[#227E7F] hover:underline"
-            >
-              Home
-            </Link>
-            <span className="mx-1.5 text-[#9CA3AF]">/</span>
-            <span className="font-medium text-[#374151]">Statistics</span>
-            <span className="mx-1.5 text-[#9CA3AF]">/</span>
-            <span className="font-medium text-[#374151]">Inventory Summary Report</span>
+          <nav className="pos-breadcrumb" aria-label="Breadcrumb">
+            <Link href="/dashboard">Home</Link>
+            <span className="mx-1.5 text-pos-subtle">/</span>
+            <span className="font-medium text-pos-secondary">Statistics</span>
+            <span className="mx-1.5 text-pos-subtle">/</span>
+            <span className="font-medium text-pos-secondary">Inventory Summary Report</span>
           </nav>
 
           <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0 space-y-2">
               <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-xl font-semibold text-[#111827] md:text-2xl">
+                <h1 className="text-xl font-semibold text-pos md:text-2xl">
                   Inventory Summary Report
                 </h1>
                 {appliedFilters ? (
@@ -94,7 +89,7 @@ export function InventorySummaryReportPage() {
               </div>
               <button
                 type="button"
-                className="rounded-sm p-0.5 text-[#D1D5DB] hover:text-[#F59E0B]"
+                className="rounded-sm p-0.5 text-pos-subtle transition-colors hover:text-[var(--repair-primary)]"
                 aria-label="Add to favorites (coming soon)"
                 onClick={() => toast.message("Favorites — coming soon")}
               >

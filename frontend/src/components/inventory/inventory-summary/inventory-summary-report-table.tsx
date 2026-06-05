@@ -47,31 +47,31 @@ export function InventorySummaryReportTable({
   const displayed = rows.slice(0, pageSize);
 
   return (
-    <section className="overflow-hidden rounded-sm border border-[#E5E7EB] bg-white shadow-sm">
-      <div className="flex justify-end border-b border-[#E5E7EB] px-4 py-2.5">
+    <section className="pos-table-shell">
+      <div className="flex justify-end border-b border-pos px-4 py-2.5">
         <label className="relative">
           <select
             value={String(pageSize)}
             onChange={(e) => onPageSizeChange(Number(e.target.value))}
-            className="h-8 appearance-none rounded-sm border border-[#E5E7EB] bg-white py-1 pl-3 pr-8 text-xs font-medium text-[#374151]"
+            className="pos-input h-8 appearance-none rounded-sm py-1 pl-3 pr-8 text-xs font-medium"
             aria-label="Rows per page"
           >
             <option value="25">25</option>
             <option value="50">50</option>
             <option value="100">100</option>
           </select>
-          <ChevronDown className="pointer-events-none absolute right-2 top-1/2 size-3.5 -translate-y-1/2 text-[#9CA3AF]" />
+          <ChevronDown className="pointer-events-none absolute right-2 top-1/2 size-3.5 -translate-y-1/2 text-pos-subtle" />
         </label>
       </div>
 
       <div className="overflow-x-auto">
         <Table className="min-w-[1200px]">
-          <TableHeader className="bg-[#F3F4F6]">
-            <TableRow className="border-b border-[#E5E7EB] hover:bg-[#F3F4F6]">
+          <TableHeader className="sticky top-0 z-10 bg-pos-table-header">
+            <TableRow className="border-b border-pos hover:bg-pos-table-header">
               {COLUMNS.map((col) => (
                 <TableHead
                   key={col.key}
-                  className={`whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-[#374151] ${col.className}`}
+                  className={`whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-pos-muted ${col.className}`}
                 >
                   {col.label}
                 </TableHead>
@@ -80,10 +80,10 @@ export function InventorySummaryReportTable({
           </TableHeader>
           <TableBody>
             {displayed.length === 0 ? (
-              <TableRow className="hover:bg-white">
+              <TableRow className="hover:bg-pos-surface">
                 <TableCell
                   colSpan={COLUMNS.length}
-                  className="h-16 border-b border-dashed border-[#E5E7EB] text-center text-sm italic text-[#6B7280]"
+                  className="h-16 border-b border-dashed border-pos text-center text-sm italic text-pos-muted"
                 >
                   No results found.
                 </TableCell>
@@ -92,12 +92,12 @@ export function InventorySummaryReportTable({
               displayed.map((row) => (
                 <TableRow
                   key={row.id}
-                  className="border-b border-dashed border-[#E5E7EB] hover:bg-[#FAFAFA]"
+                  className="pos-row-hover border-b border-dashed border-pos"
                 >
                   <TableCell className="px-3 py-2 text-sm">
                     <Link
                       href={`/inventory/products?sku=${encodeURIComponent(row.sku)}`}
-                      className="font-medium text-[#31A5A6] hover:text-[#227E7F] hover:underline"
+                      className="font-medium text-[var(--repair-primary)] hover:underline"
                     >
                       {row.sku}
                     </Link>

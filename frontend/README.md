@@ -31,6 +31,13 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+### Light / dark mode
+
+- **Toggle:** dashboard navbar, repairs top nav (POS/inventory/reports/settings), login page, and the dashboard accent toolbar.
+- **Modes:** Light, Dark, System — persisted in `localStorage` (`theme` key) via `next-themes`.
+- **Brand accent:** the color picker (teal/orange/purple presets) works in both modes; saved separately in `app-theme-v1`.
+- **POS surfaces:** repairs/inventory pages use semantic tokens (`--pos-page-bg`, `--pos-surface`, etc.) in `src/styles/repairs-pos.css`; legacy hardcoded grays remap automatically in `.dark`.
+
 Uses **Turbopack** by default (`next dev --turbopack`). After changing `next.config.ts`, env files that affect the bundler, or when dev compile times look stuck or wrong, clear the cache and restart:
 
 ```bash

@@ -28,7 +28,7 @@ export function BillPaymentsSearchFilter({
   onReset,
 }: BillPaymentsSearchFilterProps) {
   return (
-    <section className="rounded-sm border border-[#E5E7EB] bg-white p-4 shadow-sm">
+    <section className="pos-card rounded-sm p-4">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <label className="space-y-1">
           <span className="text-xs font-medium text-[#374151]">Item ID</span>
@@ -78,7 +78,7 @@ export function BillPaymentsSearchFilter({
         <Button
           type="button"
           variant="outline"
-          className="h-9 rounded-sm border-[#E5E7EB] bg-white px-4 text-sm font-medium text-[#374151] hover:bg-[#F9FAFB]"
+          className="h-9 rounded-sm border-[#E5E7EB] bg-white px-4 text-sm font-medium text-[#374151] hover:bg-pos-page"
           onClick={onReset}
         >
           Reset

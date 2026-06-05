@@ -94,7 +94,7 @@ export function TradeinReportFilters({
           type="button"
           variant="outline"
           size="icon"
-          className="size-9 rounded-sm border-[#E5E7EB] bg-white text-[#6B7280] hover:bg-[#F9FAFB]"
+          className="size-9 rounded-sm border-[#E5E7EB] bg-white text-[#6B7280] hover:bg-pos-page"
           onClick={onReset}
           aria-label="Reset filters"
         >

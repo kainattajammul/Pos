@@ -163,13 +163,13 @@ export function RepairsCheckoutDialog({
           className="min-h-0 flex-1 space-y-5 overflow-auto px-5 py-5"
         >
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-lg border border-[#E5E7EB] bg-[#F9FAFB] px-4 py-3">
+            <div className="rounded-lg border border-[#E5E7EB] bg-pos-page px-4 py-3">
               <p className="text-xs font-medium text-[#6B7280]">Customer</p>
               <p className="mt-1 text-sm font-semibold text-[#111827]">
                 {snapshot.customerName}
               </p>
             </div>
-            <div className="rounded-lg border border-[#E5E7EB] bg-[#F9FAFB] px-4 py-3">
+            <div className="rounded-lg border border-[#E5E7EB] bg-pos-page px-4 py-3">
               <p className="text-xs font-medium text-[#6B7280]">Device</p>
               <p className="mt-1 text-sm font-semibold text-[#111827]">
                 {snapshot.deviceTitle}
@@ -186,7 +186,7 @@ export function RepairsCheckoutDialog({
 
           <div className="overflow-hidden rounded-lg border border-[#E5E7EB]">
             <table className="w-full text-sm">
-              <thead className="bg-[#F9FAFB] text-left text-xs font-semibold uppercase tracking-wide text-[#6B7280]">
+              <thead className="bg-pos-page text-left text-xs font-semibold uppercase tracking-wide text-[#6B7280]">
                 <tr>
                   <th className="px-4 py-2.5">Item</th>
                   <th className="px-3 py-2.5 text-right">Qty</th>
@@ -220,7 +220,7 @@ export function RepairsCheckoutDialog({
             </table>
           </div>
 
-          <div className="ml-auto w-full max-w-xs space-y-2 rounded-lg border border-[#E5E7EB] bg-[#F9FAFB] p-4 text-sm">
+          <div className="ml-auto w-full max-w-xs space-y-2 rounded-lg border border-[#E5E7EB] bg-pos-page p-4 text-sm">
             <div className="flex justify-between text-[#374151]">
               <span>Subtotal</span>
               <span>
@@ -268,7 +268,7 @@ export function RepairsCheckoutDialog({
                       "inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border px-3 text-sm font-medium transition-all",
                       selected
                         ? "border-[#1f2a44] bg-[#1f2a44] text-white shadow-sm"
-                        : "border-[#E5E7EB] bg-white text-[#374151] shadow-sm hover:bg-[#F9FAFB]",
+                        : "border-[#E5E7EB] bg-white text-[#374151] shadow-sm hover:bg-pos-page",
                     )}
                   >
                     <Icon className="size-4" />
@@ -299,7 +299,7 @@ export function RepairsCheckoutDialog({
                 <Label className="text-xs font-medium text-[#6B7280]">
                   Change due
                 </Label>
-                <div className="flex h-10 items-center rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3 text-sm font-semibold text-[#111827]">
+                <div className="flex h-10 items-center rounded-md border border-[#E5E7EB] bg-pos-page px-3 text-sm font-semibold text-[#111827]">
                   {formatCartMoney(changeDue)}
                 </div>
               </div>
@@ -328,7 +328,7 @@ export function RepairsCheckoutDialog({
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="inline-flex min-h-10 items-center justify-center rounded-lg border border-[#E5E7EB] bg-white px-4 text-sm font-medium text-[#374151] shadow-sm hover:bg-[#F9FAFB]"
+            className="inline-flex min-h-10 items-center justify-center rounded-lg border border-[#E5E7EB] bg-white px-4 text-sm font-medium text-[#374151] shadow-sm hover:bg-pos-page"
           >
             Cancel
           </button>

@@ -24,7 +24,7 @@ export function LeadDateTabs({ activeTab, onTabChange }: LeadDateTabsProps) {
           type="button"
           onClick={() => onTabChange(tab)}
           className={cn(
-            "border-r border-[#E5E7EB] bg-white px-3 py-1.5 text-xs font-medium text-[#374151] last:border-r-0 hover:bg-[#F9FAFB]",
+            "border-r border-[#E5E7EB] bg-white px-3 py-1.5 text-xs font-medium text-[#374151] last:border-r-0 hover:bg-pos-page",
             activeTab === tab && "border-b-2 border-b-[#3B82F6] bg-white text-[#111827]",
           )}
         >

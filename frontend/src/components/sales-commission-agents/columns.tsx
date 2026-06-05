@@ -99,7 +99,7 @@ export function createSalesCommissionAgentColumns(handlers: {
         return (
           <a
             href={`mailto:${email}`}
-            className="block max-w-[200px] truncate text-sm font-medium text-blue-600 underline-offset-2 hover:text-blue-700 hover:underline"
+            className="pos-link block max-w-[200px] truncate text-sm"
             title={email}
           >
             {email}

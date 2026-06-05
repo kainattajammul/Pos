@@ -24,6 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AppLauncherDropdown } from "@/components/shared/app-launcher-dropdown";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { isAnyInventoryPage } from "@/lib/inventory-nav-items";
 import { isAnyReportsPage } from "@/lib/reports-nav-items";
 
@@ -87,7 +88,7 @@ function ProgressRing() {
           fill="none"
           stroke="currentColor"
           strokeWidth="3"
-          className="text-neutral-200"
+          className="text-white/25"
         />
         <circle
           cx="18"
@@ -199,7 +200,7 @@ export function RepairsTopNav() {
   return (
     <>
       <header
-        className="flex h-12 shrink-0 items-center justify-between px-3 text-white shadow-md md:px-4"
+        className="flex h-12 shrink-0 items-center justify-between border-b border-black/10 px-3 text-white shadow-pos-md md:px-4"
         style={{ backgroundColor: "var(--repair-primary-dark)" }}
       >
         <div className="flex min-w-0 flex-1 items-center gap-3 md:gap-4">
@@ -251,7 +252,7 @@ export function RepairsTopNav() {
                     <DropdownMenuContent
                       sideOffset={8}
                       align="start"
-                      className="w-64 rounded-none border border-[#D1D5DB] bg-white p-0 text-[#374151] shadow-lg"
+                      className="pos-dropdown w-64 rounded-lg p-0"
                     >
                       {REPAIRS_DROPDOWN_ITEMS.map((dropdownItem, index) => (
                         <DropdownMenuItem
@@ -265,7 +266,7 @@ export function RepairsTopNav() {
                             const targetRoute = REPAIRS_DROPDOWN_ROUTES[dropdownItem];
                             if (targetRoute) router.push(targetRoute);
                           }}
-                          className="flex cursor-pointer items-center justify-between rounded-none px-4 py-3 text-[17px] font-medium text-[#374151] transition-colors data-highlighted:text-(--repair-primary)"
+                          className="flex cursor-pointer items-center justify-between rounded-none px-4 py-3 text-[17px] font-medium text-pos-secondary transition-colors data-highlighted:text-(--repair-primary)"
                         >
                           <span className="transition-colors group-data-highlighted/dropdown-menu-item:text-(--repair-primary) group-data-highlighted/dropdown-menu-item:underline group-data-highlighted/dropdown-menu-item:underline-offset-2">
                             {dropdownItem}
@@ -273,7 +274,7 @@ export function RepairsTopNav() {
                           {index < 4 ? (
                             <span
                               className={cn(
-                                "ml-3 inline-flex size-6 items-center justify-center rounded-full bg-[#F3F4F6] text-[#D1D5DB] transition-colors",
+                                "ml-3 inline-flex size-6 items-center justify-center rounded-full bg-pos-muted text-pos-subtle transition-colors",
                                 "group-data-highlighted/dropdown-menu-item:bg-(--repair-primary)",
                                 "group-data-highlighted/dropdown-menu-item:text-(--repair-on-primary)",
                               )}
@@ -349,6 +350,7 @@ export function RepairsTopNav() {
         </div>
 
         <div className="flex shrink-0 items-center gap-2 md:gap-3">
+          <ThemeToggle variant="on-dark" />
           <ProgressRing />
           <button
             type="button"

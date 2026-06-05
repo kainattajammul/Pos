@@ -1,0 +1,348 @@
+/* Repairs / inventory POS surfaces — unified light & dark semantic tokens */
+
+:root {
+  --pos-page-bg: oklch(0.975 0.006 75);
+  --pos-page-bg-end: oklch(0.965 0.008 70);
+  --pos-surface: oklch(0.995 0.003 75);
+  --pos-muted-bg: oklch(0.96 0.007 75);
+  --pos-subtle-bg: oklch(0.97 0.005 75);
+  --pos-border: oklch(0 0 0 / 14%);
+  --pos-border-strong: oklch(0 0 0 / 22%);
+  --pos-table-bg: var(--pos-surface);
+  --pos-table-header-bg: oklch(0.96 0 0);
+  --pos-text: oklch(0.20 0.012 75);
+  --pos-text-secondary: oklch(0.38 0.014 75);
+  --pos-text-muted: oklch(0.50 0.018 75);
+  --pos-text-subtle: oklch(0.62 0.015 75);
+  --pos-hover-bg: oklch(0.97 0.006 75);
+  --pos-input-bg: oklch(0.995 0.003 75);
+  --pos-highlight-bg: oklch(0.97 0.03 15);
+  --pos-highlight-hover: oklch(0.94 0.04 15);
+  --pos-shadow-sm: 0 1px 2px oklch(0.20 0.01 75 / 4%), 0 1px 3px oklch(0.20 0.01 75 / 6%);
+  --pos-shadow-md: 0 2px 4px oklch(0.20 0.01 75 / 5%), 0 4px 12px oklch(0.20 0.01 75 / 8%);
+  --pos-shadow-lg: 0 4px 8px oklch(0.20 0.01 75 / 6%), 0 8px 24px oklch(0.20 0.01 75 / 10%);
+  --pos-success-bg: oklch(0.96 0.04 155);
+  --pos-success-text: oklch(0.42 0.12 155);
+  --pos-success-ring: oklch(0.86 0.07 155);
+  --pos-warning-bg: oklch(0.97 0.04 85);
+  --pos-warning-text: oklch(0.48 0.14 65);
+  --pos-warning-ring: oklch(0.88 0.08 85);
+  --pos-error-bg: oklch(0.97 0.03 20);
+  --pos-error-text: oklch(0.48 0.18 25);
+  --pos-error-ring: oklch(0.88 0.06 20);
+  --pos-info-bg: oklch(0.96 0.03 250);
+  --pos-info-text: oklch(0.45 0.12 250);
+  --pos-info-ring: oklch(0.86 0.06 250);
+}
+
+.dark {
+  --pos-page-bg: oklch(0.16 0.012 30);
+  --pos-page-bg-end: oklch(0.18 0.014 28);
+  --pos-surface: oklch(0.21 0.014 30);
+  --pos-muted-bg: oklch(0.25 0.014 30);
+  --pos-subtle-bg: oklch(0.23 0.013 30);
+  --pos-border: oklch(0 0 0 / 55%);
+  --pos-border-strong: oklch(0 0 0 / 75%);
+  --pos-table-bg: var(--color-neutral-900, oklch(0.205 0 0));
+  --pos-table-header-bg: oklch(0 0 0 / 35%);
+  --pos-text: #ffffff;
+  --pos-text-secondary: oklch(1 0 0 / 92%);
+  --pos-text-muted: oklch(1 0 0 / 78%);
+  --pos-text-subtle: oklch(1 0 0 / 62%);
+  --pos-hover-bg: oklch(0.27 0.015 30);
+  --pos-input-bg: oklch(0.24 0.013 30);
+  --pos-highlight-bg: oklch(0.28 0.04 20);
+  --pos-highlight-hover: oklch(0.32 0.05 20);
+  --pos-shadow-sm: 0 1px 2px oklch(0 0 0 / 20%), 0 1px 3px oklch(0 0 0 / 25%);
+  --pos-shadow-md: 0 2px 4px oklch(0 0 0 / 22%), 0 4px 12px oklch(0 0 0 / 30%);
+  --pos-shadow-lg: 0 4px 8px oklch(0 0 0 / 25%), 0 8px 24px oklch(0 0 0 / 35%);
+  --pos-success-bg: oklch(0.28 0.05 155);
+  --pos-success-text: oklch(0.78 0.12 155);
+  --pos-success-ring: oklch(0.38 0.06 155);
+  --pos-warning-bg: oklch(0.30 0.06 75);
+  --pos-warning-text: oklch(0.82 0.12 75);
+  --pos-warning-ring: oklch(0.42 0.07 75);
+  --pos-error-bg: oklch(0.28 0.05 25);
+  --pos-error-text: oklch(0.78 0.14 25);
+  --pos-error-ring: oklch(0.38 0.06 25);
+  --pos-info-bg: oklch(0.28 0.04 250);
+  --pos-info-text: oklch(0.78 0.10 250);
+  --pos-info-ring: oklch(0.38 0.05 250);
+}
+
+/* Page shell */
+.repairs-pos-theme {
+  background: linear-gradient(
+    165deg,
+    var(--pos-page-bg) 0%,
+    var(--pos-page-bg-end) 100%
+  );
+  color: var(--pos-text);
+}
+
+.dark .repairs-pos-theme {
+  color: #ffffff;
+}
+
+.bg-pos-page {
+  background-color: var(--pos-page-bg);
+}
+
+/* Semantic color utilities */
+.bg-pos-surface {
+  background-color: var(--pos-surface);
+}
+.bg-pos-muted {
+  background-color: var(--pos-muted-bg);
+}
+.bg-pos-subtle {
+  background-color: var(--pos-subtle-bg);
+}
+.bg-pos-hover {
+  background-color: var(--pos-hover-bg);
+}
+.border-pos {
+  border-color: var(--pos-border);
+}
+.border-pos-strong {
+  border-color: var(--pos-border-strong);
+}
+.bg-pos-table {
+  background-color: var(--pos-table-bg);
+}
+.bg-pos-table-header {
+  background-color: var(--pos-table-header-bg);
+}
+.text-pos {
+  color: var(--pos-text);
+}
+.text-pos-secondary {
+  color: var(--pos-text-secondary);
+}
+.text-pos-muted {
+  color: var(--pos-text-muted);
+}
+.text-pos-subtle {
+  color: var(--pos-text-subtle);
+}
+
+/* Elevation */
+.shadow-pos-sm {
+  box-shadow: var(--pos-shadow-sm);
+}
+.shadow-pos-md {
+  box-shadow: var(--pos-shadow-md);
+}
+.shadow-pos-lg {
+  box-shadow: var(--pos-shadow-lg);
+}
+
+/* Reusable surface patterns */
+.pos-card {
+  background-color: var(--pos-surface);
+  border: 1px solid var(--pos-border);
+  border-radius: var(--radius-lg, 0.625rem);
+  box-shadow: var(--pos-shadow-sm);
+  color: var(--pos-text);
+}
+
+.pos-panel {
+  background-color: var(--pos-surface);
+  border: 1px solid var(--pos-border);
+  border-radius: var(--radius-md, 0.5rem);
+}
+
+.pos-table-shell {
+  overflow: hidden;
+  background-color: var(--pos-table-bg);
+  border: 1px solid var(--pos-border);
+  border-radius: var(--radius-md, 0.5rem);
+  box-shadow: var(--pos-shadow-sm);
+  color: var(--pos-text);
+}
+
+/* Datatable rows inside POS shells */
+.pos-table-shell tbody tr {
+  border-color: var(--pos-border);
+}
+.dark .pos-table-shell,
+.dark .pos-table-shell th,
+.dark .pos-table-shell td {
+  color: #ffffff;
+}
+.dark .pos-table-shell tbody tr:hover {
+  background-color: oklch(0 0 0 / 25%);
+}
+
+.pos-dropdown {
+  background-color: var(--pos-surface);
+  border: 1px solid var(--pos-border);
+  color: var(--pos-text);
+  box-shadow: var(--pos-shadow-lg);
+}
+
+.pos-input {
+  background-color: var(--pos-input-bg);
+  border: 1px solid var(--pos-border);
+  color: var(--pos-text);
+  border-radius: var(--radius-md, 0.5rem);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.pos-input::placeholder {
+  color: var(--pos-text-subtle);
+}
+.pos-input:hover:not(:disabled) {
+  border-color: var(--pos-border-strong);
+}
+.pos-input:focus,
+.pos-input:focus-visible {
+  outline: none;
+  border-color: var(--repair-primary, var(--primary));
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--repair-primary, var(--primary)) 20%, transparent);
+}
+
+.pos-breadcrumb {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--pos-text-muted);
+}
+.pos-breadcrumb a {
+  font-weight: 500;
+  color: var(--repair-primary, var(--primary));
+  transition: color 0.15s ease;
+}
+.pos-breadcrumb a:hover {
+  text-decoration: underline;
+  color: var(--repair-primary-dark, var(--primary));
+}
+
+.pos-link {
+  font-weight: 500;
+  color: var(--repair-primary, var(--primary));
+  text-underline-offset: 2px;
+  transition: color 0.15s ease;
+}
+.pos-link:hover {
+  color: var(--repair-primary-dark, var(--primary));
+  text-decoration: underline;
+}
+
+/* Status badges */
+.pos-badge-success {
+  background-color: var(--pos-success-bg);
+  color: var(--pos-success-text);
+  box-shadow: inset 0 0 0 1px var(--pos-success-ring);
+}
+.pos-badge-warning {
+  background-color: var(--pos-warning-bg);
+  color: var(--pos-warning-text);
+  box-shadow: inset 0 0 0 1px var(--pos-warning-ring);
+}
+.pos-badge-error {
+  background-color: var(--pos-error-bg);
+  color: var(--pos-error-text);
+  box-shadow: inset 0 0 0 1px var(--pos-error-ring);
+}
+.pos-badge-info {
+  background-color: var(--pos-info-bg);
+  color: var(--pos-info-text);
+  box-shadow: inset 0 0 0 1px var(--pos-info-ring);
+}
+
+/* Table row patterns */
+.pos-row-hover:hover {
+  background-color: var(--pos-hover-bg);
+}
+.pos-row-zebra-even {
+  background-color: var(--pos-table-bg, var(--pos-surface));
+}
+.pos-row-zebra-odd {
+  background-color: var(--pos-subtle-bg);
+}
+.dark .pos-row-zebra-odd {
+  background-color: oklch(0 0 0 / 18%);
+}
+
+/* Form controls inside POS shell */
+.repairs-pos-theme input:not([type="checkbox"]):not([type="radio"]):not(.pos-input-override),
+.repairs-pos-theme select:not(.pos-input-override),
+.repairs-pos-theme textarea:not(.pos-input-override) {
+  background-color: var(--pos-input-bg);
+  color: var(--pos-text);
+  border-color: var(--pos-border);
+}
+.repairs-pos-theme input::placeholder,
+.repairs-pos-theme textarea::placeholder {
+  color: var(--pos-text-subtle);
+}
+
+/* Fallback overrides for legacy hardcoded classes (reduced set) */
+.dark .bg-\[\#F8FAFC\],
+.dark .bg-\[\#F9FAFB\],
+.dark .bg-\[\#EEF1F4\],
+.dark .bg-\[\#FAFBFC\],
+.dark .bg-\[\#f4f6f9\],
+.dark .bg-\[\#f7f9fa\] {
+  background-color: var(--pos-page-bg) !important;
+}
+
+.dark .bg-white {
+  background-color: var(--pos-surface) !important;
+}
+
+.dark .bg-\[\#FFFFFF\],
+.dark .bg-\[\#FAFAFA\],
+.dark .bg-\[\#F3F4F6\] {
+  background-color: var(--pos-muted-bg) !important;
+}
+
+.dark .border-\[\#E5E7EB\],
+.dark .border-\[\#D1D5DB\],
+.dark .border-neutral-200,
+.dark .border-neutral-100,
+.dark .border-\[\#CBD5E1\] {
+  border-color: var(--pos-border) !important;
+}
+
+.dark .text-\[\#111827\],
+.dark .text-\[\#334155\],
+.dark .text-neutral-900,
+.dark .text-neutral-800,
+.dark .text-neutral-700 {
+  color: #ffffff !important;
+}
+
+.dark .text-\[\#374151\],
+.dark .text-\[\#4B5563\],
+.dark .text-neutral-600 {
+  color: oklch(1 0 0 / 92%) !important;
+}
+
+.dark .text-\[\#6B7280\],
+.dark .text-neutral-500 {
+  color: oklch(1 0 0 / 78%) !important;
+}
+
+.dark .text-\[\#9CA3AF\],
+.dark .text-\[\#D1D5DB\],
+.dark .text-neutral-400 {
+  color: oklch(1 0 0 / 62%) !important;
+}
+
+.dark .hover\:bg-\[\#FAFAFA\]:hover,
+.dark .hover\:bg-white:hover {
+  background-color: var(--pos-hover-bg) !important;
+}
+
+.dark .hover\:bg-\[\#F3F4F6\]:hover,
+.dark .hover\:bg-\[\#F9FAFB\]:hover {
+  background-color: var(--pos-muted-bg) !important;
+}
+
+.dark .bg-\[\#FFF1F2\] {
+  background-color: var(--pos-highlight-bg) !important;
+}
+
+.dark .hover\:bg-\[\#FFE4E6\]:hover {
+  background-color: var(--pos-highlight-hover) !important;
+}

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const exportBtn =
-  "h-9 gap-1.5 rounded-sm border border-[#E5E7EB] bg-white px-3 text-sm font-medium text-[#374151] shadow-sm hover:bg-[#F9FAFB]";
+  "h-9 gap-1.5 rounded-sm border border-[#E5E7EB] bg-white px-3 text-sm font-medium text-[#374151] shadow-sm hover:bg-pos-page";
 
 export function LowStockReportHeaderActions() {
   const handleExport = (format: "CSV" | "PDF" | "Print") => {

@@ -344,7 +344,7 @@ export function RepairsMiscPanel() {
             </div>
 
             {/* Price note */}
-            <div className="rounded-lg border border-[#E5E7EB] bg-[#F9FAFB] px-4 py-3.5">
+            <div className="rounded-lg border border-[#E5E7EB] bg-pos-page px-4 py-3.5">
               <p className="text-sm font-medium text-[#374151]">
                 Price will be confirmed after checking your device and service details.
               </p>
@@ -380,7 +380,7 @@ function MiscFileCard({
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }) {
   return (
-    <label className="block cursor-pointer rounded-md border border-dashed border-[#D1D5DB] bg-[#F9FAFB] p-3 transition-colors hover:border-(--repair-primary)">
+    <label className="block cursor-pointer rounded-md border border-dashed border-[#D1D5DB] bg-pos-page p-3 transition-colors hover:border-(--repair-primary)">
       <span className="mb-2 block text-xs font-medium text-[#374151]">{label}</span>
       <div className="flex items-center justify-center gap-1.5 rounded-md border border-[#E5E7EB] bg-white px-3 py-2 text-xs text-[#6B7280]">
         <ArrowUpFromLine className="size-3.5" aria-hidden />

@@ -142,14 +142,14 @@ export function RepairsRecordsListDialog({
                   ? "Search ticket #, customer, device..."
                   : "Search invoice #, ticket #, customer..."
               }
-              className="h-10 border-[#E5E7EB] bg-[#F9FAFB] pl-9"
+              className="h-10 border-[#E5E7EB] bg-pos-page pl-9"
             />
           </div>
         </div>
 
         <div className="min-h-0 flex-1 overflow-auto">
           <table className="w-full min-w-[640px] text-left text-sm">
-            <thead className="sticky top-0 z-10 bg-[#F9FAFB] text-xs font-semibold uppercase tracking-wide text-[#6B7280]">
+            <thead className="sticky top-0 z-10 bg-pos-page text-xs font-semibold uppercase tracking-wide text-[#6B7280]">
               <tr className="border-b border-[#E5E7EB]">
                 <th className="px-5 py-3">
                   {variant === "tickets" ? "Ticket #" : "Invoice #"}
@@ -177,7 +177,7 @@ export function RepairsRecordsListDialog({
                 (rows as RepairTicketRecord[]).map((row) => (
                   <tr
                     key={row.id}
-                    className="border-b border-[#F3F4F6] transition-colors hover:bg-[#F9FAFB]"
+                    className="border-b border-[#F3F4F6] transition-colors hover:bg-pos-page"
                   >
                     <td className="px-5 py-3 font-medium text-[#111827]">
                       {row.ticketNumber}
@@ -204,7 +204,7 @@ export function RepairsRecordsListDialog({
                       <button
                         type="button"
                         onClick={() => onViewTicket?.(row)}
-                        className="inline-flex items-center gap-1.5 rounded-md border border-[#E5E7EB] bg-white px-2.5 py-1.5 text-xs font-medium text-[#374151] shadow-sm hover:bg-[#F9FAFB]"
+                        className="inline-flex items-center gap-1.5 rounded-md border border-[#E5E7EB] bg-white px-2.5 py-1.5 text-xs font-medium text-[#374151] shadow-sm hover:bg-pos-page"
                       >
                         <Eye className="size-3.5" />
                         View
@@ -216,7 +216,7 @@ export function RepairsRecordsListDialog({
                 (rows as RepairInvoiceRecord[]).map((row) => (
                   <tr
                     key={row.id}
-                    className="border-b border-[#F3F4F6] transition-colors hover:bg-[#F9FAFB]"
+                    className="border-b border-[#F3F4F6] transition-colors hover:bg-pos-page"
                   >
                     <td className="px-5 py-3 font-medium text-[#111827]">
                       {row.invoiceNumber}
@@ -243,7 +243,7 @@ export function RepairsRecordsListDialog({
                       <button
                         type="button"
                         onClick={() => onViewInvoice?.(row)}
-                        className="inline-flex items-center gap-1.5 rounded-md border border-[#E5E7EB] bg-white px-2.5 py-1.5 text-xs font-medium text-[#374151] shadow-sm hover:bg-[#F9FAFB]"
+                        className="inline-flex items-center gap-1.5 rounded-md border border-[#E5E7EB] bg-white px-2.5 py-1.5 text-xs font-medium text-[#374151] shadow-sm hover:bg-pos-page"
                       >
                         <Eye className="size-3.5" />
                         View

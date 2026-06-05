@@ -28,7 +28,7 @@ export function InventorySummaryReportFilters({
   onReset,
 }: InventorySummaryReportFiltersProps) {
   return (
-    <section className="rounded-sm border border-[#E5E7EB] bg-white px-4 py-4 shadow-sm">
+    <section className="pos-card rounded-sm px-4 py-4">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <label className="space-y-1.5">
@@ -97,7 +97,7 @@ export function InventorySummaryReportFilters({
             type="button"
             variant="outline"
             size="icon"
-            className="size-9 rounded-sm border-[#D1D5DB] bg-white text-[#374151] hover:bg-[#F9FAFB]"
+            className="size-9 rounded-sm border-[#D1D5DB] bg-white text-[#374151] hover:bg-pos-page"
             onClick={onReset}
             aria-label="Reset filters"
           >

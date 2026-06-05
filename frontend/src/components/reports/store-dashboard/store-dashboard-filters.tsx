@@ -89,7 +89,7 @@ export function StoreDashboardFiltersBar({
               type="button"
               variant="outline"
               size="icon"
-              className="size-9 rounded-sm border-[#E5E7EB] bg-white text-[#6B7280] hover:bg-[#F9FAFB]"
+              className="size-9 rounded-sm border-[#E5E7EB] bg-white text-[#6B7280] hover:bg-pos-page"
               onClick={onRefresh}
               aria-label="Refresh dashboard"
             >
@@ -109,7 +109,7 @@ export function StoreDashboardFiltersBar({
               "border-r border-[#E5E7EB] px-3 py-2 text-[11px] font-semibold tracking-wide transition-colors last:border-r-0 sm:px-4 sm:text-xs",
               activeDateTab === tab
                 ? "bg-(--repair-primary) text-white"
-                : "bg-white text-[#374151] hover:bg-[#F9FAFB]",
+                : "bg-white text-[#374151] hover:bg-pos-page",
             )}
           >
             {tab}

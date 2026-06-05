@@ -128,26 +128,16 @@ export function BillPaymentsPage() {
   };
 
   return (
-    <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[#F8FAFC]">
+    <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden">
       <RepairsTopNav />
       <main className="flex-1 overflow-auto">
         <div className="mx-auto w-full max-w-[1600px] space-y-4 p-4 md:p-5">
-          <nav className="text-sm text-[#6B7280]" aria-label="Breadcrumb">
-            <Link
-              href="/dashboard"
-              className="font-medium text-[#31A5A6] transition-colors hover:text-[#227E7F] hover:underline"
-            >
-              Home
-            </Link>
-            <span className="mx-1.5 text-[#9CA3AF]">/</span>
-            <Link
-              href="/inventory/products"
-              className="font-medium text-[#31A5A6] transition-colors hover:text-[#227E7F] hover:underline"
-            >
-              Manage Inventory
-            </Link>
-            <span className="mx-1.5 text-[#9CA3AF]">/</span>
-            <span className="font-medium text-[#374151]">Bill Payments</span>
+          <nav className="pos-breadcrumb" aria-label="Breadcrumb">
+            <Link href="/dashboard">Home</Link>
+            <span className="mx-1.5 text-pos-subtle">/</span>
+            <Link href="/inventory/products">Manage Inventory</Link>
+            <span className="mx-1.5 text-pos-subtle">/</span>
+            <span className="font-medium text-pos-secondary">Bill Payments</span>
           </nav>
 
           <BillPaymentsHeaderActions
@@ -175,7 +165,7 @@ export function BillPaymentsPage() {
           ) : null}
 
           {isLoading ? (
-            <div className="rounded-sm border border-[#E5E7EB] bg-white px-4 py-8 text-center text-sm text-[#6B7280]">
+            <div className="pos-card rounded-sm px-4 py-8 text-center text-sm text-pos-muted">
               Loading bill payments…
             </div>
           ) : (

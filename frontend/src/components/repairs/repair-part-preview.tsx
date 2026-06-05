@@ -47,7 +47,7 @@ export function RepairPartPreview({ variant, className }: RepairPartPreviewProps
   return (
     <div
       className={cn(
-        "flex h-[72px] w-full items-center justify-center bg-[#F9FAFB] px-2",
+        "flex h-[72px] w-full items-center justify-center bg-pos-page px-2",
         className,
       )}
     >

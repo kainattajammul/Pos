@@ -183,7 +183,7 @@ function InventoryMenuColumn({
     <div
       className={cn(
         "flex flex-col transition-all duration-200",
-        showBorder && "border-r border-[#E5E7EB]",
+        showBorder && "border-r border-pos",
       )}
       style={{ minHeight: rowCount > 0 ? rowCount * ROW_HEIGHT_PX : undefined }}
     >
@@ -242,8 +242,7 @@ export function InventoryNavDropdown({ open, onOpenChange }: InventoryNavDropdow
         sideOffset={8}
         align="start"
         className={cn(
-          "z-60 w-[min(620px,calc(100vw-2rem))] overflow-hidden rounded-lg border border-[#E5E7EB] bg-white p-0",
-          "shadow-[0_14px_32px_rgba(15,23,42,0.18)]",
+          "pos-dropdown z-60 w-[min(620px,calc(100vw-2rem))] overflow-hidden rounded-lg p-0",
           "animate-in fade-in-0 zoom-in-95 duration-150",
         )}
       >

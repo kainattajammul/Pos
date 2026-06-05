@@ -6,7 +6,7 @@ const RepairsPosView = dynamic(
     import("@/components/repairs/repairs-pos-view").then((m) => m.RepairsPosView),
   {
     loading: () => (
-      <div className="flex h-full min-h-[320px] items-center justify-center bg-[#F8FAFC] text-sm text-[#6B7280]">
+      <div className="flex h-full min-h-[320px] items-center justify-center bg-pos-page text-sm text-[#6B7280]">
         Loading repairs…
       </div>
     ),

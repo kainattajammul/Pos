@@ -141,7 +141,7 @@ export function RepairsSeriesDevicesStep({
 
         <div className="min-h-0 flex-1 overflow-y-auto pr-1">
           {seriesDevices.length === 0 ? (
-            <div className="flex min-h-[160px] flex-col items-center justify-center rounded-xl border border-dashed border-[#E5E7EB] bg-[#F9FAFB] p-6 text-center">
+            <div className="flex min-h-[160px] flex-col items-center justify-center rounded-xl border border-dashed border-[#E5E7EB] bg-pos-page p-6 text-center">
               <p className="text-sm font-medium text-[#374151]">No models in this series</p>
               <p className="mt-1 text-xs text-[#6B7280]">
                 Add existing models or create a new one.
@@ -184,7 +184,7 @@ export function RepairsSeriesDevicesStep({
 
       <div className="min-h-0 flex-1 overflow-y-auto pr-1">
         {series.length === 0 ? (
-          <div className="flex min-h-[160px] flex-col items-center justify-center rounded-xl border border-dashed border-[#E5E7EB] bg-[#F9FAFB] p-6 text-center">
+          <div className="flex min-h-[160px] flex-col items-center justify-center rounded-xl border border-dashed border-[#E5E7EB] bg-pos-page p-6 text-center">
             <p className="text-sm font-medium text-[#374151]">No series yet</p>
             <p className="mt-1 text-xs text-[#6B7280]">
               Use the menu on a manufacturer or Create series to add one.

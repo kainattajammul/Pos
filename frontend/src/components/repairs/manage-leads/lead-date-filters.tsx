@@ -33,7 +33,7 @@ export function LeadDateFilters({
             type="button"
             onClick={() => onQuickTabChange(tab)}
             className={cn(
-              "rounded-full border border-[#E5E7EB] bg-white px-4 py-1.5 text-xs font-medium text-[#374151] hover:bg-[#F9FAFB]",
+              "rounded-full border border-[#E5E7EB] bg-white px-4 py-1.5 text-xs font-medium text-[#374151] hover:bg-pos-page",
               activeQuickTab === tab && "border-[#D1D5DB] bg-[#F3F4F6] text-[#111827]",
             )}
           >

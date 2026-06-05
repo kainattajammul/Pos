@@ -52,7 +52,7 @@ function ReportRow({
   onNavigate: () => void;
 }) {
   return (
-    <div className="group flex items-stretch border-b border-[#E5E7EB] last:border-b-0 hover:bg-[#F9FAFB]">
+    <div className="group flex items-stretch border-b border-[#E5E7EB] last:border-b-0 hover:bg-pos-page">
       <Link
         href={item.href}
         className="flex min-w-0 flex-1 items-center px-3 py-2.5 text-sm font-medium text-[#374151] transition-colors group-hover:text-(--repair-primary)"
@@ -194,7 +194,7 @@ export function ReportsNavDropdown({ open, onOpenChange }: ReportsNavDropdownPro
         sideOffset={8}
         align="start"
         className={cn(
-          "z-60 w-[min(1180px,calc(100vw-1.5rem))] overflow-hidden rounded-lg border border-[#E5E7EB] bg-white p-0",
+          "pos-dropdown z-60 w-[min(1180px,calc(100vw-1.5rem))] overflow-hidden rounded-lg p-0",
           "shadow-[0_14px_32px_rgba(15,23,42,0.18)]",
           "animate-in fade-in-0 zoom-in-95 duration-150",
         )}

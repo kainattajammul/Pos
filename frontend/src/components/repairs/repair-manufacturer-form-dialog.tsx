@@ -237,7 +237,7 @@ export function RepairManufacturerFormDialog({
                           "flex flex-col items-center justify-center gap-1 rounded-md border p-2 transition-colors",
                           selected
                             ? "border-[var(--repair-primary)] bg-[var(--repair-primary)]/5 ring-1 ring-[var(--repair-primary)]"
-                            : "border-transparent hover:border-[#E5E7EB] hover:bg-[#F9FAFB]",
+                            : "border-transparent hover:border-[#E5E7EB] hover:bg-pos-page",
                         )}
                       >
                         <ManufacturerBrandMark
@@ -264,7 +264,7 @@ export function RepairManufacturerFormDialog({
               />
 
               {imagePreview || imageUrl ? (
-                <div className="relative flex flex-col items-center gap-3 rounded-lg border border-[#E5E7EB] bg-[#F9FAFB] p-4">
+                <div className="relative flex flex-col items-center gap-3 rounded-lg border border-[#E5E7EB] bg-pos-page p-4">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={imagePreview ?? imageUrl ?? ""}
@@ -286,7 +286,7 @@ export function RepairManufacturerFormDialog({
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={busy}
-                  className="flex w-full flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-[#D1D5DB] bg-[#F9FAFB] px-6 py-10 text-[#6B7280] transition-colors hover:border-[var(--repair-primary)] hover:bg-white hover:text-[var(--repair-primary)]"
+                  className="flex w-full flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-[#D1D5DB] bg-pos-page px-6 py-10 text-[#6B7280] transition-colors hover:border-[var(--repair-primary)] hover:bg-white hover:text-[var(--repair-primary)]"
                 >
                   <CloudUpload className="size-8" />
                   <span className="text-sm font-medium">Upload custom logo</span>

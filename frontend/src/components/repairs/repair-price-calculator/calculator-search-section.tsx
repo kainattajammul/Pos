@@ -54,7 +54,7 @@ export function CalculatorSearchSection({
           <select
             value={store}
             onChange={(e) => onStoreChange(e.target.value)}
-            className="h-10 appearance-none bg-[#F9FAFB] py-2 pl-3 pr-8 text-sm font-medium text-[#374151] focus:outline-none"
+            className="h-10 appearance-none bg-pos-page py-2 pl-3 pr-8 text-sm font-medium text-[#374151] focus:outline-none"
           >
             {STORES.map((s) => (
               <option key={s} value={s}>

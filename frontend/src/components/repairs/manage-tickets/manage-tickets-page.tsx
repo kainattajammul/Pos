@@ -92,7 +92,7 @@ function ToolbarButton({
       className={
         active
           ? "h-9 rounded-md border-0 bg-(--repair-primary) px-3 text-sm font-semibold text-(--repair-on-primary) hover:opacity-90"
-          : "h-9 rounded-md border-[#E5E7EB] bg-white px-3 text-sm font-medium text-[#374151] hover:bg-[#F9FAFB]"
+          : "h-9 rounded-md border-[#E5E7EB] bg-white px-3 text-sm font-medium text-[#374151] hover:bg-pos-page"
       }
     >
       {icon}
@@ -124,7 +124,7 @@ export function ManageTicketsPage() {
   };
 
   return (
-    <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[#F9FAFB]">
+    <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-pos-page">
       <RepairsTopNav />
       <div className="min-h-0 flex-1 overflow-auto p-4 md:p-5">
         <div className="mx-auto w-full max-w-[1600px]">

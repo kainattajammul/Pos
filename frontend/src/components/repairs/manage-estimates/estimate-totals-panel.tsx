@@ -51,7 +51,7 @@ export function EstimateTotalsPanel({
         <span className="font-medium text-[#374151]">Tax</span>
         <span className="font-semibold text-[#111827]">{formatMoney(tax)}</span>
       </div>
-      <div className="flex items-center justify-between bg-[#F9FAFB] px-4 py-2.5 text-sm">
+      <div className="flex items-center justify-between bg-pos-page px-4 py-2.5 text-sm">
         <span className="font-semibold text-[#111827]">Total</span>
         <span className="text-base font-bold text-[#111827]">{formatMoney(total)}</span>
       </div>

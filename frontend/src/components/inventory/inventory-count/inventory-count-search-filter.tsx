@@ -101,7 +101,7 @@ export function InventoryCountSearchFilter({
         <Button
           type="button"
           variant="outline"
-          className="h-9 rounded-sm border-[#E5E7EB] bg-white text-sm font-medium text-[#374151] hover:bg-[#F9FAFB]"
+          className="h-9 rounded-sm border-[#E5E7EB] bg-white text-sm font-medium text-[#374151] hover:bg-pos-page"
           onClick={onReset}
         >
           Reset

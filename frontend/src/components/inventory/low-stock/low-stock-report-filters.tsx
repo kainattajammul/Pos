@@ -28,7 +28,7 @@ export function LowStockReportFiltersBar({
   onReset,
 }: LowStockReportFiltersProps) {
   return (
-    <section className="rounded-sm border border-[#E5E7EB] bg-[#F3F4F6] px-4 py-4 shadow-sm">
+    <section className="pos-card rounded-sm bg-pos-muted px-4 py-4">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="space-y-1.5">
@@ -80,7 +80,7 @@ export function LowStockReportFiltersBar({
             variant="outline"
             size="icon"
             className={cn(
-              "size-9 rounded-sm border-[#D1D5DB] bg-white text-[#374151] hover:bg-[#F9FAFB]",
+              "size-9 rounded-sm border-[#D1D5DB] bg-white text-[#374151] hover:bg-pos-page",
             )}
             onClick={onReset}
             aria-label="Reset filters"

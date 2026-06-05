@@ -70,8 +70,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     <div
       className={
         repairsLayout
-          ? "flex h-screen min-h-screen overflow-hidden bg-[#F8FAFC]"
-          : "flex min-h-screen bg-[#f4f6f9] dark:bg-background"
+          ? "repairs-pos-theme flex h-screen min-h-screen overflow-hidden"
+          : "dashboard-surface flex min-h-screen"
       }
     >
       <div className="hidden lg:block">

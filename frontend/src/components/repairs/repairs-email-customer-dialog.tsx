@@ -139,7 +139,7 @@ export function RepairsEmailCustomerDialog({
           onSubmit={handleSend}
           className="min-h-0 flex-1 space-y-4 overflow-auto px-5 py-5"
         >
-          <div className="rounded-lg border border-[#E5E7EB] bg-[#F9FAFB] px-4 py-3 text-sm text-[#374151]">
+          <div className="rounded-lg border border-[#E5E7EB] bg-pos-page px-4 py-3 text-sm text-[#374151]">
             <p>
               <span className="font-medium text-[#111827]">Ticket:</span>{" "}
               {snapshot.ticketId}
@@ -217,7 +217,7 @@ export function RepairsEmailCustomerDialog({
             />
           </div>
 
-          <div className="space-y-2 rounded-lg border border-[#E5E7EB] bg-[#F9FAFB] p-4">
+          <div className="space-y-2 rounded-lg border border-[#E5E7EB] bg-pos-page p-4">
             <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[#6B7280]">
               <Paperclip className="size-3.5" />
               Attachments
@@ -247,7 +247,7 @@ export function RepairsEmailCustomerDialog({
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="inline-flex min-h-10 items-center justify-center rounded-lg border border-[#E5E7EB] bg-white px-4 text-sm font-medium text-[#374151] shadow-sm hover:bg-[#F9FAFB]"
+            className="inline-flex min-h-10 items-center justify-center rounded-lg border border-[#E5E7EB] bg-white px-4 text-sm font-medium text-[#374151] shadow-sm hover:bg-pos-page"
           >
             Cancel
           </button>

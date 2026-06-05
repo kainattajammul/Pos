@@ -289,7 +289,7 @@ export function NewProductPageView() {
   };
 
   return (
-    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[#F8FAFC]">
+    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-pos-page">
       <RepairsTopNav />
       <main className="flex-1 overflow-auto px-4 py-4 md:px-5">
         <div className="mx-auto max-w-[1600px] space-y-5">

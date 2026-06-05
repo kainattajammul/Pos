@@ -33,7 +33,7 @@ export function EstimateAttachmentsSection({
       </button>
       {open ? (
         <div className="p-4">
-          <label className="flex cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-[#D1D5DB] bg-[#F9FAFB] px-4 py-8 text-center hover:border-(--repair-primary)">
+          <label className="flex cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-[#D1D5DB] bg-pos-page px-4 py-8 text-center hover:border-(--repair-primary)">
             <Upload className="mb-2 size-8 text-[#9CA3AF]" />
             <span className="text-sm font-medium text-[#374151]">
               Drag and drop files here, or click to browse

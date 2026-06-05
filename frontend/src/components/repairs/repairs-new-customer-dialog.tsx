@@ -30,10 +30,10 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 const fieldClass =
-  "h-10 w-full rounded-md border border-[#E5E7EB] bg-white px-3 text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:border-[var(--repair-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--repair-primary)]";
+  "pos-input h-10 w-full rounded-md px-3 text-sm focus:border-[var(--repair-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--repair-primary)]/30";
 
 const selectClass =
-  "h-10 w-full rounded-md border border-[#E5E7EB] bg-white px-3 text-sm shadow-none focus-visible:border-[var(--repair-primary)] focus-visible:ring-1 focus-visible:ring-[var(--repair-primary)]";
+  "pos-input h-10 w-full rounded-md px-3 text-sm shadow-none focus-visible:border-[var(--repair-primary)] focus-visible:ring-1 focus-visible:ring-[var(--repair-primary)]/30";
 
 interface RepairsNewCustomerDialogProps {
   open: boolean;
@@ -80,23 +80,23 @@ export function RepairsNewCustomerDialog({
       <DialogContent
         showCloseButton={false}
         overlayClassName="bg-black/55 supports-backdrop-filter:backdrop-blur-[2px]"
-        className="flex max-h-[92vh] w-[calc(100%-2rem)] max-w-2xl flex-col gap-0 overflow-hidden rounded-lg border border-[#E5E7EB] bg-white p-0 shadow-xl sm:max-w-2xl"
+        className="pos-card flex max-h-[92vh] w-[calc(100%-2rem)] max-w-2xl flex-col gap-0 overflow-hidden rounded-lg p-0 shadow-pos-lg sm:max-w-2xl dark:bg-neutral-900"
       >
-        <div className="flex shrink-0 items-start justify-between border-b border-[#E5E7EB] px-5 py-4">
-          <DialogTitle className="text-lg font-semibold text-[#111827]">
+        <div className="flex shrink-0 items-start justify-between border-b border-pos px-5 py-4">
+          <DialogTitle className="text-lg font-semibold text-pos">
             New Customer
           </DialogTitle>
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="rounded-md p-1 text-[#6B7280] transition-colors hover:bg-[#F3F4F6] hover:text-[#111827]"
+            className="rounded-md p-1 text-pos-muted transition-colors hover:bg-pos-hover hover:text-pos"
             aria-label="Close"
           >
             <X className="size-5" />
           </button>
         </div>
 
-        <div className="shrink-0 border-b border-[#E5E7EB] px-5">
+        <div className="shrink-0 border-b border-pos px-5">
           <nav className="flex gap-6" aria-label="Customer form sections">
             {(
               [
@@ -113,7 +113,7 @@ export function RepairsNewCustomerDialog({
                   "border-b-2 py-3 text-sm font-medium transition-colors",
                   tab === id
                     ? "border-[var(--repair-primary)] text-[var(--repair-primary)]"
-                    : "border-transparent text-[#6B7280] hover:text-[#374151]",
+                    : "border-transparent text-pos-muted hover:text-pos-secondary",
                 )}
               >
                 {label}
@@ -132,7 +132,7 @@ export function RepairsNewCustomerDialog({
           )}
         </div>
 
-        <div className="flex shrink-0 justify-center border-t border-[#E5E7EB] bg-[#FAFAFA] px-5 py-4">
+        <div className="flex shrink-0 justify-center border-t border-pos bg-pos-muted px-5 py-4">
           <Button
             type="button"
             onClick={handleSave}
@@ -300,8 +300,8 @@ function ContactTab({
         </Select>
       </FormField>
 
-      <div className="flex items-center justify-between rounded-md border border-[#E5E7EB] bg-[#FAFAFA] px-4 py-3">
-        <Label className="text-sm font-medium text-[#374151]">Email Alert</Label>
+      <div className="flex items-center justify-between rounded-md border border-pos bg-pos-muted px-4 py-3">
+        <Label className="text-sm font-medium text-pos-secondary">Email Alert</Label>
         <EmailAlertToggle
           checked={form.emailAlert}
           onCheckedChange={(v) => update("emailAlert", v)}
@@ -420,7 +420,7 @@ function FormField({
 }) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-sm font-medium text-[#374151]">
+      <Label className="text-sm font-medium text-pos-secondary">
         {label}
         {required ? <span className="text-red-500">*</span> : null}
       </Label>
@@ -444,12 +444,12 @@ function EmailAlertToggle({
       onClick={() => onCheckedChange(!checked)}
       className={cn(
         "relative inline-flex h-[22px] w-[40px] shrink-0 items-center rounded-full p-0.5 transition-colors",
-        checked ? "bg-[var(--repair-primary)]" : "bg-[#C8C4DC]",
+        checked ? "bg-[var(--repair-primary)]" : "bg-pos-subtle",
       )}
     >
       <span
         className={cn(
-          "block size-[18px] rounded-full bg-white shadow-sm transition-transform",
+          "block size-[18px] rounded-full bg-pos-surface shadow-sm transition-transform",
           checked ? "translate-x-[18px]" : "translate-x-0",
         )}
       />

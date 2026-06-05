@@ -30,7 +30,7 @@ export function InvoiceTable({ rows, activeDateTab, onDateTabChange }: InvoiceTa
         <InvoiceDateTabs activeTab={activeDateTab} onTabChange={onDateTabChange} />
         <button
           type="button"
-          className="flex size-8 items-center justify-center rounded-sm border border-[#E5E7EB] bg-white text-[#6B7280] hover:bg-[#F9FAFB]"
+          className="flex size-8 items-center justify-center rounded-sm border border-[#E5E7EB] bg-white text-[#6B7280] hover:bg-pos-page"
           aria-label="Table settings"
         >
           <Settings className="size-4" />

@@ -15,7 +15,7 @@ export function PhoneInputField({ label, value, onChange }: PhoneInputFieldProps
       <div className="flex overflow-hidden rounded-sm border border-[#E5E7EB] bg-white focus-within:border-(--repair-primary) focus-within:ring-1 focus-within:ring-(--repair-primary)">
         <button
           type="button"
-          className="flex shrink-0 items-center gap-1 border-r border-[#E5E7EB] bg-[#F9FAFB] px-2.5 py-2 text-sm text-[#374151]"
+          className="flex shrink-0 items-center gap-1 border-r border-[#E5E7EB] bg-pos-page px-2.5 py-2 text-sm text-[#374151]"
           aria-label="Country code United Kingdom"
         >
           <span aria-hidden>🇬🇧</span>

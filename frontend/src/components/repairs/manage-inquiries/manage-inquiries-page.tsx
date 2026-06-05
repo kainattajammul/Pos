@@ -181,7 +181,7 @@ export function ManageInquiriesPage() {
   }, [filteredRows]);
 
   return (
-    <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[#F8FAFC]">
+    <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-pos-page">
       <RepairsTopNav />
       <div className="min-h-0 flex-1 overflow-auto">
         <div className="mx-auto w-full max-w-[1600px] p-4 md:p-5">
@@ -196,7 +196,7 @@ export function ManageInquiriesPage() {
               <Button
                 type="button"
                 variant="outline"
-                className="h-9 rounded-md border-[#E5E7EB] bg-white px-3 text-sm font-medium text-[#374151] hover:bg-[#F9FAFB]"
+                className="h-9 rounded-md border-[#E5E7EB] bg-white px-3 text-sm font-medium text-[#374151] hover:bg-pos-page"
               >
                 <Download className="size-4 text-[#7AAE85]" />
                 Export

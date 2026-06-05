@@ -128,7 +128,7 @@ export function RepairsProductsPanel({
         </div>
 
         {filteredProducts.length === 0 ? (
-          <div className="flex min-h-[200px] flex-col items-center justify-center rounded-xl border border-dashed border-[#E5E7EB] bg-[#F9FAFB] p-8 text-center">
+          <div className="flex min-h-[200px] flex-col items-center justify-center rounded-xl border border-dashed border-[#E5E7EB] bg-pos-page p-8 text-center">
             <p className="text-sm font-medium text-[#374151]">No products found</p>
             <p className="mt-1 text-xs text-[#6B7280]">Try a different search or category.</p>
           </div>

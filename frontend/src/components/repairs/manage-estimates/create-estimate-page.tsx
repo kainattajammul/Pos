@@ -146,7 +146,7 @@ export function CreateEstimatePage() {
   };
 
   return (
-    <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-white">
+    <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-pos-page">
       <RepairsTopNav />
       <div className="min-h-0 flex-1 overflow-auto">
         <div className="mx-auto w-full max-w-[1600px] px-4 py-4 md:px-5 md:py-5">

@@ -13,7 +13,7 @@ export function ManageInventoryTabs({ activeId }: ManageInventoryTabsProps) {
   const pathname = usePathname();
 
   return (
-    <div className="overflow-x-auto border-b border-[#E5E7EB] bg-[#F9FAFB]">
+    <div className="overflow-x-auto border-b border-pos bg-pos-subtle">
       <div className="flex min-w-max px-2 pt-2">
         {MANAGE_INVENTORY_TABS.map((tab) => {
           const isActive =
@@ -26,10 +26,10 @@ export function ManageInventoryTabs({ activeId }: ManageInventoryTabsProps) {
               key={tab.id}
               href={tab.href}
               className={cn(
-                "relative -mb-px rounded-t-sm border border-[#E5E7EB] border-b-0 px-4 py-2.5 text-sm font-semibold transition-colors",
+                "relative -mb-px rounded-t-md border border-pos border-b-0 px-4 py-2.5 text-sm font-semibold transition-colors",
                 isActive
-                  ? "z-10 border-b-white bg-white text-[#111827]"
-                  : "bg-[#F3F4F6] text-[#6B7280] hover:bg-white hover:text-[#374151]",
+                  ? "z-10 border-b-pos-surface bg-pos-surface text-pos shadow-pos-sm"
+                  : "bg-pos-muted text-pos-muted hover:bg-pos-surface hover:text-pos-secondary",
               )}
             >
               {tab.label}

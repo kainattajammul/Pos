@@ -35,7 +35,7 @@ export const WalkInCustomerForm = forwardRef<HTMLElement, WalkInCustomerFormProp
         className="rounded-sm border border-[#E5E7EB] bg-white p-4"
       >
         <div className="mb-4 flex flex-wrap items-center gap-3 border-b border-[#E5E7EB] pb-4">
-          <div className="flex size-10 items-center justify-center rounded-full border border-[#E5E7EB] bg-[#F9FAFB] text-[#9CA3AF]">
+          <div className="flex size-10 items-center justify-center rounded-full border border-[#E5E7EB] bg-pos-page text-[#9CA3AF]">
             <User className="size-5" />
           </div>
           <span className="text-sm font-semibold text-[#111827]">Walk in Customer</span>
@@ -53,7 +53,7 @@ export const WalkInCustomerForm = forwardRef<HTMLElement, WalkInCustomerFormProp
             </div>
             <button
               type="button"
-              className="flex size-9 items-center justify-center rounded-sm border border-[#E5E7EB] bg-white text-[#6B7280] hover:bg-[#F9FAFB]"
+              className="flex size-9 items-center justify-center rounded-sm border border-[#E5E7EB] bg-white text-[#6B7280] hover:bg-pos-page"
               aria-label="Expand customer options"
             >
               <ChevronDown className="size-4" />
@@ -131,7 +131,7 @@ export const WalkInCustomerForm = forwardRef<HTMLElement, WalkInCustomerFormProp
               <FieldLabel>Email Alerts</FieldLabel>
               <button
                 type="button"
-                className="flex size-6 items-center justify-center rounded-sm border border-[#E5E7EB] text-[#6B7280] hover:bg-[#F9FAFB]"
+                className="flex size-6 items-center justify-center rounded-sm border border-[#E5E7EB] text-[#6B7280] hover:bg-pos-page"
                 aria-label="Add email alert"
               >
                 <Plus className="size-3.5" />

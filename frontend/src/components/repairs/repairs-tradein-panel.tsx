@@ -303,7 +303,7 @@ export function RepairsTradeInPanel() {
                 <TradeInField label="Accessories Included" htmlFor="tradein-accessories">
                   <div
                     id="tradein-accessories"
-                    className="grid grid-cols-1 gap-2 rounded-md border border-[#E5E7EB] bg-[#F9FAFB] p-3 sm:grid-cols-2 lg:grid-cols-3"
+                    className="grid grid-cols-1 gap-2 rounded-md border border-[#E5E7EB] bg-pos-page p-3 sm:grid-cols-2 lg:grid-cols-3"
                   >
                     {TRADE_IN_ACCESSORY_OPTIONS.map((item) => {
                       const checked = form.accessoriesIncluded.includes(item);
@@ -453,7 +453,7 @@ function FileInputCard({
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }) {
   return (
-    <label className="group block cursor-pointer rounded-md border border-dashed border-[#D1D5DB] bg-[#F9FAFB] p-3 transition-colors hover:border-(--repair-primary)">
+    <label className="group block cursor-pointer rounded-md border border-dashed border-[#D1D5DB] bg-pos-page p-3 transition-colors hover:border-(--repair-primary)">
       <span className="mb-2 block text-xs font-medium text-[#374151]">{label}</span>
       <div className="flex items-center justify-center gap-1.5 rounded-md border border-[#E5E7EB] bg-white px-3 py-2 text-xs text-[#6B7280]">
         <ArrowUpFromLine className="size-3.5" aria-hidden />

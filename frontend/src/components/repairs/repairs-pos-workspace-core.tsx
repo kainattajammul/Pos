@@ -7,7 +7,7 @@ export type { RepairsPosWorkspaceCoreProps } from "@/components/repairs/repairs-
 
 function WorkspaceInnerSkeleton() {
   return (
-    <div className="flex min-h-0 min-w-0 flex-1 items-center justify-center bg-white text-sm text-[#6B7280]">
+    <div className="flex min-h-0 min-w-0 flex-1 items-center justify-center bg-pos-surface text-sm text-pos-muted">
       Loading workflow…
     </div>
   );

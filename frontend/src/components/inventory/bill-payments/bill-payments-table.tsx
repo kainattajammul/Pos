@@ -64,29 +64,29 @@ export function BillPaymentsTable({
     pageIds.length > 0 && pageIds.every((id) => selectedIds.has(id));
 
   return (
-    <section className="overflow-hidden rounded-sm border border-[#E5E7EB] bg-white shadow-sm">
+    <section className="pos-table-shell">
       <ManageInventoryTabs activeId="bill-payments" />
 
-      <div className="flex items-center justify-end border-b border-[#E5E7EB] px-4 py-2.5">
+      <div className="flex items-center justify-end border-b border-pos px-4 py-2.5">
         <label className="relative">
           <select
             value={String(pageSize)}
             onChange={(e) => onPageSizeChange(Number(e.target.value))}
-            className="h-8 appearance-none rounded-sm border border-[#E5E7EB] bg-white py-1 pl-3 pr-8 text-xs font-medium text-[#374151]"
+            className="pos-input h-8 appearance-none rounded-sm py-1 pl-3 pr-8 text-xs font-medium"
             aria-label="Rows per page"
           >
             <option value="25">25</option>
             <option value="50">50</option>
             <option value="100">100</option>
           </select>
-          <ChevronDown className="pointer-events-none absolute right-2 top-1/2 size-3.5 -translate-y-1/2 text-[#9CA3AF]" />
+          <ChevronDown className="pointer-events-none absolute right-2 top-1/2 size-3.5 -translate-y-1/2 text-pos-subtle" />
         </label>
       </div>
 
       <div className="overflow-x-auto">
         <Table className="min-w-[1400px]">
-          <TableHeader className="bg-[#F3F4F6]">
-            <TableRow className="border-b border-[#E5E7EB] hover:bg-[#F3F4F6]">
+          <TableHeader className="sticky top-0 z-10 bg-pos-table-header">
+            <TableRow className="border-b border-pos hover:bg-pos-table-header">
               <TableHead className="w-10 px-3">
                 <input
                   type="checkbox"
@@ -99,7 +99,7 @@ export function BillPaymentsTable({
               {COLUMNS.map((col) => (
                 <TableHead
                   key={col.key}
-                  className={`whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-[#374151] ${col.className ?? ""}`}
+                  className={`whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-pos-muted ${col.className ?? ""}`}
                 >
                   {col.label}
                 </TableHead>
@@ -108,16 +108,16 @@ export function BillPaymentsTable({
           </TableHeader>
           <TableBody>
             {displayed.length === 0 ? (
-              <TableRow className="hover:bg-white">
+              <TableRow className="hover:bg-pos-surface">
                 <TableCell
                   colSpan={COLUMNS.length + 1}
-                  className="h-16 px-4 text-sm text-[#6B7280]"
+                  className="h-16 px-4 text-sm text-pos-muted"
                 >
                   <span>No results found. Do you want to </span>
                   <Button
                     type="button"
                     variant="outline"
-                    className="ml-1 inline-flex h-7 rounded-sm border-[#E5E7EB] px-2.5 text-xs font-semibold text-[#374151] hover:bg-[#F9FAFB]"
+                    className="ml-1 inline-flex h-7 rounded-sm border-pos px-2.5 text-xs font-semibold text-pos-secondary hover:bg-pos-hover"
                     onClick={onAddItem}
                   >
                     Add Item
@@ -128,7 +128,7 @@ export function BillPaymentsTable({
               displayed.map((row) => (
                 <TableRow
                   key={row.id}
-                  className="border-b border-[#E5E7EB] hover:bg-[#F9FAFB]"
+                  className="pos-row-hover border-b border-pos"
                 >
                   <TableCell className="px-3">
                     <input

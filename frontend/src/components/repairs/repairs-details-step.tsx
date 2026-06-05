@@ -151,7 +151,7 @@ export function RepairsDetailsStep({
                   type="button"
                   variant="outline"
                   size="icon"
-                  className="size-10 shrink-0 border-[#E5E7EB] bg-white text-[#6B7280] hover:bg-[#F9FAFB]"
+                  className="size-10 shrink-0 border-[#E5E7EB] bg-white text-[#6B7280] hover:bg-pos-page"
                   aria-label="More options"
                 />
               }

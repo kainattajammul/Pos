@@ -137,7 +137,7 @@ export function ManageEstimatesPage() {
   }, [activeDateTab, appliedFilters, estimates, pageSize]);
 
   return (
-    <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[#F8FAFC]">
+    <div className="repairs-pos-theme flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-pos-page">
       <RepairsTopNav />
       <div className="min-h-0 flex-1 overflow-auto">
         <div className="mx-auto w-full max-w-[1600px] p-4 md:p-5">

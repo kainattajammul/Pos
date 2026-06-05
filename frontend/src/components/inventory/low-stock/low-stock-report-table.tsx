@@ -39,7 +39,7 @@ function InfoHeader({ label, tip }: { label: string; tip: string }) {
       <Tooltip>
         <TooltipTrigger
           type="button"
-          className="inline-flex text-[#9CA3AF] hover:text-[#6B7280]"
+          className="inline-flex text-pos-subtle transition-colors hover:text-pos-muted"
           aria-label={`${label} info`}
         >
           <Info className="size-3.5" />
@@ -66,8 +66,8 @@ export function LowStockReportTable({
 
   return (
     <TooltipProvider>
-      <section className="overflow-hidden rounded-sm border border-[#E5E7EB] bg-white shadow-sm">
-        <div className="flex flex-wrap items-center justify-end gap-3 border-b border-[#E5E7EB] px-4 py-3">
+      <section className="pos-table-shell">
+        <div className="flex flex-wrap items-center justify-end gap-3 border-b border-pos px-4 py-3">
           <Button type="button" className={tealBtn} onClick={onAddToPurchaseOrder}>
             <Plus className="size-4" />
             Add to Purchase Order
@@ -76,21 +76,21 @@ export function LowStockReportTable({
             <select
               value={String(pageSize)}
               onChange={(e) => onPageSizeChange(Number(e.target.value))}
-              className="h-8 appearance-none rounded-sm border border-[#E5E7EB] bg-white py-1 pl-3 pr-8 text-xs font-medium text-[#374151]"
+              className="pos-input h-8 appearance-none rounded-sm py-1 pl-3 pr-8 text-xs font-medium"
               aria-label="Rows per page"
             >
               <option value="25">25</option>
               <option value="50">50</option>
               <option value="100">100</option>
             </select>
-            <ChevronDown className="pointer-events-none absolute right-2 top-1/2 size-3.5 -translate-y-1/2 text-[#9CA3AF]" />
+            <ChevronDown className="pointer-events-none absolute right-2 top-1/2 size-3.5 -translate-y-1/2 text-pos-subtle" />
           </label>
         </div>
 
         <div className="overflow-x-auto">
           <Table className="min-w-[1600px]">
-            <TableHeader className="bg-[#F9FAFB]">
-              <TableRow className="border-b border-[#E5E7EB] hover:bg-[#F9FAFB]">
+            <TableHeader className="sticky top-0 z-10 bg-pos-table-header">
+              <TableRow className="border-b border-pos hover:bg-pos-table-header">
                 <TableHead className="w-10 px-3 py-2.5">
                   <Checkbox
                     checked={allDisplayedSelected}
@@ -99,46 +99,46 @@ export function LowStockReportTable({
                     aria-label="Select all rows"
                   />
                 </TableHead>
-                <TableHead className="min-w-[80px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-[#374151]">
+                <TableHead className="min-w-[80px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-pos-muted">
                   Item ID
                 </TableHead>
-                <TableHead className="min-w-[100px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-[#374151]">
+                <TableHead className="min-w-[100px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-pos-muted">
                   SKU
                 </TableHead>
-                <TableHead className="min-w-[100px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-[#374151]">
+                <TableHead className="min-w-[100px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-pos-muted">
                   Category
                 </TableHead>
-                <TableHead className="min-w-[110px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-[#374151]">
+                <TableHead className="min-w-[110px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-pos-muted">
                   Manufacturer
                 </TableHead>
-                <TableHead className="min-w-[120px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-[#374151]">
+                <TableHead className="min-w-[120px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-pos-muted">
                   Device
                 </TableHead>
-                <TableHead className="min-w-[220px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-[#374151]">
+                <TableHead className="min-w-[220px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-pos-muted">
                   Product Name
                 </TableHead>
-                <TableHead className="min-w-[120px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-[#374151]">
+                <TableHead className="min-w-[120px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-pos-muted">
                   Supplier
                 </TableHead>
-                <TableHead className="min-w-[72px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-[#374151]">
+                <TableHead className="min-w-[72px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-pos-muted">
                   On Hand
                 </TableHead>
-                <TableHead className="min-w-[100px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-[#374151]">
+                <TableHead className="min-w-[100px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-pos-muted">
                   Stock Warning
                 </TableHead>
-                <TableHead className="min-w-[110px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-[#374151]">
+                <TableHead className="min-w-[110px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-pos-muted">
                   <InfoHeader
                     label="Reorder Level"
                     tip="Minimum quantity to keep on hand before reordering."
                   />
                 </TableHead>
-                <TableHead className="min-w-[72px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-[#374151]">
+                <TableHead className="min-w-[72px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-pos-muted">
                   <InfoHeader
                     label="On PO"
                     tip="Quantity already on open purchase orders."
                   />
                 </TableHead>
-                <TableHead className="min-w-[90px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-[#374151]">
+                <TableHead className="min-w-[90px] whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-pos-muted">
                   Required Qty
                 </TableHead>
               </TableRow>
@@ -148,7 +148,7 @@ export function LowStockReportTable({
                 <TableRow>
                   <TableCell
                     colSpan={13}
-                    className="h-16 text-center text-sm italic text-[#6B7280]"
+                    className="h-16 text-center text-sm italic text-pos-muted"
                   >
                     No results found.
                   </TableCell>
@@ -157,7 +157,7 @@ export function LowStockReportTable({
                 displayed.map((row) => (
                   <TableRow
                     key={row.id}
-                    className="border-b border-[#E5E7EB] hover:bg-[#F9FAFB]"
+                    className="pos-row-hover border-b border-pos"
                   >
                     <TableCell className="px-3 py-2">
                       <Checkbox
@@ -168,27 +168,27 @@ export function LowStockReportTable({
                         aria-label={`Select item ${row.itemId}`}
                       />
                     </TableCell>
-                    <TableCell className="whitespace-nowrap px-3 py-2 text-sm text-[#374151]">
+                    <TableCell className="whitespace-nowrap px-3 py-2 text-sm text-pos-secondary">
                       {row.itemId}
                     </TableCell>
-                    <TableCell className="whitespace-nowrap px-3 py-2 text-sm text-[#374151]">
+                    <TableCell className="whitespace-nowrap px-3 py-2 text-sm text-pos-secondary">
                       {row.sku}
                     </TableCell>
-                    <TableCell className="whitespace-nowrap px-3 py-2 text-sm text-[#374151]">
+                    <TableCell className="whitespace-nowrap px-3 py-2 text-sm text-pos-secondary">
                       {row.category}
                     </TableCell>
-                    <TableCell className="whitespace-nowrap px-3 py-2 text-sm text-[#374151]">
+                    <TableCell className="whitespace-nowrap px-3 py-2 text-sm text-pos-secondary">
                       {row.manufacturer}
                     </TableCell>
-                    <TableCell className="whitespace-nowrap px-3 py-2 text-sm text-[#374151]">
+                    <TableCell className="whitespace-nowrap px-3 py-2 text-sm text-pos-secondary">
                       {row.device}
                     </TableCell>
-                    <TableCell className="max-w-[280px] px-3 py-2 text-sm text-[#374151]">
+                    <TableCell className="max-w-[280px] px-3 py-2 text-sm text-pos-secondary">
                       <span className="line-clamp-2" title={row.productName}>
                         {row.productName}
                       </span>
                     </TableCell>
-                    <TableCell className="whitespace-nowrap px-3 py-2 text-sm text-[#374151]">
+                    <TableCell className="whitespace-nowrap px-3 py-2 text-sm text-pos-secondary">
                       {row.supplier}
                     </TableCell>
                     <TableCell className="whitespace-nowrap px-3 py-2 text-sm tabular-nums text-[#374151]">
@@ -203,7 +203,7 @@ export function LowStockReportTable({
                     <TableCell className="whitespace-nowrap px-3 py-2 text-sm tabular-nums text-[#374151]">
                       {row.onPo}
                     </TableCell>
-                    <TableCell className="whitespace-nowrap px-3 py-2 text-sm tabular-nums font-medium text-[#111827]">
+                    <TableCell className="whitespace-nowrap px-3 py-2 text-sm tabular-nums font-medium text-pos">
                       {row.requiredQty}
                     </TableCell>
                   </TableRow>

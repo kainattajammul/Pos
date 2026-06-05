@@ -112,7 +112,7 @@ export function SelectRegisterModal({
               filtered.map((register) => (
                 <div
                   key={register.id}
-                  className="grid cursor-pointer grid-cols-[1fr_120px_140px] border-b border-[#E5E7EB] last:border-b-0 hover:bg-[#F9FAFB] sm:grid-cols-[1fr_140px_160px]"
+                  className="grid cursor-pointer grid-cols-[1fr_120px_140px] border-b border-[#E5E7EB] last:border-b-0 hover:bg-pos-page sm:grid-cols-[1fr_140px_160px]"
                   onClick={() => void handleContinue(register)}
                 >
                   <div className="flex items-center border-r border-[#E5E7EB] px-4 py-3 text-sm font-bold uppercase tracking-wide text-[#1F2937]">

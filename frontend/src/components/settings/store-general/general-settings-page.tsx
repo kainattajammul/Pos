@@ -219,7 +219,7 @@ export function GeneralSettingsPage() {
           Loading store settings…
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="flex flex-col gap-4">
           <SettingsSection title="Basic Information">
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
               <div className="space-y-4">
@@ -433,7 +433,7 @@ export function GeneralSettingsPage() {
                 </label>
                 <div className="space-y-1.5">
                   <span className="text-sm font-medium text-[#374151]">API KEY</span>
-                  <div className="rounded-sm border border-[#E5E7EB] bg-[#F9FAFB] px-3 py-2 text-sm text-[#374151]">
+                  <div className="rounded-sm border border-[#E5E7EB] bg-pos-page px-3 py-2 text-sm text-[#374151]">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <span className="truncate">{form.apiKey}</span>
                       <button
@@ -676,26 +676,24 @@ export function GeneralSettingsPage() {
               />
             </div>
           </SettingsSection>
+
+          <Button
+            type="button"
+            className="h-10 self-end rounded-sm border-0 bg-(--repair-primary) px-5 text-sm font-semibold text-(--repair-on-primary) hover:opacity-90"
+            onClick={handleSave}
+            disabled={updateMutation.isPending}
+          >
+            {updateMutation.isPending ? (
+              <>
+                <Loader2 className="mr-1.5 size-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              "Save Changes"
+            )}
+          </Button>
         </div>
       )}
-
-      <div className="sticky bottom-3 z-20 flex justify-end">
-        <Button
-          type="button"
-          className="h-10 rounded-sm border-0 bg-(--repair-primary) px-5 text-sm font-semibold text-(--repair-on-primary) shadow-lg hover:opacity-90"
-          onClick={handleSave}
-          disabled={isLoading || updateMutation.isPending}
-        >
-          {updateMutation.isPending ? (
-            <>
-              <Loader2 className="mr-1.5 size-4 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            "Save Changes"
-          )}
-        </Button>
-      </div>
     </div>
   );
 }

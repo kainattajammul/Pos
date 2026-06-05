@@ -178,7 +178,7 @@ export function DailySalesSection({ rows, period }: DailySalesSectionProps) {
           <Button
             type="button"
             variant="outline"
-            className="h-7 rounded-sm border-[#E5E7EB] bg-white px-3 text-xs font-semibold text-[#374151] hover:bg-[#F9FAFB]"
+            className="h-7 rounded-sm border-[#E5E7EB] bg-white px-3 text-xs font-semibold text-[#374151] hover:bg-pos-page"
             onClick={handleDownload}
           >
             Download Report
@@ -208,7 +208,7 @@ export function DailySalesSection({ rows, period }: DailySalesSectionProps) {
                 </TableRow>
               ) : (
                 rows.map((row) => (
-                  <TableRow key={row.id} className="hover:bg-[#F9FAFB]">
+                  <TableRow key={row.id} className="hover:bg-pos-page">
                     <TableCell className="px-3">
                       <input type="checkbox" className="size-3.5 rounded border-[#D1D5DB]" aria-label={`Select ${formatDashboardDate(row.date)}`} />
                     </TableCell>
@@ -433,7 +433,7 @@ export function RepairTicketsSection({ tickets }: RepairTicketsSectionProps) {
                 </TableRow>
               ) : (
                 tickets.map((ticket) => (
-                  <TableRow key={ticket.id} className="hover:bg-[#F9FAFB]">
+                  <TableRow key={ticket.id} className="hover:bg-pos-page">
                     <TableCell className="text-sm font-medium text-[#374151]">{ticket.id}</TableCell>
                     <TableCell className="text-sm text-[#374151]">{ticket.task}</TableCell>
                     <TableCell className="whitespace-nowrap text-sm text-[#374151]">

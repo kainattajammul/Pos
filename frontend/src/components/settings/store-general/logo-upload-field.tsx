@@ -37,7 +37,7 @@ export function LogoUploadField({ value, onChange }: LogoUploadFieldProps) {
     <div className="space-y-2">
       <span className="text-sm font-medium text-[#374151]">Logo</span>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
-        <div className="flex size-16 shrink-0 items-center justify-center rounded-sm border border-[#E5E7EB] bg-[#F9FAFB] text-xs text-[#9CA3AF]">
+        <div className="flex size-16 shrink-0 items-center justify-center rounded-sm border border-[#E5E7EB] bg-pos-page text-xs text-[#9CA3AF]">
           {value ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={value} alt="Store logo preview" className="size-full rounded-sm object-contain" />
@@ -80,7 +80,7 @@ export function LogoUploadField({ value, onChange }: LogoUploadFieldProps) {
             <Button
               type="button"
               variant="outline"
-              className="h-8 gap-1.5 rounded-sm border-[#E5E7EB] bg-white px-3 text-xs font-medium text-[#374151] hover:bg-[#F9FAFB]"
+              className="h-8 gap-1.5 rounded-sm border-[#E5E7EB] bg-white px-3 text-xs font-medium text-[#374151] hover:bg-pos-page"
               onClick={() => onChange(null)}
               disabled={!value}
             >

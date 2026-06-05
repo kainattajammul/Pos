@@ -85,9 +85,9 @@ export function RepairsCartPanel() {
         onSave={handleCustomerSaved}
       />
 
-      <aside className="flex min-h-0 w-full flex-col border-r border-[#E5E7EB] bg-white lg:w-[42%] lg:max-w-[42%] lg:shrink-0">
+      <aside className="flex min-h-0 w-full flex-col border-r border-pos bg-pos-surface shadow-pos-sm dark:bg-neutral-950 lg:w-[42%] lg:max-w-[42%] lg:shrink-0">
         {/* Customer block */}
-        <div className="shrink-0 border-b border-[#E5E7EB] p-3 md:p-4">
+        <div className="shrink-0 border-b border-pos p-3 md:p-4">
           <div className="flex items-center gap-3">
             <div
               className="flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-bold"
@@ -100,13 +100,13 @@ export function RepairsCartPanel() {
             </div>
             <div className="min-w-0 flex-1">
               <p
-                className="truncate text-sm font-semibold text-[#111827]"
+                className="truncate text-sm font-semibold text-pos"
                 title={customerName}
               >
                 {isWalkin ? WALKIN_CUSTOMER_NAME : customerName}
               </p>
               {ticketConfirmed ? (
-                <p className="truncate text-xs text-[#6B7280]">Ticket confirmed</p>
+                <p className="truncate text-xs text-pos-muted">Ticket confirmed</p>
               ) : null}
             </div>
             <div className="flex min-w-0 flex-1 items-center gap-1.5 sm:max-w-[240px]">
@@ -126,7 +126,7 @@ export function RepairsCartPanel() {
         </div>
 
         {ticketConfirmed ? (
-          <div className="shrink-0 border-b border-[#E5E7EB] px-3 py-2.5 md:px-4">
+          <div className="shrink-0 border-b border-pos px-3 py-2.5 md:px-4">
             <button
               type="button"
               id="repair-ticket-details-trigger"
@@ -134,19 +134,19 @@ export function RepairsCartPanel() {
               aria-controls="repair-ticket-details-panel"
               onClick={() => setTicketDetailsOpen((open) => !open)}
               className={cn(
-                "flex h-10 w-full items-center justify-between gap-2 rounded-md border border-[#E5E7EB] bg-white px-3 text-sm text-[#111827] shadow-none transition-colors",
-                "hover:border-[#D1D5DB] hover:bg-[#F9FAFB]",
-                "focus-visible:border-[var(--repair-primary)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--repair-primary)]",
-                ticketDetailsOpen && "border-[var(--repair-primary)] ring-1 ring-[var(--repair-primary)]",
+                "flex h-10 w-full items-center justify-between gap-2 rounded-md border border-pos bg-pos-surface px-3 text-sm text-pos shadow-none transition-colors",
+                "hover:border-pos-strong hover:bg-pos-hover",
+                "focus-visible:border-[var(--repair-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--repair-primary)]/20",
+                ticketDetailsOpen && "border-[var(--repair-primary)] ring-2 ring-[var(--repair-primary)]/20",
               )}
             >
               <span className="min-w-0 truncate text-left">
                 <span className="font-medium">{snapshot.ticketId}</span>
-                <span className="text-[#6B7280]"> · {snapshot.deviceTitle}</span>
+                <span className="text-pos-muted"> · {snapshot.deviceTitle}</span>
               </span>
               <ChevronDown
                 className={cn(
-                  "size-4 shrink-0 text-[#6B7280] transition-transform",
+                  "size-4 shrink-0 text-pos-muted transition-transform",
                   ticketDetailsOpen && "rotate-180",
                 )}
                 aria-hidden
@@ -158,50 +158,50 @@ export function RepairsCartPanel() {
                 id="repair-ticket-details-panel"
                 role="region"
                 aria-labelledby="repair-ticket-details-trigger"
-                className="mt-2 space-y-2 rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3 py-2.5 text-xs leading-relaxed text-[#6B7280]"
+                className="mt-2 space-y-2 rounded-md border border-pos bg-pos-muted px-3 py-2.5 text-xs leading-relaxed text-pos-muted"
               >
                 {selectedCategoryLabel ? (
                   <div className="flex justify-between gap-2">
-                    <span className="shrink-0 text-[#9CA3AF]">Category</span>
-                    <span className="text-right font-medium text-[#374151]">
+                    <span className="shrink-0 text-pos-subtle">Category</span>
+                    <span className="text-right font-medium text-pos-secondary">
                       {selectedCategoryLabel}
                     </span>
                   </div>
                 ) : null}
                 <div className="flex justify-between gap-2">
-                  <span className="shrink-0 text-[#9CA3AF]">Device</span>
-                  <span className="text-right font-medium text-[#111827]">
+                  <span className="shrink-0 text-pos-subtle">Device</span>
+                  <span className="text-right font-medium text-pos">
                     {snapshot.deviceTitle}
                   </span>
                 </div>
                 <div className="flex justify-between gap-2">
-                  <span className="shrink-0 text-[#9CA3AF]">{snapshot.imeiSerialLabel}</span>
-                  <span className="text-right font-medium text-[#374151]">
+                  <span className="shrink-0 text-pos-subtle">{snapshot.imeiSerialLabel}</span>
+                  <span className="text-right font-medium text-pos-secondary">
                     {snapshot.imeiSerialValue}
                   </span>
                 </div>
                 <div className="flex justify-between gap-2">
-                  <span className="shrink-0 text-[#9CA3AF]">Assigned</span>
-                  <span className="text-right font-medium text-[#374151]">
+                  <span className="shrink-0 text-pos-subtle">Assigned</span>
+                  <span className="text-right font-medium text-pos-secondary">
                     {detailsForm.assignedTo}
                   </span>
                 </div>
                 <div className="flex justify-between gap-2">
-                  <span className="shrink-0 text-[#9CA3AF]">Status</span>
-                  <span className="text-right font-medium text-[#374151]">
+                  <span className="shrink-0 text-pos-subtle">Status</span>
+                  <span className="text-right font-medium text-pos-secondary">
                     {detailsForm.repairTaskStatus}
                   </span>
                 </div>
                 <div className="flex justify-between gap-2">
-                  <span className="shrink-0 text-[#9CA3AF]">Due</span>
-                  <span className="text-right font-medium text-[#374151]">
+                  <span className="shrink-0 text-pos-subtle">Due</span>
+                  <span className="text-right font-medium text-pos-secondary">
                     {formatReceiptDateTime(detailsForm.taskDueAt)}
                   </span>
                 </div>
                 {detailsForm.diagnosticNote.trim() ? (
-                  <div className="border-t border-[#E5E7EB] pt-2">
-                    <span className="text-[#9CA3AF]">Diagnostic note</span>
-                    <p className="mt-1 text-[#374151]">
+                  <div className="border-t border-pos pt-2">
+                    <span className="text-pos-subtle">Diagnostic note</span>
+                    <p className="mt-1 text-pos-secondary">
                       {detailsForm.diagnosticNote.trim()}
                     </p>
                   </div>
@@ -212,11 +212,11 @@ export function RepairsCartPanel() {
         ) : null}
 
         {/* Item search */}
-        <div className="shrink-0 border-b border-[#E5E7EB] p-3 md:p-4">
+        <div className="shrink-0 border-b border-pos p-3 md:p-4">
           <div className="flex gap-2">
             <Input
               placeholder="Enter item name, SKU or scan bar code"
-              className="h-9 flex-1 border-[#E5E7EB] text-sm"
+              className="h-9 flex-1 border-pos text-sm"
               disabled={!ticketConfirmed}
             />
             <Button
@@ -243,42 +243,42 @@ export function RepairsCartPanel() {
 
         {/* Summary + total */}
         <div className="shrink-0 space-y-3 px-3 pb-3 md:px-4 md:pb-4">
-          <div className="rounded-lg border border-[#E5E7EB] bg-[#F9FAFB] p-3 md:p-4">
-            <dl className="space-y-2 text-sm text-[#374151]">
+          <div className="rounded-lg border border-pos bg-pos-muted p-3 md:p-4">
+            <dl className="space-y-2 text-sm text-pos-secondary">
             <div className="flex justify-between">
               <dt>Total Items</dt>
-              <dd className="font-medium text-[#111827]">
+              <dd className="font-medium text-pos">
                 {hasCartItems ? cartTotals.itemCount : 0}
               </dd>
             </div>
             <div className="flex justify-between">
               <dt>Sub Total</dt>
-              <dd className="font-medium text-[#111827]">
+              <dd className="font-medium text-pos">
                 {hasCartItems ? formatCartMoney(cartTotals.subTotal) : formatCartMoney(0)}
               </dd>
             </div>
             <div className="flex justify-between">
               <dt>Discount</dt>
-              <dd className="font-medium text-[#111827]">
+              <dd className="font-medium text-pos">
                 {hasCartItems ? formatCartMoney(cartTotals.discount) : formatCartMoney(0)}
               </dd>
             </div>
             <div className="flex justify-between">
               <dt>Tax</dt>
-              <dd className="font-medium text-[#111827]">
+              <dd className="font-medium text-pos">
                 {hasCartItems ? formatCartMoney(cartTotals.tax) : formatCartMoney(0)}
               </dd>
             </div>
             </dl>
           </div>
 
-          <div className="flex items-center justify-between rounded-lg border border-[#E5E7EB] bg-white px-4 py-3.5 shadow-sm">
-            <span className="text-base font-semibold text-[#111827]">Total</span>
+          <div className="flex items-center justify-between rounded-lg border border-pos bg-pos-surface px-4 py-3.5 shadow-pos-sm">
+            <span className="text-base font-semibold text-pos">Total</span>
             <div className="flex items-center gap-2">
-              <span className="text-xl font-bold text-[#111827]">
+              <span className="text-xl font-bold text-pos">
                 {hasCartItems ? formatCartMoney(cartTotals.total) : formatCartMoney(0)}
               </span>
-              <span className="text-[#9CA3AF]" aria-hidden>
+              <span className="text-pos-subtle" aria-hidden>
                 ▲
               </span>
             </div>

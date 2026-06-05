@@ -110,7 +110,7 @@ export function RepairsWarrantyClaimDialog({
               <Input
                 readOnly
                 value={snapshot.ticketId}
-                className={cn(fieldClass, "bg-[#F9FAFB]")}
+                className={cn(fieldClass, "bg-pos-page")}
               />
             </div>
             <div className="space-y-1.5">
@@ -118,7 +118,7 @@ export function RepairsWarrantyClaimDialog({
               <Input
                 readOnly
                 value={snapshot.customerName}
-                className={cn(fieldClass, "bg-[#F9FAFB]")}
+                className={cn(fieldClass, "bg-pos-page")}
               />
             </div>
             <div className="space-y-1.5 sm:col-span-2">
@@ -126,7 +126,7 @@ export function RepairsWarrantyClaimDialog({
               <Input
                 readOnly
                 value={snapshot.deviceTitle}
-                className={cn(fieldClass, "bg-[#F9FAFB]")}
+                className={cn(fieldClass, "bg-pos-page")}
               />
             </div>
             <div className="space-y-1.5 sm:col-span-2">
@@ -136,7 +136,7 @@ export function RepairsWarrantyClaimDialog({
               <Input
                 readOnly
                 value={snapshot.imeiSerialValue}
-                className={cn(fieldClass, "bg-[#F9FAFB]")}
+                className={cn(fieldClass, "bg-pos-page")}
               />
             </div>
           </div>
@@ -211,7 +211,7 @@ export function RepairsWarrantyClaimDialog({
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="inline-flex min-h-10 items-center justify-center rounded-lg border border-[#E5E7EB] bg-white px-4 text-sm font-medium text-[#374151] shadow-sm hover:bg-[#F9FAFB]"
+            className="inline-flex min-h-10 items-center justify-center rounded-lg border border-[#E5E7EB] bg-white px-4 text-sm font-medium text-[#374151] shadow-sm hover:bg-pos-page"
           >
             Cancel
           </button>

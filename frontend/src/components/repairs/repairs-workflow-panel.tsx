@@ -179,8 +179,8 @@ export function RepairsWorkflowPanel({
   const workflowStepsAfterDevice = ["Problems", "Parts", "Details"] as const;
 
   return (
-    <section className="flex min-h-0 min-w-0 flex-1 flex-col bg-white">
-      <div className="shrink-0 border-b border-[#E5E7EB] px-4 py-3 md:px-5">
+    <section className="flex min-h-0 min-w-0 flex-1 flex-col bg-pos-surface dark:bg-neutral-950">
+      <div className="shrink-0 border-b border-pos px-4 py-3 md:px-5">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between lg:gap-12 xl:gap-16">
         <nav
           className="flex min-w-0 flex-1 flex-wrap items-center justify-start gap-1 text-sm"
@@ -204,7 +204,7 @@ export function RepairsWorkflowPanel({
 
           {selectedManufacturerId && manufacturer ? (
             <>
-              <ChevronRight className="size-4 shrink-0 text-[#9CA3AF]" aria-hidden />
+              <ChevronRight className="size-4 shrink-0 text-pos-subtle" aria-hidden />
               <BreadcrumbStep
                 label={manufacturerLabel}
                 active={activeStep === "Manufacturer"}
@@ -216,7 +216,7 @@ export function RepairsWorkflowPanel({
 
           {selectedManufacturerId && !deviceLabel ? (
             <span className="flex items-center gap-1">
-              <ChevronRight className="size-4 shrink-0 text-[#9CA3AF]" aria-hidden />
+              <ChevronRight className="size-4 shrink-0 text-pos-subtle" aria-hidden />
               <BreadcrumbStep
                 label="Devices"
                 active={activeStep === "Devices"}
@@ -228,7 +228,7 @@ export function RepairsWorkflowPanel({
 
           {deviceLabel ? (
             <span className="flex items-center gap-1">
-              <ChevronRight className="size-4 shrink-0 text-[#9CA3AF]" aria-hidden />
+              <ChevronRight className="size-4 shrink-0 text-pos-subtle" aria-hidden />
               <BreadcrumbStep
                 label={deviceLabel}
                 active={activeStep === "Devices"}
@@ -240,7 +240,7 @@ export function RepairsWorkflowPanel({
 
           {workflowStepsAfterDevice.map((step) => (
             <span key={step} className="flex items-center gap-1">
-              <ChevronRight className="size-4 shrink-0 text-[#9CA3AF]" aria-hidden />
+              <ChevronRight className="size-4 shrink-0 text-pos-subtle" aria-hidden />
               <BreadcrumbStep
                 label={step}
                 active={activeStep === step}
@@ -270,7 +270,7 @@ export function RepairsWorkflowPanel({
       >
         {activeStep === "Category" ? (
           categoriesLoading ? (
-            <div className="flex min-h-[200px] items-center justify-center text-sm text-[#6B7280]">
+            <div className="flex min-h-[200px] items-center justify-center text-sm text-pos-muted">
               Loading categories…
             </div>
           ) : (
@@ -288,7 +288,7 @@ export function RepairsWorkflowPanel({
           )
         ) : activeStep === "Manufacturer" ? (
           manufacturersLoading ? (
-            <div className="flex min-h-[200px] items-center justify-center text-sm text-[#6B7280]">
+            <div className="flex min-h-[200px] items-center justify-center text-sm text-pos-muted">
               Loading manufacturers…
             </div>
           ) : (
@@ -429,8 +429,8 @@ function BreadcrumbStep({
       className={cn(
         "rounded px-1.5 py-0.5 font-medium transition-colors",
         active && "text-[var(--repair-primary)]",
-        !active && reachable && "text-[#6B7280] hover:text-[#111827]",
-        !active && !reachable && "cursor-not-allowed text-[#D1D5DB]",
+        !active && reachable && "text-pos-muted hover:text-pos",
+        !active && !reachable && "cursor-not-allowed text-pos-subtle",
       )}
     >
       {label}
@@ -450,9 +450,9 @@ function WorkflowPlaceholder({
   if (excludeSteps.includes(step)) return null;
 
   return (
-    <div className="flex min-h-[200px] flex-col items-center justify-center rounded-xl border border-dashed border-[#E5E7EB] bg-[#F9FAFB] p-8 text-center">
-      <p className="text-sm font-medium text-[#374151]">{step}</p>
-      <p className="mt-1 text-xs text-[#6B7280]">
+    <div className="flex min-h-[200px] flex-col items-center justify-center rounded-xl border border-dashed border-pos bg-pos-muted p-8 text-center">
+      <p className="text-sm font-medium text-pos-secondary">{step}</p>
+      <p className="mt-1 text-xs text-pos-muted">
         {message ?? "This step will be available soon."}
       </p>
     </div>
@@ -499,13 +499,13 @@ function CategoryCard({
         <DropdownMenu>
           <DropdownMenuTrigger
             type="button"
-            className="absolute top-2 right-2 z-10 flex size-7 items-center justify-center rounded-md bg-white/90 text-[#6B7280] opacity-0 shadow-sm ring-1 ring-[#E5E7EB] transition-opacity group-hover:opacity-100 hover:text-[#111827] data-popup-open:opacity-100"
+            className="absolute top-2 right-2 z-10 flex size-7 items-center justify-center rounded-md border border-pos bg-pos-surface text-pos-muted opacity-0 shadow-pos-sm transition-opacity group-hover:opacity-100 hover:text-pos data-popup-open:opacity-100"
             onClick={(e) => e.stopPropagation()}
             aria-label={`Actions for ${card.label}`}
           >
             <MoreHorizontal className="size-4" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-40">
+          <DropdownMenuContent align="end" className="pos-dropdown w-40">
             {onEdit ? (
               <DropdownMenuItem
                 onClick={(e) => {
@@ -536,7 +536,7 @@ function CategoryCard({
       <button
         type="button"
         onClick={onSelect}
-        className="flex min-h-[118px] w-full flex-col items-center justify-center gap-3 rounded-lg border border-[#E5E7EB] bg-white p-4 shadow-sm transition-all hover:border-[var(--repair-primary)] hover:shadow-md"
+        className="pos-card flex min-h-[118px] w-full flex-col items-center justify-center gap-3 rounded-lg p-4 transition-all hover:border-[var(--repair-primary)] hover:shadow-pos-md"
       >
         {showImage ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -547,9 +547,9 @@ function CategoryCard({
             onError={() => setImageFailed(true)}
           />
         ) : (
-          <Icon className="size-9 stroke-[1.25] text-[#374151]" />
+          <Icon className="size-9 stroke-[1.25] text-pos-secondary" />
         )}
-        <span className="text-center text-sm font-medium text-[#111827]">{card.label}</span>
+        <span className="text-center text-sm font-medium text-pos">{card.label}</span>
       </button>
     </div>
   );
@@ -607,13 +607,13 @@ function ManufacturerCard({
         <DropdownMenu>
           <DropdownMenuTrigger
             type="button"
-            className="absolute top-2 right-2 z-10 flex size-7 items-center justify-center rounded-md bg-white/90 text-[#6B7280] shadow-sm ring-1 ring-[#E5E7EB] hover:text-[#111827] data-popup-open:bg-white"
+            className="absolute top-2 right-2 z-10 flex size-7 items-center justify-center rounded-md border border-pos bg-pos-surface text-pos-muted shadow-pos-sm hover:text-pos data-popup-open:bg-pos-surface"
             onClick={(e) => e.stopPropagation()}
             aria-label={`Actions for ${manufacturer.name}`}
           >
             <MoreHorizontal className="size-4" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-52">
+          <DropdownMenuContent align="end" className="pos-dropdown w-52">
             {onCreateSeries ? (
               <DropdownMenuItem
                 disabled={!seriesModeEnabled}
@@ -640,7 +640,7 @@ function ManufacturerCard({
                   onClick={(e) => e.stopPropagation()}
                   onPointerDown={(e) => e.stopPropagation()}
                 >
-                  <span className="text-sm font-medium text-[#374151]">Series mode</span>
+                  <span className="text-sm font-medium text-pos-secondary">Series mode</span>
                   <Switch
                     checked={seriesModeEnabled}
                     onCheckedChange={(enabled) =>
@@ -682,11 +682,11 @@ function ManufacturerCard({
         type="button"
         onClick={onSelect}
         className={cn(
-          "relative flex min-h-[108px] w-full flex-col items-center justify-center gap-2 rounded-lg border bg-white p-3 shadow-sm transition-all",
-          "hover:border-[var(--repair-primary)] hover:shadow-md",
+          "pos-card relative flex min-h-[108px] w-full flex-col items-center justify-center gap-2 rounded-lg p-3 transition-all",
+          "hover:border-[var(--repair-primary)] hover:shadow-pos-md",
           selected
-            ? "border-2 border-[var(--repair-primary)] shadow-md ring-1 ring-[var(--repair-primary)]/20"
-            : "border-[#E5E7EB]",
+            ? "border-2 border-[var(--repair-primary)] shadow-pos-md ring-1 ring-[var(--repair-primary)]/20"
+            : "border-pos",
         )}
       >
         {showImage ? (
@@ -703,7 +703,7 @@ function ManufacturerCard({
             logoSlug={brandSlug}
           />
         )}
-        <span className="text-center text-xs font-medium text-[#111827]">
+        <span className="text-center text-xs font-medium text-pos">
           {manufacturer.name}
         </span>
       </button>

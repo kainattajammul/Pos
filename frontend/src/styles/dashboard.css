@@ -1,9 +1,17 @@
 .dashboard-surface {
-  background: linear-gradient(180deg, rgb(244 246 249) 0%, rgb(248 250 252) 100%);
+  background: linear-gradient(
+    165deg,
+    var(--pos-page-bg, oklch(0.975 0.006 75)) 0%,
+    var(--pos-page-bg-end, oklch(0.965 0.008 70)) 100%
+  );
 }
 
 .dark .dashboard-surface {
-  background: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted) / 0.35) 100%);
+  background: linear-gradient(
+    165deg,
+    var(--pos-page-bg) 0%,
+    var(--pos-page-bg-end) 100%
+  );
 }
 
 .glass-card {

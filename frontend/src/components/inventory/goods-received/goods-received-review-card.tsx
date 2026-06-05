@@ -57,7 +57,7 @@ export function GoodsReceivedReviewCard({ data }: GoodsReceivedReviewCardProps) 
           <div className="flex items-center justify-between gap-4">
             <div className="space-y-4">
               <p className="text-lg font-medium text-[#374151]">Average cost of adjustment</p>
-              <span className="inline-flex rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3 py-1.5 text-sm font-medium text-[#4B5563]">
+              <span className="inline-flex rounded-md border border-[#E5E7EB] bg-pos-page px-3 py-1.5 text-sm font-medium text-[#4B5563]">
                 Note: {data.note}
               </span>
             </div>
@@ -73,7 +73,7 @@ export function GoodsReceivedReviewCard({ data }: GoodsReceivedReviewCardProps) 
             type="button"
             variant="outline"
             onClick={handleBack}
-            className="h-10 rounded-md border-[#E5E7EB] px-6 text-sm font-semibold text-[#64748B] hover:bg-[#F8FAFC]"
+            className="h-10 rounded-md border-[#E5E7EB] px-6 text-sm font-semibold text-[#64748B] hover:bg-pos-page"
           >
             Back
           </Button>

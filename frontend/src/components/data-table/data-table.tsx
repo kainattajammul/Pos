@@ -52,18 +52,18 @@ export function DataTable<TData>({
 
   return (
     <div className="space-y-4">
-      <div className="overflow-x-auto rounded-xl border border-neutral-200/90 bg-white shadow-[0_1px_3px_rgba(15,23,42,0.06),0_8px_24px_rgba(15,23,42,0.04)]">
+      <div className="overflow-x-auto rounded-xl border border-pos bg-pos-table shadow-pos-sm">
         <Table className="min-w-[960px] text-sm">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow
                 key={headerGroup.id}
-                className="border-b border-neutral-200/90 bg-neutral-50/90 hover:bg-neutral-50/90"
+                className="border-b border-pos bg-pos-table-header hover:bg-pos-table-header"
               >
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
-                    className="h-11 px-3 text-xs font-semibold uppercase tracking-wide text-neutral-600 first:pl-4 last:pr-4"
+                    className="h-11 px-3 text-xs font-semibold uppercase tracking-wide text-pos-muted first:pl-4 last:pr-4"
                   >
                     {header.id === "actions" && actionsHeaderContent
                       ? actionsHeaderContent
@@ -80,7 +80,7 @@ export function DataTable<TData>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  className="border-b border-neutral-100 transition-colors hover:bg-neutral-50/80"
+                  className="pos-row-hover border-b border-pos transition-colors"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
@@ -99,7 +99,7 @@ export function DataTable<TData>({
               <TableRow>
                 <TableCell
                   colSpan={table.getAllColumns().length}
-                  className="h-28 text-center text-sm text-neutral-500"
+                  className="h-28 text-center text-sm text-pos-muted"
                 >
                   {emptyMessage}
                 </TableCell>
@@ -109,10 +109,10 @@ export function DataTable<TData>({
         </Table>
       </div>
 
-      <div className="flex flex-col gap-4 border-t border-neutral-200/80 pt-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap items-center gap-3 text-sm text-neutral-600">
+      <div className="flex flex-col gap-4 border-t border-pos pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap items-center gap-3 text-sm text-pos-muted">
           <div className="flex items-center gap-2">
-            <span className="whitespace-nowrap text-neutral-500">Show</span>
+            <span className="whitespace-nowrap text-pos-subtle">Show</span>
             <Select
               value={String(pageSize)}
               onValueChange={(v) => {
@@ -120,7 +120,7 @@ export function DataTable<TData>({
                 table.setPageIndex(0);
               }}
             >
-              <SelectTrigger size="sm" className="h-8 w-[88px] border-neutral-200 bg-white">
+              <SelectTrigger size="sm" className="h-8 w-[88px] border-pos bg-pos-surface">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -131,15 +131,15 @@ export function DataTable<TData>({
                 ))}
               </SelectContent>
             </Select>
-            <span className="whitespace-nowrap text-neutral-500">entries</span>
+            <span className="whitespace-nowrap text-pos-subtle">entries</span>
           </div>
-          <p className="text-neutral-500">
+          <p className="text-pos-subtle">
             Showing{" "}
-            <span className="font-medium text-neutral-800">
+            <span className="font-medium text-pos-secondary">
               {from}
             </span>{" "}
-            to <span className="font-medium text-neutral-800">{to}</span> of{" "}
-            <span className="font-medium text-neutral-800">{totalFilteredRows}</span>{" "}
+            to <span className="font-medium text-pos-secondary">{to}</span> of{" "}
+            <span className="font-medium text-pos-secondary">{totalFilteredRows}</span>{" "}
             entries
           </p>
         </div>
@@ -149,7 +149,7 @@ export function DataTable<TData>({
             type="button"
             variant="outline"
             size="sm"
-            className="h-8 border-neutral-200 bg-white px-2.5 text-neutral-700 shadow-sm hover:bg-neutral-50"
+            className="h-8 border-pos bg-pos-surface px-2.5 text-pos-secondary shadow-pos-sm hover:bg-pos-hover"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
             aria-label="Previous page"
@@ -164,10 +164,10 @@ export function DataTable<TData>({
                   variant="outline"
                   size="sm"
                   className={cn(
-                    "h-8 min-w-8 border-neutral-200 px-2.5 font-medium shadow-sm",
+                    "h-8 min-w-8 border-pos px-2.5 font-medium shadow-pos-sm",
                     pageIndex === i
-                      ? "border-neutral-300 bg-neutral-900 text-white hover:bg-neutral-800 hover:text-white"
-                      : "bg-white text-neutral-700 hover:bg-neutral-50",
+                      ? "border-pos-strong bg-neutral-900 text-white hover:bg-neutral-800 hover:text-white dark:bg-neutral-900 dark:hover:bg-neutral-800"
+                      : "bg-pos-surface text-pos-secondary hover:bg-pos-hover",
                   )}
                   onClick={() => table.setPageIndex(i)}
                 >
@@ -179,7 +179,7 @@ export function DataTable<TData>({
             type="button"
             variant="outline"
             size="sm"
-            className="h-8 border-neutral-200 bg-white px-2.5 text-neutral-700 shadow-sm hover:bg-neutral-50"
+            className="h-8 border-pos bg-pos-surface px-2.5 text-pos-secondary shadow-pos-sm hover:bg-pos-hover"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
             aria-label="Next page"

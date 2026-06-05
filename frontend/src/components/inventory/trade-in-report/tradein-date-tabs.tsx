@@ -20,7 +20,7 @@ export function TradeinDateTabs({ activeTab, onTabChange }: TradeinDateTabsProps
           type="button"
           onClick={() => onTabChange(tab)}
           className={cn(
-            "border-r border-[#E5E7EB] bg-white px-3 py-1.5 text-xs font-medium text-[#374151] last:border-r-0 hover:bg-[#F9FAFB]",
+            "border-r border-[#E5E7EB] bg-white px-3 py-1.5 text-xs font-medium text-[#374151] last:border-r-0 hover:bg-pos-page",
             activeTab === tab && "bg-[#F3F4F6] text-[#111827]",
           )}
         >

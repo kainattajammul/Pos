@@ -241,7 +241,7 @@ function PartCard({
         </span>
 
         {showUploadedImage ? (
-          <div className="flex h-[72px] w-full shrink-0 items-center justify-center border-b border-[#F3F4F6] bg-[#F9FAFB] px-2">
+          <div className="flex h-[72px] w-full shrink-0 items-center justify-center border-b border-[#F3F4F6] bg-pos-page px-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={part.imageUrl!}

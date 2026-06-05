@@ -116,7 +116,7 @@ export function RepairsConditionImagesPanel({
 
       <div className="min-h-0 flex-1 overflow-y-auto pr-1">
         {images.length === 0 ? (
-          <div className="flex min-h-[280px] flex-col items-center justify-center rounded-xl border border-dashed border-[#E5E7EB] bg-[#F9FAFB] p-8 text-center">
+          <div className="flex min-h-[280px] flex-col items-center justify-center rounded-xl border border-dashed border-[#E5E7EB] bg-pos-page p-8 text-center">
             <div className="mb-4 flex size-14 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--repair-primary)_12%,white)]">
               <ImagePlus className="size-7 text-[var(--repair-primary)]" aria-hidden />
             </div>
@@ -161,7 +161,7 @@ export function RepairsConditionImagesPanel({
                 render={
                   <button
                     type="button"
-                    className="flex min-h-[140px] w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-[#D1D5DB] bg-[#F9FAFB] text-[#6B7280] transition-colors hover:border-[var(--repair-primary)] hover:bg-white hover:text-[var(--repair-primary)]"
+                    className="flex min-h-[140px] w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-[#D1D5DB] bg-pos-page text-[#6B7280] transition-colors hover:border-[var(--repair-primary)] hover:bg-white hover:text-[var(--repair-primary)]"
                   >
                     <Upload className="size-6" aria-hidden />
                     <span className="text-xs font-medium">Add more</span>
