@@ -23,6 +23,18 @@ export const queryKeys = {
     all: ["purchase-orders"] as const,
     list: (shopId: number) => ["purchase-orders", "list", shopId] as const,
   },
+  billPayments: {
+    all: ["bill-payments"] as const,
+    list: (shopId: number) => ["bill-payments", "list", shopId] as const,
+  },
+  storeSettings: {
+    all: ["store-settings"] as const,
+    general: (shopId: number) => ["store-settings", "general", shopId] as const,
+  },
+  posRegisters: {
+    all: ["pos-registers"] as const,
+    list: (shopId: number) => ["pos-registers", "list", shopId] as const,
+  },
   auth: {
     me: ["auth", "me"] as const,
   },

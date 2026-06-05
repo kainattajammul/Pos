@@ -5,12 +5,11 @@ import { useEffect, useState } from "react";
 import {
   Bell,
   ChevronDown,
-  Grid3X3,
   Headphones,
+  Maximize2,
   Menu,
   Plus,
   Search,
-  Store,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { POS_NAV_ITEMS } from "@/lib/repairs-pos-data";
@@ -24,7 +23,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { AppLauncherDropdown } from "@/components/shared/app-launcher-dropdown";
 import { isAnyInventoryPage } from "@/lib/inventory-nav-items";
+import { isAnyReportsPage } from "@/lib/reports-nav-items";
 
 const InventoryNavDropdown = dynamic(
   () =>
@@ -34,11 +35,24 @@ const InventoryNavDropdown = dynamic(
   { ssr: false },
 );
 
+const ReportsNavDropdown = dynamic(
+  () =>
+    import("@/components/repairs/reports-nav-dropdown").then(
+      (m) => m.ReportsNavDropdown,
+    ),
+  { ssr: false },
+);
+
 const RepairPriceCalculatorModal = dynamic(
   () =>
     import("@/components/repairs/repair-price-calculator/repair-price-calculator-modal").then(
       (m) => m.RepairPriceCalculatorModal,
     ),
+  { ssr: false },
+);
+
+const SelectRegisterModal = dynamic(
+  () => import("@/components/repairs/select-register-modal").then((m) => m.SelectRegisterModal),
   { ssr: false },
 );
 
@@ -102,34 +116,84 @@ export function RepairsTopNav() {
   const [calculatorOpen, setCalculatorOpen] = useState(false);
   const [inventoryOpen, setInventoryOpen] = useState(false);
   const [repairsOpen, setRepairsOpen] = useState(false);
+  const [reportsOpen, setReportsOpen] = useState(false);
+  const [appLauncherOpen, setAppLauncherOpen] = useState(false);
+  const [selectRegisterOpen, setSelectRegisterOpen] = useState(false);
 
   const isRepairsPage = pathname === "/repairs" || pathname.startsWith("/repairs/");
   const isInventoryPage = isAnyInventoryPage(pathname);
+  const isReportsPage = isAnyReportsPage(pathname);
 
   const isMainItemActive = (label: string) => {
     if (label === "Point Of Sale" || label === "Repairs") return isRepairsPage;
     if (label === "Inventory") return isInventoryPage;
+    if (label === "Reports") return isReportsPage;
     return false;
   };
 
   const handleInventoryOpenChange = (open: boolean) => {
     setInventoryOpen(open);
-    if (open) setRepairsOpen(false);
+    if (open) {
+      setRepairsOpen(false);
+      setReportsOpen(false);
+      setAppLauncherOpen(false);
+      setSelectRegisterOpen(false);
+    }
   };
 
   const handleRepairsOpenChange = (open: boolean) => {
     setRepairsOpen(open);
-    if (open) setInventoryOpen(false);
+    if (open) {
+      setInventoryOpen(false);
+      setReportsOpen(false);
+      setAppLauncherOpen(false);
+      setSelectRegisterOpen(false);
+    }
+  };
+
+  const handleReportsOpenChange = (open: boolean) => {
+    setReportsOpen(open);
+    if (open) {
+      setInventoryOpen(false);
+      setRepairsOpen(false);
+      setAppLauncherOpen(false);
+      setSelectRegisterOpen(false);
+    }
+  };
+
+  const handleAppLauncherOpenChange = (open: boolean) => {
+    setAppLauncherOpen(open);
+    if (open) {
+      setInventoryOpen(false);
+      setRepairsOpen(false);
+      setReportsOpen(false);
+      setSelectRegisterOpen(false);
+    }
   };
 
   useEffect(() => {
     setInventoryOpen(false);
     setRepairsOpen(false);
+    setReportsOpen(false);
+    setAppLauncherOpen(false);
+    setSelectRegisterOpen(false);
   }, [pathname]);
 
   const closeNavDropdowns = () => {
     setInventoryOpen(false);
     setRepairsOpen(false);
+    setReportsOpen(false);
+    setAppLauncherOpen(false);
+    setSelectRegisterOpen(false);
+  };
+
+  const handlePointOfSaleClick = () => {
+    closeNavDropdowns();
+    if (isRepairsPage) {
+      setSelectRegisterOpen(true);
+      return;
+    }
+    router.push("/repairs");
   };
 
   return (
@@ -234,11 +298,23 @@ export function RepairsTopNav() {
                 );
               }
 
+              if (item.label === "Reports") {
+                return (
+                  <ReportsNavDropdown
+                    key={item.label}
+                    open={reportsOpen}
+                    onOpenChange={handleReportsOpenChange}
+                  />
+                );
+              }
+
               return (
                 <button
                   key={item.label}
                   type="button"
-                  onClick={closeNavDropdowns}
+                  onClick={
+                    item.label === "Point Of Sale" ? handlePointOfSaleClick : closeNavDropdowns
+                  }
                   className={cn(
                     "flex shrink-0 items-center gap-1 rounded px-2.5 py-1.5 text-xs font-medium transition-colors md:text-sm",
                     isActive
@@ -299,9 +375,9 @@ export function RepairsTopNav() {
           <button
             type="button"
             className="rounded p-1.5 text-white/90 transition-colors hover:bg-white/10"
-            aria-label="Store"
+            aria-label="Fullscreen"
           >
-            <Store className="size-5" />
+            <Maximize2 className="size-5" />
           </button>
           <button
             type="button"
@@ -310,16 +386,20 @@ export function RepairsTopNav() {
           >
             <Bell className="size-5" />
           </button>
-          <button
-            type="button"
-            className="rounded p-1.5 text-white/90 transition-colors hover:bg-white/10"
-            aria-label="App launcher"
-          >
-            <Grid3X3 className="size-5" />
-          </button>
+          <AppLauncherDropdown
+            open={appLauncherOpen}
+            onOpenChange={handleAppLauncherOpenChange}
+          />
         </div>
       </header>
       <RepairPriceCalculatorModal open={calculatorOpen} onOpenChange={setCalculatorOpen} />
+      <SelectRegisterModal
+        open={selectRegisterOpen}
+        onOpenChange={setSelectRegisterOpen}
+        onRegisterSelected={() => {
+          router.push("/repairs");
+        }}
+      />
     </>
   );
 }

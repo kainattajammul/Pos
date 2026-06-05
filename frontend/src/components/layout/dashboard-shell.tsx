@@ -25,7 +25,11 @@ function isRepairsRoute(pathname: string) {
     pathname === "/inventory" ||
     pathname.startsWith("/inventory/") ||
     pathname === "/purchases" ||
-    pathname.startsWith("/purchases/")
+    pathname.startsWith("/purchases/") ||
+    pathname === "/reports" ||
+    pathname.startsWith("/reports/") ||
+    pathname === "/settings" ||
+    pathname.startsWith("/settings/")
   );
 }
 

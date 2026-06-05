@@ -16,7 +16,7 @@ export const POS_NAV_ITEMS: PosNavItem[] = [
   { label: "Inventory", hasDropdown: true },
   { label: "Customer", hasDropdown: true },
   { label: "Point Of Sale", active: true },
-  { label: "Reports" },
+  { label: "Reports", hasDropdown: true },
   { label: "Campaigner" },
   { label: "Expense", hasDropdown: true },
 ];
