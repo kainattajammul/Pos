@@ -6,8 +6,8 @@ import {
   LogOut,
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { useState } from "react";
+import { SwitchUserModal } from "@/components/shared/switch-user-modal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -51,8 +51,8 @@ function LauncherMenuItem({
 }
 
 export function AppLauncherDropdown({ open, onOpenChange }: AppLauncherDropdownProps) {
-  const router = useRouter();
   const { user, logout, isLoggingOut } = useAuth();
+  const [switchUserOpen, setSwitchUserOpen] = useState(false);
 
   const displayName = user?.name?.trim() || PLACEHOLDER_USER.name;
   const displayEmail = user?.email ?? PLACEHOLDER_USER.email;
@@ -67,8 +67,7 @@ export function AppLauncherDropdown({ open, onOpenChange }: AppLauncherDropdownP
 
   const handleSwitchUser = () => {
     close();
-    toast.message("Switch user — connect user picker when ready");
-    router.push("/login?switch=1");
+    setSwitchUserOpen(true);
   };
 
   const handleLogout = () => {
@@ -77,6 +76,7 @@ export function AppLauncherDropdown({ open, onOpenChange }: AppLauncherDropdownP
   };
 
   return (
+    <>
     <DropdownMenu open={open} onOpenChange={onOpenChange}>
       <DropdownMenuTrigger
         render={
@@ -158,5 +158,7 @@ export function AppLauncherDropdown({ open, onOpenChange }: AppLauncherDropdownP
         </div>
       </DropdownMenuContent>
     </DropdownMenu>
+    <SwitchUserModal open={switchUserOpen} onOpenChange={setSwitchUserOpen} />
+    </>
   );
 }

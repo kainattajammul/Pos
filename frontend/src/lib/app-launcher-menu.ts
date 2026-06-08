@@ -23,7 +23,7 @@ export interface AppLauncherMenuItem {
 
 export const APP_LAUNCHER_COLUMNS: AppLauncherMenuItem[][] = [
   [
-    { id: "my-profile", label: "My Profile", href: "/settings", icon: User },
+    { id: "my-profile", label: "My Profile", href: "/profile", icon: User },
     { id: "start-shift", label: "Start Shift", href: "/shift/start", icon: LogIn },
     {
       id: "my-commission",

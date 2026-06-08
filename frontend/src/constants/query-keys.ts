@@ -38,6 +38,20 @@ export const queryKeys = {
   auth: {
     me: ["auth", "me"] as const,
   },
+  profile: {
+    all: ["profile"] as const,
+    me: (userId: string) => ["profile", "me", userId] as const,
+  },
+  transactionLog: {
+    all: ["transaction-log"] as const,
+    list: (scope: string, userId: string) =>
+      ["transaction-log", "list", scope, userId] as const,
+  },
+  billing: {
+    all: ["billing"] as const,
+    summary: (companyName: string) => ["billing", "summary", companyName] as const,
+    invoices: () => ["billing", "invoices"] as const,
+  },
   users: {
     all: ["users"] as const,
     list: () => ["users", "list"] as const,
