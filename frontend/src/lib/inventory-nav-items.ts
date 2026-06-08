@@ -46,8 +46,8 @@ export const MANAGE_INVENTORY_CHILDREN: InventoryMegaMenuItem[] = [
 ];
 
 export const MANAGE_SERVICES_CHILDREN: InventoryMegaMenuItem[] = [
-  { id: "service-list", label: "Service list", href: "/inventory/services" },
-  { id: "service-categories", label: "Categories", href: "/inventory/services/categories" },
+  { id: "service-repairs", label: "Repairs", href: "/inventory/repairs" },
+  { id: "service-unlocking", label: "Unlocking", href: "/inventory/services/unlocking" },
 ];
 
 export const INVENTORY_LEFT_SECTIONS: InventoryExpandableSection[] = [
