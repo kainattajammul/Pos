@@ -83,8 +83,14 @@ export function buildThemeFromColor(hex: string, id: string, name: string): AppT
 }
 
 /** CSS variables for repairs POS + global shadcn/Tailwind tokens. */
-export function themeToCssVariables(theme: AppTheme): Record<string, string> {
-  const accentMuted = mixHex(theme.primary, 0.92, "white");
+export function themeToCssVariables(
+  theme: AppTheme,
+  options?: { isDark?: boolean },
+): Record<string, string> {
+  const isDark = options?.isDark ?? false;
+  const accentMuted = isDark
+    ? "rgba(255, 255, 255, 0.08)"
+    : mixHex(theme.primary, 0.92, "white");
 
   return {
     "--repair-primary": theme.primary,
@@ -109,8 +115,13 @@ export function themeToCssVariables(theme: AppTheme): Record<string, string> {
   };
 }
 
-export function applyThemeCssVariables(theme: AppTheme, target: HTMLElement = document.documentElement) {
-  const vars = themeToCssVariables(theme);
+export function applyThemeCssVariables(
+  theme: AppTheme,
+  target: HTMLElement = document.documentElement,
+  options?: { isDark?: boolean },
+) {
+  const isDark = options?.isDark ?? target.classList.contains("dark");
+  const vars = themeToCssVariables(theme, { isDark });
   for (const [key, value] of Object.entries(vars)) {
     target.style.setProperty(key, value);
   }

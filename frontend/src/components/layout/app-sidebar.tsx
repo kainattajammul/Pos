@@ -84,7 +84,7 @@ export function AppSidebar({
           <Button
             variant="ghost"
             size="icon-xs"
-            className="hidden shrink-0 lg:inline-flex"
+            className="hidden shrink-0 text-sidebar-foreground lg:inline-flex"
             onClick={() => dispatch(toggleSidebar())}
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >

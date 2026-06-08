@@ -36,23 +36,23 @@
 }
 
 .dark {
-  --pos-page-bg: oklch(0.16 0.012 30);
-  --pos-page-bg-end: oklch(0.18 0.014 28);
-  --pos-surface: oklch(0.21 0.014 30);
-  --pos-muted-bg: oklch(0.25 0.014 30);
-  --pos-subtle-bg: oklch(0.23 0.013 30);
-  --pos-border: oklch(0 0 0 / 55%);
-  --pos-border-strong: oklch(0 0 0 / 75%);
-  --pos-table-bg: var(--color-neutral-900, oklch(0.205 0 0));
-  --pos-table-header-bg: oklch(0 0 0 / 35%);
-  --pos-text: #ffffff;
-  --pos-text-secondary: oklch(1 0 0 / 92%);
-  --pos-text-muted: oklch(1 0 0 / 78%);
-  --pos-text-subtle: oklch(1 0 0 / 62%);
-  --pos-hover-bg: oklch(0.27 0.015 30);
-  --pos-input-bg: oklch(0.24 0.013 30);
-  --pos-highlight-bg: oklch(0.28 0.04 20);
-  --pos-highlight-hover: oklch(0.32 0.05 20);
+  --pos-page-bg: #0b0b0f;
+  --pos-page-bg-end: #101014;
+  --pos-surface: #101014;
+  --pos-muted-bg: #16161c;
+  --pos-subtle-bg: #141418;
+  --pos-border: rgba(255, 255, 255, 0.08);
+  --pos-border-strong: rgba(255, 255, 255, 0.14);
+  --pos-table-bg: #101014;
+  --pos-table-header-bg: rgba(255, 255, 255, 0.06);
+  --pos-text: #f4f4f5;
+  --pos-text-secondary: rgba(255, 255, 255, 0.92);
+  --pos-text-muted: rgba(255, 255, 255, 0.78);
+  --pos-text-subtle: rgba(255, 255, 255, 0.62);
+  --pos-hover-bg: rgba(255, 255, 255, 0.1);
+  --pos-input-bg: #16161c;
+  --pos-highlight-bg: rgba(255, 255, 255, 0.06);
+  --pos-highlight-hover: rgba(255, 255, 255, 0.1);
   --pos-shadow-sm: 0 1px 2px oklch(0 0 0 / 20%), 0 1px 3px oklch(0 0 0 / 25%);
   --pos-shadow-md: 0 2px 4px oklch(0 0 0 / 22%), 0 4px 12px oklch(0 0 0 / 30%);
   --pos-shadow-lg: 0 4px 8px oklch(0 0 0 / 25%), 0 8px 24px oklch(0 0 0 / 35%);

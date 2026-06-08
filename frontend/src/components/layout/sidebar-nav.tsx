@@ -58,9 +58,9 @@ function SidebarNavChildLinks({
                 type="button"
                 onClick={() => toggleGroup(groupKey)}
                 className={cn(
-                  "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors",
+                  "sidebar-nav-item flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors",
                   childActive
-                    ? "bg-primary/10 font-medium text-primary"
+                    ? "sidebar-nav-active sidebar-nav-active-label"
                     : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground",
                 )}
               >
@@ -72,24 +72,17 @@ function SidebarNavChildLinks({
                   )}
                 />
               </button>
-              <div
-                className={cn(
-                  "grid overflow-hidden transition-[grid-template-rows] duration-300 ease-out",
-                  nestedOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
-                )}
-              >
-                <div className="min-h-0">
-                    <SidebarNavChildLinks
-                      items={child.children!}
-                      pathname={pathname}
-                      onNavigate={onNavigate}
-                      depth={depth + 1}
-                      openGroups={openGroups}
-                      toggleGroup={toggleGroup}
-                      prefetchRoutes={prefetchRoutes}
-                    />
-                </div>
-              </div>
+              {nestedOpen ? (
+                <SidebarNavChildLinks
+                  items={child.children!}
+                  pathname={pathname}
+                  onNavigate={onNavigate}
+                  depth={depth + 1}
+                  openGroups={openGroups}
+                  toggleGroup={toggleGroup}
+                  prefetchRoutes={prefetchRoutes}
+                />
+              ) : null}
             </div>
           );
         }
@@ -105,9 +98,9 @@ function SidebarNavChildLinks({
             prefetch={prefetchRoutes}
             onClick={onNavigate}
             className={cn(
-              "block rounded-lg px-3 py-2 text-sm transition-colors",
+              "sidebar-nav-item block rounded-lg px-3 py-2 text-sm transition-colors",
               linkActive
-                ? "bg-primary/10 font-medium text-primary"
+                ? "sidebar-nav-active sidebar-nav-active-label"
                 : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground",
             )}
           >
@@ -172,13 +165,18 @@ export function SidebarNav({ collapsed, onNavigate }: SidebarNavProps) {
                   type="button"
                   onClick={() => toggleGroup(item.title)}
                   className={cn(
-                    "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
+                    "sidebar-nav-item flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
                     groupActive
-                      ? "bg-gray-200 font-medium text-black shadow-sm"
+                      ? "sidebar-nav-active sidebar-nav-active-label"
                       : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground",
                   )}
                 >
-                  <Icon className="size-[18px] shrink-0 text-neutral-900" />
+                  <Icon
+                    className={cn(
+                      "size-[18px] shrink-0",
+                      groupActive ? "text-current" : "text-sidebar-foreground",
+                    )}
+                  />
                   <span className="flex-1 text-left font-medium">{item.title}</span>
                   <ChevronDown
                     className={cn(
@@ -187,13 +185,8 @@ export function SidebarNav({ collapsed, onNavigate }: SidebarNavProps) {
                     )}
                   />
                 </button>
-                <div
-                  className={cn(
-                    "grid overflow-hidden transition-[grid-template-rows] duration-300 ease-out",
-                    isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
-                  )}
-                >
-                  <div className="min-h-0 py-1">
+                {isOpen ? (
+                  <div className="py-1">
                     <SidebarNavChildLinks
                       items={item.children!}
                       pathname={pathname}
@@ -203,7 +196,7 @@ export function SidebarNav({ collapsed, onNavigate }: SidebarNavProps) {
                       prefetchRoutes={prefetchRoutes}
                     />
                   </div>
-                </div>
+                ) : null}
               </div>
             );
           }
@@ -217,15 +210,20 @@ export function SidebarNav({ collapsed, onNavigate }: SidebarNavProps) {
               onClick={onNavigate}
               title={collapsed ? item.title : undefined}
               className={cn(
-                "mt-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all",
+                "sidebar-nav-item mt-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all",
                 isActive
-                  ? "bg-gray-200 font-medium text-black shadow-sm"
+                  ? "sidebar-nav-active sidebar-nav-active-label"
                   : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground",
                 collapsed && "justify-center px-2",
               )}
             >
-              <Icon className="size-[18px] shrink-0 text-neutral-900" />
-              {!collapsed ? <span className="font-medium">{item.title}</span> : null}
+              <Icon
+                className={cn(
+                  "size-[18px] shrink-0",
+                  isActive ? "text-current" : "text-sidebar-foreground",
+                )}
+              />
+              {!collapsed ? <span>{item.title}</span> : null}
             </Link>
           );
         })}

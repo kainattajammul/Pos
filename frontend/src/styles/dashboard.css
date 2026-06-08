@@ -18,3 +18,72 @@
   background: color-mix(in oklab, var(--card) 88%, transparent);
   backdrop-filter: blur(12px);
 }
+
+/* Sidebar nav — frosted glass active state */
+.sidebar-nav-active {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: linear-gradient(
+    145deg,
+    color-mix(in oklab, var(--primary) 14%, transparent) 0%,
+    color-mix(in oklab, var(--sidebar-accent) 62%, transparent) 48%,
+    color-mix(in oklab, var(--sidebar) 78%, white) 100%
+  );
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in oklab, var(--sidebar-border) 65%, transparent);
+  box-shadow:
+    0 1px 2px color-mix(in oklab, var(--primary) 8%, transparent),
+    0 2px 10px color-mix(in oklab, var(--sidebar-foreground) 5%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 42%, transparent);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.15s ease;
+}
+
+.dark .sidebar-nav-active {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.12),
+    rgba(255, 255, 255, 0.04)
+  );
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 0 0 1px color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.dark .sidebar-nav-active::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 45%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.14),
+    rgba(255, 255, 255, 0)
+  );
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sidebar-nav-active-label {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.dark .sidebar-nav-active-label {
+  color: #f4f4f5;
+}
+
+/* Inactive sidebar items — neutral charcoal hover in dark mode */
+.dark .sidebar-nav-item:not(.sidebar-nav-active):hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}

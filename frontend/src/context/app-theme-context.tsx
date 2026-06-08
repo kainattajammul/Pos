@@ -10,6 +10,7 @@ import {
   type CSSProperties,
   type ReactNode,
 } from "react";
+import { useTheme } from "next-themes";
 import {
   applyThemeCssVariables,
   buildThemeFromColor,
@@ -42,8 +43,10 @@ const INITIAL_STORED = {
 };
 
 export function AppThemeProvider({ children }: { children: ReactNode }) {
+  const { resolvedTheme } = useTheme();
   const [stored, setStored] = useState(INITIAL_STORED);
   const [ready, setReady] = useState(false);
+  const isDark = resolvedTheme === "dark";
 
   useEffect(() => {
     const loaded = loadStoredThemeState();
@@ -65,13 +68,26 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
   );
 
   const cssVariables = useMemo(
-    () => themeToCssVariables(theme) as CSSProperties,
-    [theme],
+    () => themeToCssVariables(theme, { isDark }) as CSSProperties,
+    [theme, isDark],
   );
 
   useEffect(() => {
     if (!ready) return;
-    applyThemeCssVariables(theme);
+
+    const root = document.documentElement;
+    const apply = () => {
+      applyThemeCssVariables(theme, root, {
+        isDark: root.classList.contains("dark"),
+      });
+    };
+
+    apply();
+
+    const observer = new MutationObserver(apply);
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+
+    return () => observer.disconnect();
   }, [theme, ready]);
 
   const persist = useCallback((next: typeof stored) => {
