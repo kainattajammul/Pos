@@ -31,7 +31,9 @@ function isRepairsRoute(pathname: string) {
     pathname === "/settings" ||
     pathname.startsWith("/settings/") ||
     pathname === "/profile" ||
-    pathname.startsWith("/profile/")
+    pathname.startsWith("/profile/") ||
+    pathname === "/branches" ||
+    pathname.startsWith("/branches/")
   );
 }
 

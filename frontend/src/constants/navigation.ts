@@ -3,6 +3,7 @@ import {
   BarChart3,
   Boxes,
   Contact,
+  GitBranch,
   LayoutDashboard,
   Package,
   Receipt,
@@ -29,6 +30,7 @@ export interface NavItem {
 
 export const MAIN_NAV: NavItem[] = [
   { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { title: "Branches", href: "/branches", icon: GitBranch },
   {
     title: "User Management",
     icon: Users,

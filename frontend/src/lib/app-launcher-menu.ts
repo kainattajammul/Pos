@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   Clock,
+  GitBranch,
   Inbox,
   Lightbulb,
   LogIn,
@@ -34,6 +35,12 @@ export const APP_LAUNCHER_COLUMNS: AppLauncherMenuItem[][] = [
     { id: "integrations", label: "Integrations", href: "/settings/integrations", icon: Plug },
   ],
   [
+    {
+      id: "branch-management",
+      label: "Branch Management",
+      href: "/branches",
+      icon: GitBranch,
+    },
     {
       id: "store-settings",
       label: "Store Settings",

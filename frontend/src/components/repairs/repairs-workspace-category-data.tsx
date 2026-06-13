@@ -7,9 +7,7 @@ import {
   useRepairCategories,
   useUpdateRepairCategory,
 } from "@/hooks/use-repair-categories";
-import type { RepairCategoryCard } from "@/lib/repairs-pos-data";
-
-const EMPTY_CATEGORIES: RepairCategoryCard[] = [];
+import { REPAIR_CATEGORIES, type RepairCategoryCard } from "@/lib/repairs-pos-data";
 
 export interface RepairsWorkspaceCategoryDataSnapshot {
   categories: RepairCategoryCard[];
@@ -30,7 +28,7 @@ export function RepairsWorkspaceCategoryData({
   onSnapshot,
 }: RepairsWorkspaceCategoryDataProps) {
   const {
-    data: categories = EMPTY_CATEGORIES,
+    data: categories = REPAIR_CATEGORIES,
     isLoading: categoriesLoading,
     isError: categoriesError,
   } = useRepairCategories(shopId);

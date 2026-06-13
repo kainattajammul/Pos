@@ -26,6 +26,10 @@ function isRetryableConnectionError(error) {
   );
 }
 
+async function verifyDatabaseConnection() {
+  await basePrisma.$queryRaw`SELECT 1`;
+}
+
 /** Retry once after reconnect when Supabase pooler drops idle connections. */
 const prisma = basePrisma.$extends({
   query: {
@@ -33,11 +37,12 @@ const prisma = basePrisma.$extends({
       async $allOperations({ args, query }) {
         try {
           if (!connected) {
-            await connectDatabase(3);
+            await connectDatabase(5);
           }
           return await query(args);
         } catch (error) {
           if (isRetryableConnectionError(error)) {
+            connected = false;
             await reconnectDatabase();
             return await query(args);
           }
@@ -92,6 +97,7 @@ export async function reconnectDatabase() {
   }
   connected = false;
   await basePrisma.$connect();
+  await verifyDatabaseConnection();
   connected = true;
 }
 
@@ -101,6 +107,7 @@ export async function connectDatabase(maxAttempts = 5) {
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     try {
       await basePrisma.$connect();
+      await verifyDatabaseConnection();
       connected = true;
       startConnectionKeepalive();
       return prisma;

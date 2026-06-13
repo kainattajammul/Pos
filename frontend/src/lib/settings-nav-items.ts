@@ -4,6 +4,7 @@ import {
   Bell,
   Building2,
   DollarSign,
+  GitBranch,
   Gift,
   HandCoins,
   Link2,
@@ -42,6 +43,24 @@ export const SETTINGS_NAV_ITEMS: SettingsNavItem[] = [
     label: "Your profile",
     icon: User,
     href: "/settings/profile",
+  },
+  {
+    id: "branch-management",
+    label: "Branch management",
+    icon: GitBranch,
+    defaultExpanded: true,
+    children: [
+      {
+        id: "branch-overview",
+        label: "All branches",
+        href: "/branches",
+      },
+      {
+        id: "branch-settings",
+        label: "System settings",
+        href: "/settings/branches",
+      },
+    ],
   },
   {
     id: "store-settings",

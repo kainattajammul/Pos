@@ -3,7 +3,7 @@ import { RepairDevicePartController } from "../controllers/repairDevicePart.cont
 import { validateRequest } from "../middleware/validate.middleware.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import {
-  repairCategoryImageUpload,
+  imageUpload,
   handleMulterError,
 } from "../middleware/upload.middleware.js";
 import {
@@ -24,7 +24,7 @@ router.get(
 );
 router.post(
   "/upload-image",
-  repairCategoryImageUpload,
+  imageUpload,
   handleMulterError,
   uploadDevicePartImageRules,
   validateRequest,

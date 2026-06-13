@@ -135,4 +135,9 @@ export const queryKeys = {
     all: ["repair-search"] as const,
     query: (shopId: number, q: string) => ["repair-search", shopId, q] as const,
   },
+  branches: {
+    all: ["branches"] as const,
+    list: (shopId: number) => ["branches", "list", shopId] as const,
+    detail: (id: number) => ["branches", "detail", id] as const,
+  },
 } as const;
