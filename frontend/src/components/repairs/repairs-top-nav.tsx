@@ -124,13 +124,11 @@ export function RepairsTopNav() {
   const isRepairsPage = pathname === "/repairs" || pathname.startsWith("/repairs/");
   const isInventoryPage = isAnyInventoryPage(pathname);
   const isReportsPage = isAnyReportsPage(pathname);
-  const isBranchesPage = pathname === "/branches" || pathname.startsWith("/branches/");
 
   const isMainItemActive = (label: string) => {
     if (label === "Point Of Sale" || label === "Repairs") return isRepairsPage;
     if (label === "Inventory") return isInventoryPage;
     if (label === "Reports") return isReportsPage;
-    if (label === "Branch") return isBranchesPage;
     return false;
   };
 
@@ -197,11 +195,6 @@ export function RepairsTopNav() {
       return;
     }
     router.push("/repairs");
-  };
-
-  const handleBranchClick = () => {
-    closeNavDropdowns();
-    router.push("/branches");
   };
 
   return (
@@ -323,9 +316,7 @@ export function RepairsTopNav() {
                   onClick={
                     item.label === "Point Of Sale"
                       ? handlePointOfSaleClick
-                      : item.label === "Branch"
-                        ? handleBranchClick
-                        : closeNavDropdowns
+                      : closeNavDropdowns
                   }
                   className={cn(
                     "flex shrink-0 items-center gap-1 rounded px-2.5 py-1.5 text-xs font-medium transition-colors md:text-sm",
