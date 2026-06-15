@@ -11,7 +11,6 @@ import {
 } from "@/lib/branch-nav-items";
 import type { BranchRecord } from "@/lib/branch-types";
 import { cn } from "@/lib/utils";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 interface BranchSidebarProps {
@@ -50,10 +49,10 @@ export function BranchSidebar({ branch, mobileOpen, onMobileClose }: BranchSideb
         </div>
       </div>
 
-      <ScrollArea className="min-h-0 flex-1">
+      <div className="scrollbar-hide min-h-0 flex-1 overflow-y-auto">
         <nav className="space-y-0.5 p-2" aria-label="Branch sections">
           {items.map((item) => {
-            const href = `/branches/${branch.id}/${item.slug}`;
+            const href = `/branches/${branch.uuid}/${item.slug}`;
             const active = pathname === href || pathname.startsWith(`${href}/`);
             const Icon = item.icon;
             return (
@@ -77,7 +76,7 @@ export function BranchSidebar({ branch, mobileOpen, onMobileClose }: BranchSideb
             );
           })}
         </nav>
-      </ScrollArea>
+      </div>
 
       <div className="border-t border-[#E5E7EB] p-3">
         <Link
@@ -95,7 +94,7 @@ export function BranchSidebar({ branch, mobileOpen, onMobileClose }: BranchSideb
     <>
       <div className="hidden md:block">{content}</div>
       <Sheet open={mobileOpen} onOpenChange={(open) => !open && onMobileClose?.()}>
-        <SheetContent side="left" className="w-[min(100%,300px)] p-0">
+        <SheetContent side="left" className="scrollbar-hide w-[min(100%,300px)] overflow-hidden p-0">
           {content}
         </SheetContent>
       </Sheet>

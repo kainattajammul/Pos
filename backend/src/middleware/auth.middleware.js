@@ -36,7 +36,7 @@ export async function authenticate(req, _res, next) {
       where: { id: decoded.userId },
     });
 
-    if (!user || user.status !== "active") {
+    if (!user) {
       throw new ApiError(HTTP.UNAUTHORIZED, "Invalid or inactive user");
     }
 

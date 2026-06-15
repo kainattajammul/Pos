@@ -1,11 +1,19 @@
-export type BranchStatus = "active" | "inactive" | "archived";
+export type BranchStatus =
+  | "draft"
+  | "active"
+  | "inactive"
+  | "temporarily_closed"
+  | "archived";
 
 export type BranchType =
-  | "retail"
-  | "repair_center"
-  | "warehouse"
+  | "main"
+  | "standard"
   | "franchise"
-  | "kiosk";
+  | "warehouse"
+  | "kiosk"
+  | "service_centre"
+  | "online"
+  | "other";
 
 export interface BranchOpeningHours {
   monday: string;
@@ -118,7 +126,7 @@ export interface BranchSystemSettings {
 }
 
 export interface BranchRecord {
-  id: number;
+  uuid: string;
   shopId: number;
   code: string;
   name: string;
@@ -128,6 +136,12 @@ export interface BranchRecord {
   contact: BranchContact;
   openingHours: BranchOpeningHours;
   holidays: BranchHoliday[];
+  timezone?: string;
+  openingStatus?: {
+    status: string;
+    is_open: boolean;
+    reason?: string;
+  };
   staff: BranchStaffSettings;
   inventory: BranchInventorySettings;
   operations: BranchOperationsSettings;
@@ -176,15 +190,20 @@ export interface UpdateBranchPayload {
 }
 
 export const BRANCH_TYPE_LABELS: Record<BranchType, string> = {
-  retail: "Retail Store",
-  repair_center: "Repair Center",
-  warehouse: "Warehouse",
+  main: "Main Branch",
+  standard: "Standard",
   franchise: "Franchise",
+  warehouse: "Warehouse",
   kiosk: "Kiosk",
+  service_centre: "Service Centre",
+  online: "Online",
+  other: "Other",
 };
 
 export const BRANCH_STATUS_LABELS: Record<BranchStatus, string> = {
+  draft: "Draft",
   active: "Active",
   inactive: "Inactive",
+  temporarily_closed: "Temporarily Closed",
   archived: "Archived",
 };

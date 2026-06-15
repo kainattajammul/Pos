@@ -6,9 +6,7 @@ import { RepairDeviceModel } from "../models/repairDevice.model.js";
 import { RepairDevicePartModel } from "../models/repairDevicePart.model.js";
 import { ShopModel } from "../models/shop.model.js";
 import { slugify } from "../utils/slugify.js";
-import {
-  DEFAULT_REPAIR_DEVICE_PARTS,
-  REPAIR_PART_IMAGE_VARIANTS,
+import { DEFAULT_REPAIR_DEVICE_PARTS, REPAIR_PART_IMAGE_VARIANTS,
 } from "../data/defaultRepairDeviceParts.js";
 import { deleteStoredImage, deleteStoredImageIfReplaced } from "./storage/deleteImage.js";
 

@@ -14,19 +14,115 @@ enum MemberStatus {
   SUSPENDED
 }
 
+enum BranchType {
+  MAIN
+  STANDARD
+  FRANCHISE
+  WAREHOUSE
+  KIOSK
+  SERVICE_CENTRE
+  ONLINE
+  OTHER
+}
+
+enum BranchStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+  TEMPORARILY_CLOSED
+  ARCHIVED
+}
+
+enum BranchManualOpeningStatus {
+  OPEN
+  CLOSED
+  TEMPORARILY_CLOSED
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum BranchClosureType {
+  PUBLIC_HOLIDAY
+  MAINTENANCE
+  EMERGENCY
+  STAFF_EVENT
+  TEMPORARY_CLOSURE
+  CUSTOM
+}
+
+enum BranchStaffStatus {
+  INVITED
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  ARCHIVED
+}
+
+enum PermissionEffect {
+  ALLOW
+  DENY
+}
+
+enum StaffShiftStatus {
+  DRAFT
+  PUBLISHED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  ABSENT
+}
+
+enum PerformancePeriodType {
+  DAILY
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  YEARLY
+  CUSTOM
+}
+
+enum RoleScope {
+  SHOP
+  BRANCH
+}
+
 model User {
   id           Int      @id @default(autoincrement())
+  uuid         String   @unique @default(uuid()) @db.Uuid
+  supabaseAuthId String? @unique @map("supabase_auth_id") @db.Uuid
 
   fullName     String   @map("full_name")
   email        String   @unique
   passwordHash String   @map("password_hash")
   accessPin    String?  @map("access_pin") @db.VarChar(4)
   phone        String?
+  lastLogin    DateTime? @map("last_login")
 
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
   memberships  ShopMember[]
+  branchesCreated Branch[] @relation("BranchCreatedBy")
+  branchesUpdated Branch[] @relation("BranchUpdatedBy")
+  branchClosuresCreated BranchClosure[] @relation("BranchClosureCreatedBy")
+  auditLogs      AuditLog[]
+  staffAssignments BranchStaffAssignment[] @relation("StaffAssignmentUser")
+  staffAssignmentsCreated BranchStaffAssignment[] @relation("StaffAssignmentAssignedBy")
+  staffRolesAssigned BranchStaffRoleAssignment[] @relation("StaffRoleAssignedBy")
+  userPermissionsAssigned BranchUserPermission[] @relation("UserPermissionAssignedBy")
+  staffShiftsCreated BranchStaffShift[] @relation("ShiftCreatedBy")
+  staffShiftsUpdated BranchStaffShift[] @relation("ShiftUpdatedBy")
+  staffShiftsPublished BranchStaffShift[] @relation("ShiftPublishedBy")
+  securityRulesCreated BranchSecurityRule[] @relation("SecurityRuleCreatedBy")
+  securityRulesUpdated BranchSecurityRule[] @relation("SecurityRuleUpdatedBy")
 
   @@map("users")
 }
@@ -46,35 +142,166 @@ model Shop {
   branches         Branch[]
   members          ShopMember[]
   roles            Role[]
+  auditLogs        AuditLog[]
   repairCategories    RepairCategory[]
   repairManufacturers RepairManufacturer[]
   repairDevices       RepairDevice[]
   repairDeviceSeries  RepairDeviceSeries[]
   repairDeviceIssues  RepairDeviceIssue[]
   repairDeviceParts   RepairDevicePart[]
+  staffAssignments    BranchStaffAssignment[]
+  staffShifts         BranchStaffShift[]
+  staffPerformance    BranchStaffPerformance[]
+  securityRules       BranchSecurityRule[]
 
   @@map("shops")
 }
 
 model Branch {
   id        Int      @id @default(autoincrement())
+  uuid      String   @unique @default(uuid()) @db.Uuid
 
   shopId    Int      @map("shop_id")
 
+  branchCode String  @map("branch_code")
   name      String
-  address   String?
+  slug      String
+  branchType BranchType @default(STANDARD) @map("branch_type")
+
+  addressLine1 String? @map("address_line_1")
+  addressLine2 String? @map("address_line_2")
+  city         String?
+  county       String?
+  postcode     String?
+  country      String? @default("United Kingdom")
+
+  latitude     Decimal? @db.Decimal(10, 7)
+  longitude    Decimal? @db.Decimal(10, 7)
+
+  phone              String?
+  alternativePhone   String? @map("alternative_phone")
+  email              String?
+  contactPersonName  String? @map("contact_person_name")
+  contactPersonPhone String? @map("contact_person_phone")
+  contactPersonEmail String? @map("contact_person_email")
+
+  timezone String @default("Europe/London")
+
+  status BranchStatus @default(DRAFT)
+
+  manualOpeningStatus     BranchManualOpeningStatus? @map("manual_opening_status")
+  manualStatusExpiresAt   DateTime?                  @map("manual_status_expires_at")
+
+  isPrimary  Boolean @default(false) @map("is_primary")
+  isActive   Boolean @default(true)  @map("is_active")
+  archivedAt DateTime? @map("archived_at")
+
+  createdById Int? @map("created_by")
+  updatedById Int? @map("updated_by")
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  shop          Shop                 @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  createdBy     User?                @relation("BranchCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy     User?                @relation("BranchUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  members       BranchMemberRole[]
+  openingHours  BranchOpeningHour[]
+  closures      BranchClosure[]
+  auditLogs     AuditLog[]
+  staffAssignments BranchStaffAssignment[]
+  staffShifts      BranchStaffShift[]
+  staffPerformance BranchStaffPerformance[]
+  securityRules    BranchSecurityRule[]
+  shiftRecurrences BranchStaffShiftRecurrence[]
+
+  @@unique([shopId, slug])
+  @@unique([shopId, branchCode])
+  @@unique([id, shopId])
+  @@index([shopId])
+  @@index([status])
+  @@index([branchType])
+  @@index([city])
+  @@index([deletedAt])
+
+  @@map("branches")
+}
+
+model BranchOpeningHour {
+  id       Int @id @default(autoincrement())
+  branchId Int @map("branch_id")
+  shopId   Int @map("shop_id")
+
+  dayOfWeek    DayOfWeek @map("day_of_week")
+  isClosed     Boolean   @default(false) @map("is_closed")
+  opensAt      String?   @map("opens_at") @db.VarChar(5)
+  closesAt     String?   @map("closes_at") @db.VarChar(5)
+  breakStartsAt String? @map("break_starts_at") @db.VarChar(5)
+  breakEndsAt     String? @map("break_ends_at") @db.VarChar(5)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId, shopId], references: [id, shopId], onDelete: Cascade)
 
-  members   BranchMemberRole[]
-
-  @@unique([id, shopId])
+  @@unique([branchId, dayOfWeek])
   @@index([shopId])
+  @@map("branch_opening_hours")
+}
 
-  @@map("branches")
+model BranchClosure {
+  id       Int @id @default(autoincrement())
+  branchId Int @map("branch_id")
+  shopId   Int @map("shop_id")
+
+  title          String
+  reason         String?
+  closureType    BranchClosureType @default(CUSTOM) @map("closure_type")
+  startsAt       DateTime          @map("starts_at")
+  endsAt         DateTime          @map("ends_at")
+  allDay         Boolean           @default(true) @map("all_day")
+  isRecurring    Boolean           @default(false) @map("is_recurring")
+  recurrenceRule String?           @map("recurrence_rule")
+
+  createdById Int? @map("created_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  branch    Branch @relation(fields: [branchId, shopId], references: [id, shopId], onDelete: Cascade)
+  createdBy User?  @relation("BranchClosureCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([branchId])
+  @@index([shopId])
+  @@index([startsAt, endsAt])
+  @@map("branch_closures")
+}
+
+model AuditLog {
+  id       Int  @id @default(autoincrement())
+  shopId   Int  @map("shop_id")
+  branchId Int? @map("branch_id")
+  userId   Int? @map("user_id")
+
+  action    String
+  entity    String
+  entityId  String? @map("entity_id")
+  oldValues Json?   @map("old_values")
+  newValues Json?   @map("new_values")
+  ipAddress String? @map("ip_address")
+  userAgent String? @map("user_agent")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  shop   Shop    @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([shopId])
+  @@index([branchId])
+  @@index([userId])
+  @@index([action])
+  @@map("audit_logs")
 }
 
 model ShopMember {
@@ -93,6 +320,7 @@ model ShopMember {
 
   shopRoles   ShopMemberRole[]
   branchRoles BranchMemberRole[]
+  staffAssignments BranchStaffAssignment[]
 
   @@unique([userId, shopId])
   @@unique([id, shopId])
@@ -104,10 +332,16 @@ model ShopMember {
 
 model Role {
   id        Int      @id @default(autoincrement())
+  uuid      String   @unique @default(uuid()) @db.Uuid
 
   shopId    Int      @map("shop_id")
 
   name      String
+  code      String?
+  description String?
+  isSystem  Boolean  @default(false) @map("is_system")
+  isActive  Boolean  @default(true) @map("is_active")
+  scope     RoleScope @default(SHOP)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -117,10 +351,13 @@ model Role {
   permissions RolePermission[]
   shopMembers ShopMemberRole[]
   branchMembers BranchMemberRole[]
+  staffRoles  BranchStaffRoleAssignment[]
 
   @@unique([shopId, name])
+  @@unique([shopId, code])
   @@unique([id, shopId])
   @@index([shopId])
+  @@index([scope])
 
   @@map("roles")
 }
@@ -134,6 +371,7 @@ model Permission {
   createdAt DateTime @default(now()) @map("created_at")
 
   roles     RolePermission[]
+  branchUserPermissions BranchUserPermission[]
 
   @@map("permissions")
 }
@@ -189,6 +427,237 @@ model BranchMemberRole {
   @@index([roleId])
 
   @@map("branch_member_roles")
+}
+
+model BranchStaffAssignment {
+  id              Int      @id @default(autoincrement())
+  uuid            String   @unique @default(uuid()) @db.Uuid
+
+  shopId          Int      @map("shop_id")
+  branchId        Int      @map("branch_id")
+  userId          Int      @map("user_id")
+  shopMemberId    Int?     @map("shop_member_id")
+
+  employmentTitle String?  @map("employment_title")
+  employeeCode    String?  @map("employee_code")
+  status          BranchStaffStatus @default(ACTIVE)
+
+  isPrimaryBranch Boolean  @default(false) @map("is_primary_branch")
+  startDate       DateTime? @map("start_date")
+  endDate         DateTime? @map("end_date")
+
+  assignedById    Int?     @map("assigned_by")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  archivedAt      DateTime? @map("archived_at")
+
+  shop            Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch          Branch   @relation(fields: [branchId, shopId], references: [id, shopId], onDelete: Cascade)
+  user            User     @relation("StaffAssignmentUser", fields: [userId], references: [id], onDelete: Cascade)
+  shopMember      ShopMember? @relation(fields: [shopMemberId], references: [id], onDelete: SetNull)
+  assignedBy      User?    @relation("StaffAssignmentAssignedBy", fields: [assignedById], references: [id], onDelete: SetNull)
+
+  roles           BranchStaffRoleAssignment[]
+  permissions     BranchUserPermission[]
+  shifts          BranchStaffShift[]
+  performance     BranchStaffPerformance[]
+  shiftRecurrences BranchStaffShiftRecurrence[]
+
+  @@unique([branchId, userId])
+  @@unique([id, shopId])
+  @@index([shopId])
+  @@index([branchId])
+  @@index([userId])
+  @@index([status])
+  @@index([employeeCode])
+  @@map("branch_staff_assignments")
+}
+
+model BranchStaffRoleAssignment {
+  id                Int @id @default(autoincrement())
+  uuid              String @unique @default(uuid()) @db.Uuid
+
+  shopId            Int @map("shop_id")
+  staffAssignmentId Int @map("staff_assignment_id")
+  roleId            Int @map("role_id")
+  assignedById      Int? @map("assigned_by")
+  isPrimary         Boolean @default(false) @map("is_primary")
+
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  staffAssignment   BranchStaffAssignment @relation(fields: [staffAssignmentId, shopId], references: [id, shopId], onDelete: Cascade)
+  role              Role @relation(fields: [roleId, shopId], references: [id, shopId], onDelete: Cascade)
+  assignedBy        User? @relation("StaffRoleAssignedBy", fields: [assignedById], references: [id], onDelete: SetNull)
+
+  @@unique([staffAssignmentId, roleId])
+  @@index([shopId])
+  @@index([roleId])
+  @@map("branch_staff_role_assignments")
+}
+
+model BranchUserPermission {
+  id                Int @id @default(autoincrement())
+  uuid              String @unique @default(uuid()) @db.Uuid
+
+  shopId            Int @map("shop_id")
+  staffAssignmentId Int @map("staff_assignment_id")
+  permissionId      Int @map("permission_id")
+  effect            PermissionEffect
+  assignedById      Int? @map("assigned_by")
+  expiresAt         DateTime? @map("expires_at")
+
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  staffAssignment   BranchStaffAssignment @relation(fields: [staffAssignmentId, shopId], references: [id, shopId], onDelete: Cascade)
+  permission        Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  assignedBy        User? @relation("UserPermissionAssignedBy", fields: [assignedById], references: [id], onDelete: SetNull)
+
+  @@unique([staffAssignmentId, permissionId])
+  @@index([shopId])
+  @@map("branch_user_permissions")
+}
+
+model BranchStaffShift {
+  id                Int @id @default(autoincrement())
+  uuid              String @unique @default(uuid()) @db.Uuid
+
+  shopId            Int @map("shop_id")
+  branchId          Int @map("branch_id")
+  staffAssignmentId Int @map("staff_assignment_id")
+
+  title             String?
+  shiftDate         DateTime @map("shift_date") @db.Date
+  startsAt          DateTime @map("starts_at")
+  endsAt            DateTime @map("ends_at")
+  breakMinutes      Int @default(0) @map("break_minutes")
+
+  status            StaffShiftStatus @default(DRAFT)
+  notes             String?
+
+  publishedAt       DateTime? @map("published_at")
+  publishedById     Int? @map("published_by")
+  createdById       Int? @map("created_by")
+  updatedById       Int? @map("updated_by")
+
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  branch            Branch @relation(fields: [branchId, shopId], references: [id, shopId], onDelete: Cascade)
+  shop              Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  staffAssignment   BranchStaffAssignment @relation(fields: [staffAssignmentId, shopId], references: [id, shopId], onDelete: Cascade)
+  publishedBy       User? @relation("ShiftPublishedBy", fields: [publishedById], references: [id], onDelete: SetNull)
+  createdBy         User? @relation("ShiftCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy         User? @relation("ShiftUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@index([shopId])
+  @@index([branchId, shiftDate])
+  @@index([staffAssignmentId, startsAt])
+  @@map("branch_staff_shifts")
+}
+
+model BranchStaffShiftRecurrence {
+  id                Int @id @default(autoincrement())
+  uuid              String @unique @default(uuid()) @db.Uuid
+
+  shopId            Int @map("shop_id")
+  branchId          Int @map("branch_id")
+  staffAssignmentId Int @map("staff_assignment_id")
+
+  frequency         String
+  daysOfWeek        Json @map("days_of_week")
+  recurrenceStart   DateTime @map("recurrence_start") @db.Date
+  recurrenceEnd     DateTime @map("recurrence_end") @db.Date
+  startTime         String @map("start_time") @db.VarChar(5)
+  endTime           String @map("end_time") @db.VarChar(5)
+  breakMinutes      Int @default(0) @map("break_minutes")
+  isActive          Boolean @default(true) @map("is_active")
+
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  branch            Branch @relation(fields: [branchId, shopId], references: [id, shopId], onDelete: Cascade)
+  staffAssignment   BranchStaffAssignment @relation(fields: [staffAssignmentId, shopId], references: [id, shopId], onDelete: Cascade)
+
+  @@index([shopId])
+  @@index([branchId])
+  @@map("branch_staff_shift_recurrences")
+}
+
+model BranchStaffPerformance {
+  id                Int @id @default(autoincrement())
+  uuid              String @unique @default(uuid()) @db.Uuid
+
+  shopId            Int @map("shop_id")
+  branchId          Int @map("branch_id")
+  staffAssignmentId Int @map("staff_assignment_id")
+
+  periodType        PerformancePeriodType @map("period_type")
+  periodStart       DateTime @map("period_start") @db.Date
+  periodEnd         DateTime @map("period_end") @db.Date
+
+  scheduledHours    Decimal? @map("scheduled_hours") @db.Decimal(10, 2)
+  workedHours       Decimal? @map("worked_hours") @db.Decimal(10, 2)
+  attendanceRate    Decimal? @map("attendance_rate") @db.Decimal(5, 2)
+
+  salesCount        Int @default(0) @map("sales_count")
+  salesValue        Decimal? @map("sales_value") @db.Decimal(12, 2)
+
+  repairsAssigned   Int @default(0) @map("repairs_assigned")
+  repairsCompleted  Int @default(0) @map("repairs_completed")
+  repairSuccessRate Decimal? @map("repair_success_rate") @db.Decimal(5, 2)
+
+  refundsCount      Int @default(0) @map("refunds_count")
+  customerRating    Decimal? @map("customer_rating") @db.Decimal(3, 2)
+
+  targetValue       Decimal? @map("target_value") @db.Decimal(12, 2)
+  achievedValue     Decimal? @map("achieved_value") @db.Decimal(12, 2)
+  targetPercentage  Decimal? @map("target_percentage") @db.Decimal(6, 2)
+
+  customMetrics     Json? @map("custom_metrics")
+  notes             String?
+
+  calculatedAt      DateTime? @map("calculated_at")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  shop              Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch            Branch @relation(fields: [branchId, shopId], references: [id, shopId], onDelete: Cascade)
+  staffAssignment   BranchStaffAssignment @relation(fields: [staffAssignmentId, shopId], references: [id, shopId], onDelete: Cascade)
+
+  @@unique([staffAssignmentId, periodType, periodStart, periodEnd])
+  @@index([shopId])
+  @@index([branchId, periodStart])
+  @@map("branch_staff_performance")
+}
+
+model BranchSecurityRule {
+  id          Int @id @default(autoincrement())
+  uuid        String @unique @default(uuid()) @db.Uuid
+
+  shopId      Int @map("shop_id")
+  branchId    Int @map("branch_id")
+
+  ruleKey     String @map("rule_key")
+  name        String
+  description String?
+  value       Json
+  isEnabled   Boolean @default(true) @map("is_enabled")
+
+  createdById Int? @map("created_by")
+  updatedById Int? @map("updated_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  shop        Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch      Branch @relation(fields: [branchId, shopId], references: [id, shopId], onDelete: Cascade)
+  createdBy   User? @relation("SecurityRuleCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy   User? @relation("SecurityRuleUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@unique([branchId, ruleKey])
+  @@index([shopId])
+  @@index([branchId])
+  @@map("branch_security_rules")
 }
 
 model RepairCategory {

@@ -13,7 +13,9 @@ import {
   branchTextareaClass,
 } from "@/components/branches/branch-ui-primitives";
 import { Button } from "@/components/ui/button";
-import { useBranch, useUpdateBranch } from "@/hooks/use-branches";
+import { toast } from "sonner";
+import { APP_CONFIG } from "@/constants/config";
+import { useBranch, useUpdateBranch, useUpdateBranchStatus } from "@/hooks/use-branches";
 import { getBranchNavItem } from "@/lib/branch-nav-items";
 import {
   BRANCH_TYPE_LABELS,
@@ -23,14 +25,16 @@ import {
 } from "@/lib/branch-types";
 
 interface BranchSectionPageProps {
-  branchId: number;
+  branchUuid: string;
   sectionSlug: string;
 }
 
-export function BranchSectionPage({ branchId, sectionSlug }: BranchSectionPageProps) {
+export function BranchSectionPage({ branchUuid, sectionSlug }: BranchSectionPageProps) {
   const navItem = getBranchNavItem(sectionSlug);
-  const { data: branch, isLoading } = useBranch(branchId);
-  const updateBranch = useUpdateBranch(branch?.shopId ?? 1);
+  const { data: branch, isLoading } = useBranch(branchUuid);
+  const shopId = APP_CONFIG.defaultShopId;
+  const updateBranch = useUpdateBranch(shopId);
+  const updateStatus = useUpdateBranchStatus(shopId);
   const [draft, setDraft] = useState<BranchRecord | null>(null);
 
   useEffect(() => {
@@ -46,17 +50,32 @@ export function BranchSectionPage({ branchId, sectionSlug }: BranchSectionPagePr
   }
 
   const persist = (payload: UpdateBranchPayload) => {
-    void updateBranch.mutateAsync({ id: branchId, payload });
+    if (sectionSlug === "setup") {
+      if (payload.status !== undefined) {
+        void updateStatus.mutateAsync({
+          uuid: branchUuid,
+          status: payload.status,
+          currentStatus: branch.status,
+        });
+        return;
+      }
+      void updateBranch.mutateAsync({ uuid: branchUuid, payload });
+      return;
+    }
+    toast.info("This section is not yet synced to the server.");
   };
 
   const handleSaveSection = () => {
     switch (sectionSlug) {
       case "setup":
-        persist({
-          name: draft.name,
-          address: draft.address,
-          contact: draft.contact,
-          openingHours: draft.openingHours,
+        void updateBranch.mutateAsync({
+          uuid: branchUuid,
+          payload: {
+            name: draft.name,
+            address: draft.address,
+            contact: draft.contact,
+            openingHours: draft.openingHours,
+          },
         });
         break;
       case "staff":
@@ -88,7 +107,7 @@ export function BranchSectionPage({ branchId, sectionSlug }: BranchSectionPagePr
   const breadcrumbs = [
     { label: "Home", href: "/dashboard" },
     { label: "Branches", href: "/branches" },
-    { label: branch.name, href: `/branches/${branchId}/setup` },
+    { label: branch.name, href: `/branches/${branchUuid}/setup` },
     { label: navItem.shortLabel },
   ];
 

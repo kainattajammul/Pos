@@ -6,7 +6,6 @@ import { ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { MAIN_NAV, type NavChild } from "@/constants/navigation";
 import { cn } from "@/lib/utils";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface SidebarNavProps {
   collapsed?: boolean;
@@ -146,7 +145,7 @@ export function SidebarNav({ collapsed, onNavigate }: SidebarNavProps) {
   };
 
   return (
-    <ScrollArea className="min-h-0 flex-1 px-3">
+    <div className="scrollbar-hide min-h-0 flex-1 overflow-y-auto px-3">
       <nav className="space-y-1 pb-4">
         {MAIN_NAV.map((item) => {
           const Icon = item.icon;
@@ -228,6 +227,6 @@ export function SidebarNav({ collapsed, onNavigate }: SidebarNavProps) {
           );
         })}
       </nav>
-    </ScrollArea>
+    </div>
   );
 }

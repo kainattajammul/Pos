@@ -2,8 +2,10 @@ import type { BranchStatus } from "@/lib/branch-types";
 import { cn } from "@/lib/utils";
 
 const STATUS_STYLES: Record<BranchStatus, string> = {
+  draft: "bg-[#E0E7FF] text-[#3730A3] border-[#C7D2FE]",
   active: "bg-[#DCFCE7] text-[#166534] border-[#BBF7D0]",
   inactive: "bg-[#FEF3C7] text-[#92400E] border-[#FDE68A]",
+  temporarily_closed: "bg-[#FFEDD5] text-[#9A3412] border-[#FED7AA]",
   archived: "bg-[#F3F4F6] text-[#4B5563] border-[#E5E7EB]",
 };
 
@@ -22,7 +24,7 @@ export function BranchStatusBadge({
         className,
       )}
     >
-      {status}
+      {status.replace(/_/g, " ")}
     </span>
   );
 }

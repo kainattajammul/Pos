@@ -16,5 +16,5 @@ export async function generateMetadata({ params }: BranchSectionRouteProps): Pro
 
 export default async function BranchSectionRoutePage({ params }: BranchSectionRouteProps) {
   const { branchId, section } = await params;
-  return <BranchSectionPage branchId={Number(branchId)} sectionSlug={section} />;
+  return <BranchSectionPage branchUuid={branchId} sectionSlug={section} />;
 }

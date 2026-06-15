@@ -17,11 +17,11 @@ function createBranch(partial: Omit<BranchRecord, "createdAt" | "updatedAt">): B
 
 export const DEFAULT_BRANCHES: BranchRecord[] = [
   createBranch({
-    id: 1,
+    uuid: "00000000-0000-4000-8000-000000000001",
     shopId: 1,
     code: "BR-001",
     name: "Main Branch",
-    type: "repair_center",
+    type: "standard",
     status: "active",
     address: {
       line1: "12 High Street",
@@ -112,11 +112,11 @@ export const DEFAULT_BRANCHES: BranchRecord[] = [
     },
   }),
   createBranch({
-    id: 2,
+    uuid: "00000000-0000-4000-8000-000000000002",
     shopId: 1,
     code: "BR-002",
     name: "Bradford Branch",
-    type: "retail",
+    type: "standard",
     status: "active",
     address: {
       line1: "45 Market Street",
@@ -204,7 +204,7 @@ export const DEFAULT_BRANCHES: BranchRecord[] = [
     },
   }),
   createBranch({
-    id: 3,
+    uuid: "00000000-0000-4000-8000-000000000003",
     shopId: 1,
     code: "BR-003",
     name: "London Branch",
@@ -296,7 +296,7 @@ export const DEFAULT_BRANCHES: BranchRecord[] = [
     },
   }),
   createBranch({
-    id: 4,
+    uuid: "00000000-0000-4000-8000-000000000004",
     shopId: 1,
     code: "BR-WH",
     name: "Warehouse",
@@ -394,7 +394,7 @@ export const DEFAULT_BRANCHES: BranchRecord[] = [
 ];
 
 export function createDefaultBranchRecord(
-  id: number,
+  _legacyId: number,
   payload: {
     shopId: number;
     code: string;
@@ -405,7 +405,7 @@ export function createDefaultBranchRecord(
   },
 ): BranchRecord {
   return createBranch({
-    id,
+    uuid: `default-${payload.code.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
     shopId: payload.shopId,
     code: payload.code,
     name: payload.name,

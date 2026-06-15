@@ -13,6 +13,7 @@ import salesCommissionAgentRoutes from "./salesCommissionAgent.routes.js";
 import repairSearchRoutes from "./repairSearch.routes.js";
 import dashboardRoutes from "./dashboard.routes.js";
 import uploadRoutes from "./upload.routes.js";
+import branchRoutes from "./branch.routes.js";
 
 const router = Router();
 
@@ -37,6 +38,8 @@ router.get("/", (_req, res) => {
         repairs: "/api/v1/repairs",
         dashboard: "/api/v1/dashboard",
         upload: "/api/v1/upload",
+        shops: "/api/v1/shops/:shopId/branches",
+        branchStaff: "/api/v1/shops/:shopId/branches/:branchUuid/staff",
       },
     },
   });
@@ -55,6 +58,7 @@ router.use("/repair-device-parts", repairDevicePartRoutes);
 router.use("/sales-commission-agents", salesCommissionAgentRoutes);
 router.use("/repairs", repairSearchRoutes);
 router.use("/dashboard", dashboardRoutes);
+router.use("/shops/:shopId/branches", branchRoutes);
 
 router.get("/health", (_req, res) => {
   res.json({ success: true, message: "POS API is running", data: { status: "ok" } });

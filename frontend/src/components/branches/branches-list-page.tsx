@@ -10,7 +10,6 @@ import {
   Plus,
   Power,
   Search,
-  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -31,9 +30,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { APP_CONFIG } from "@/constants/config";
 import {
+  useArchiveBranch,
   useBranches,
   useCreateBranch,
-  useDeleteBranch,
   useUpdateBranch,
   useUpdateBranchStatus,
 } from "@/hooks/use-branches";
@@ -51,7 +50,7 @@ export function BranchesListPage() {
   const createBranch = useCreateBranch(shopId);
   const updateBranch = useUpdateBranch(shopId);
   const updateStatus = useUpdateBranchStatus(shopId);
-  const deleteBranch = useDeleteBranch(shopId);
+  const archiveBranch = useArchiveBranch(shopId);
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<BranchStatus | "all">("all");
@@ -97,7 +96,7 @@ export function BranchesListPage() {
   const handleFormSubmit = async (values: BranchFormValues) => {
     if (editingBranch) {
       await updateBranch.mutateAsync({
-        id: editingBranch.id,
+        uuid: editingBranch.uuid,
         payload: {
           name: values.name,
           type: values.type,
@@ -141,8 +140,24 @@ export function BranchesListPage() {
     setDialogOpen(false);
   };
 
-  const handleStatus = (id: number, status: BranchStatus) => {
-    void updateStatus.mutateAsync({ id, status });
+  const handleStatus = (branch: BranchRecord, status: BranchStatus) => {
+    if (status === "archived") {
+      void archiveBranch.mutateAsync(branch.uuid);
+      return;
+    }
+    if (branch.status === "archived" && status === "active") {
+      void updateStatus.mutateAsync({
+        uuid: branch.uuid,
+        status: "active",
+        currentStatus: branch.status,
+      });
+      return;
+    }
+    void updateStatus.mutateAsync({
+      uuid: branch.uuid,
+      status,
+      currentStatus: branch.status,
+    });
   };
 
   return (
@@ -187,8 +202,10 @@ export function BranchesListPage() {
               className="h-10 rounded-md border border-[#E5E7EB] bg-white px-3 text-sm"
             >
               <option value="all">All statuses</option>
+              <option value="draft">Draft</option>
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
+              <option value="temporarily_closed">Temporarily closed</option>
               <option value="archived">Archived</option>
             </select>
             <select
@@ -231,10 +248,10 @@ export function BranchesListPage() {
               </thead>
               <tbody className="divide-y divide-[#E5E7EB]">
                 {filtered.map((branch) => (
-                  <tr key={branch.id} className="hover:bg-[#FAFAFA]">
+                  <tr key={branch.uuid} className="hover:bg-[#FAFAFA]">
                     <td className="px-4 py-3">
                       <Link
-                        href={`/branches/${branch.id}/setup`}
+                        href={`/branches/${branch.uuid}/setup`}
                         className="font-semibold text-[#111827] hover:text-(--repair-primary)"
                       >
                         {branch.name}
@@ -268,9 +285,9 @@ export function BranchesListPage() {
                         >
                           <MoreHorizontal className="size-4" />
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuContent align="end" className="scrollbar-hide w-48">
                           <DropdownMenuItem
-                            render={<Link href={`/branches/${branch.id}/setup`} />}
+                            render={<Link href={`/branches/${branch.uuid}/setup`} />}
                           >
                             <Eye className="size-4" />
                             View branch
@@ -280,44 +297,37 @@ export function BranchesListPage() {
                             Edit profile
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          {branch.status !== "active" ? (
+                          {branch.status !== "active" && branch.status !== "archived" ? (
                             <DropdownMenuItem
-                              onClick={() => handleStatus(branch.id, "active")}
+                              onClick={() => handleStatus(branch, "active")}
                             >
                               <Power className="size-4" />
                               Activate
                             </DropdownMenuItem>
-                          ) : (
+                          ) : null}
+                          {branch.status === "active" ? (
                             <DropdownMenuItem
-                              onClick={() => handleStatus(branch.id, "inactive")}
+                              onClick={() => handleStatus(branch, "inactive")}
                             >
                               <Power className="size-4" />
                               Deactivate
                             </DropdownMenuItem>
-                          )}
+                          ) : null}
                           {branch.status !== "archived" ? (
                             <DropdownMenuItem
-                              onClick={() => handleStatus(branch.id, "archived")}
+                              onClick={() => handleStatus(branch, "archived")}
                             >
                               <Archive className="size-4" />
                               Archive
                             </DropdownMenuItem>
                           ) : (
                             <DropdownMenuItem
-                              onClick={() => handleStatus(branch.id, "active")}
+                              onClick={() => handleStatus(branch, "active")}
                             >
                               <ArchiveRestore className="size-4" />
-                              Restore
+                              Restore & activate
                             </DropdownMenuItem>
                           )}
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            className="text-[#DC2626] focus:text-[#DC2626]"
-                            onClick={() => void deleteBranch.mutateAsync(branch.id)}
-                          >
-                            <Trash2 className="size-4" />
-                            Delete
-                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </td>

@@ -9,12 +9,12 @@ import { useBranch } from "@/hooks/use-branches";
 import { Loader2 } from "lucide-react";
 
 interface BranchDetailLayoutShellProps {
-  branchId: number;
+  branchUuid: string;
   children: React.ReactNode;
 }
 
-export function BranchDetailLayoutShell({ branchId, children }: BranchDetailLayoutShellProps) {
-  const { data: branch, isLoading, isError } = useBranch(branchId);
+export function BranchDetailLayoutShell({ branchUuid, children }: BranchDetailLayoutShellProps) {
+  const { data: branch, isLoading, isError } = useBranch(branchUuid);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   return (

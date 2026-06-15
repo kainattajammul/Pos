@@ -10,10 +10,9 @@ export default async function BranchDetailLayout({
   params,
 }: BranchDetailLayoutProps) {
   const { branchId } = await params;
-  const id = Number(branchId);
 
   return (
-    <BranchDetailLayoutShell branchId={id}>
+    <BranchDetailLayoutShell branchUuid={branchId}>
       {children}
     </BranchDetailLayoutShell>
   );

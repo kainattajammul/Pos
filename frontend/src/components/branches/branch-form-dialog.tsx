@@ -33,7 +33,7 @@ export interface BranchFormValues {
 const EMPTY_FORM: BranchFormValues = {
   code: "",
   name: "",
-  type: "repair_center",
+  type: "standard",
   line1: "",
   line2: "",
   city: "",
@@ -97,7 +97,7 @@ export function BranchFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-lg gap-0 overflow-hidden border border-[#E5E7EB] bg-white p-0">
+      <DialogContent className="scrollbar-hide max-h-[90vh] max-w-lg gap-0 overflow-hidden border border-[#E5E7EB] bg-white p-0">
         <div
           className="px-5 py-4"
           style={{ backgroundColor: "var(--repair-primary)" }}
@@ -107,7 +107,7 @@ export function BranchFormDialog({
           </DialogTitle>
         </div>
 
-        <form onSubmit={handleSubmit} className="max-h-[calc(90vh-140px)] overflow-y-auto p-5">
+        <form onSubmit={handleSubmit} className="scrollbar-hide max-h-[calc(90vh-140px)] overflow-y-auto p-5">
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="space-y-1 sm:col-span-2">
               <span className="text-sm font-medium text-[#374151]">Branch name</span>

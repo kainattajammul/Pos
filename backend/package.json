@@ -17,6 +17,13 @@
     "db:env-check": "node scripts/check-db-env.mjs",
     "db:deploy": "prisma migrate deploy",
     "test:roles": "node scripts/test-roles-api.mjs",
+    "test:branches": "node scripts/test-branches-api.mjs",
+    "test:branch-opening-status": "node scripts/test-branch-opening-status.mjs",
+    "seed:branch-permissions": "node scripts/seed-branch-permissions.mjs",
+    "seed:branch-staff-permissions": "node scripts/seed-branch-staff-permissions.mjs",
+    "seed:branch-staff-roles": "node scripts/seed-branch-staff-roles.mjs",
+    "test:branch-staff": "node scripts/test-branch-staff-api.mjs",
+    "test:branch-authorization": "node scripts/test-branch-authorization.mjs",
     "db:test": "node scripts/test-db-connection.mjs"
   },
   "keywords": [
