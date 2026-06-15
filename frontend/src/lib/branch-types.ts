@@ -100,6 +100,30 @@ export interface BranchCommunicationSettings {
   receiptFooter: string;
   notificationsEnabled: boolean;
   documentTemplate: string;
+  invoice: BranchInvoiceSettings;
+  messageTemplates: BranchCustomerMessageTemplate[];
+}
+
+export interface BranchInvoiceSettings {
+  invoicePrefix: string;
+  nextInvoiceNumber: number;
+  paymentTerms: string;
+  dueDays: number;
+  showVatBreakdown: boolean;
+  footerTerms: string;
+  defaultNotes: string;
+  legalName: string;
+  showBranchAddress: boolean;
+}
+
+export interface BranchCustomerMessageTemplate {
+  id: string;
+  name: string;
+  channel: "email" | "sms" | "both";
+  trigger: string;
+  subject: string;
+  body: string;
+  enabled: boolean;
 }
 
 export interface BranchReportingSettings {

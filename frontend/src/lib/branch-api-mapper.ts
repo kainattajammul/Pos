@@ -1,4 +1,3 @@
-import { createDefaultBranchRecord } from "@/lib/branch-mock-data";
 import type {
   BranchHoliday,
   BranchOpeningHours,
@@ -8,6 +7,7 @@ import type {
   CreateBranchPayload,
   UpdateBranchPayload,
 } from "@/lib/branch-types";
+import { defaultInvoiceSettings } from "@/lib/branch-communication-defaults";
 import type {
   ApiBranchListItem,
   ApiBranchProfile,
@@ -104,11 +104,11 @@ export function parseDayHours(value: string): {
   opens_at: string | null;
   closes_at: string | null;
 } {
-  const trimmed = value.trim();
+  const trimmed = value.trim().replace(/^["']|["']$/g, "");
   if (!trimmed || trimmed.toLowerCase() === "closed") {
     return { is_closed: true, opens_at: null, closes_at: null };
   }
-  const [opens_at, closes_at] = trimmed.split("-").map((part) => part.trim());
+  const [opens_at, closes_at] = trimmed.split(/[-–—]/).map((part) => part.trim());
   return {
     is_closed: false,
     opens_at: opens_at || null,
@@ -137,6 +137,92 @@ export function mapClosuresToHolidays(
   }));
 }
 
+function emptyModuleSettings(): Pick<
+  BranchRecord,
+  | "staff"
+  | "inventory"
+  | "operations"
+  | "finance"
+  | "online"
+  | "communication"
+  | "reporting"
+  | "devices"
+  | "system"
+> {
+  return {
+    staff: {
+      assignedStaffCount: 0,
+      rolesEnabled: [],
+      rotaEnabled: false,
+      securityRules: "",
+    },
+    inventory: {
+      allocationMode: "dedicated",
+      stockLevel: 0,
+      lowStockThreshold: 0,
+      reorderRules: "",
+      transferApprovalRequired: false,
+      valuationMethod: "",
+    },
+    operations: {
+      salesToday: 0,
+      openRepairTickets: 0,
+      appointmentSlotsPerDay: 0,
+      pickupEnabled: false,
+      deliveryRadiusKm: 0,
+      warrantyClaimsOpen: 0,
+    },
+    finance: {
+      registerId: "",
+      cashDrawerAssigned: false,
+      paymentsToday: 0,
+      refundsToday: 0,
+      openInvoices: 0,
+      vatRate: "",
+      currency: "GBP",
+      timezone: "Europe/London",
+      endOfDayRequired: false,
+    },
+    online: {
+      websiteVisible: false,
+      marketplaceVisible: false,
+      clickAndCollect: false,
+      publishedProducts: 0,
+      seoTitle: "",
+    },
+    communication: {
+      emailSender: "",
+      smsSender: "",
+      receiptHeader: "",
+      receiptFooter: "",
+      notificationsEnabled: false,
+      documentTemplate: "",
+      invoice: defaultInvoiceSettings(),
+      messageTemplates: [],
+    },
+    reporting: {
+      salesTargetMonthly: 0,
+      repairTargetMonthly: 0,
+      commissionRules: "",
+      lastReportGenerated: "",
+    },
+    devices: {
+      storageLocations: 0,
+      repairShelves: 0,
+      pickupAreas: 0,
+      devicesInStorage: 0,
+      handoverPending: 0,
+    },
+    system: {
+      dataSyncStatus: "pending",
+      lastSyncAt: "",
+      franchiseOwner: "",
+      auditLogCount: 0,
+      twoFactorRequired: false,
+    },
+  };
+}
+
 function moduleDefaults(
   shopId: number,
   partial: {
@@ -148,31 +234,15 @@ function moduleDefaults(
     contact: BranchRecord["contact"];
   },
 ): Omit<BranchRecord, "createdAt" | "updatedAt" | "status" | "openingHours" | "holidays"> {
-  const base = createDefaultBranchRecord(0, {
+  return {
+    uuid: partial.uuid,
     shopId,
     code: partial.code,
     name: partial.name,
     type: partial.type,
     address: partial.address,
     contact: partial.contact,
-  });
-  return {
-    uuid: partial.uuid,
-    shopId: base.shopId,
-    code: base.code,
-    name: base.name,
-    type: base.type,
-    address: base.address,
-    contact: base.contact,
-    staff: base.staff,
-    inventory: base.inventory,
-    operations: base.operations,
-    finance: base.finance,
-    online: base.online,
-    communication: base.communication,
-    reporting: base.reporting,
-    devices: base.devices,
-    system: base.system,
+    ...emptyModuleSettings(),
   };
 }
 
@@ -186,13 +256,18 @@ export function mapListItemToBranchRecord(
     name: item.name,
     type: mapApiBranchType(item.branch_type),
     address: {
-      ...emptyAddress(),
+      line1: item.address_line_1 ?? "",
+      line2: item.address_line_2 ?? "",
       city: item.city ?? "",
+      county: item.county ?? "",
+      postcode: item.postcode ?? "",
+      country: item.country ?? "United Kingdom",
     },
     contact: {
       ...emptyContact(),
       phone: item.phone ?? "",
       email: item.email ?? "",
+      managerName: item.contact_person_name ?? "",
     },
   });
 
@@ -239,6 +314,15 @@ export function mapProfileToBranchRecord(
     holidays: mapClosuresToHolidays(profile.upcoming_closures),
     openingStatus: profile.opening_status,
     timezone: profile.timezone,
+    communication: {
+      ...defaults.communication,
+      emailSender: defaults.contact.email,
+      receiptHeader: defaults.name,
+      invoice: {
+        ...defaults.communication.invoice,
+        legalName: defaults.name,
+      },
+    },
     createdAt: profile.created_at,
     updatedAt: profile.updated_at,
   };

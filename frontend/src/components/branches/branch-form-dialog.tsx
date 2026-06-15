@@ -14,6 +14,7 @@ import {
 } from "@/components/branches/branch-ui-primitives";
 import type { BranchRecord, BranchType } from "@/lib/branch-types";
 import { BRANCH_TYPE_LABELS } from "@/lib/branch-types";
+import { getCountryOptions } from "@/lib/countries";
 
 export interface BranchFormValues {
   code: string;
@@ -51,7 +52,7 @@ interface BranchFormDialogProps {
   mode: "create" | "edit";
   branch?: BranchRecord | null;
   isSubmitting?: boolean;
-  onSubmit: (values: BranchFormValues) => void;
+  onSubmit: (values: BranchFormValues) => void | Promise<void>;
 }
 
 export function BranchFormDialog({
@@ -90,9 +91,13 @@ export function BranchFormDialog({
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
+  const countryOptions = getCountryOptions(form.country);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(form);
+    void Promise.resolve(onSubmit(form)).catch(() => {
+      // Parent mutation onError shows a toast; swallow to avoid unhandled rejections.
+    });
   };
 
   return (
@@ -171,14 +176,6 @@ export function BranchFormDialog({
               />
             </label>
             <label className="space-y-1">
-              <span className="text-sm font-medium text-[#374151]">County</span>
-              <input
-                value={form.county}
-                onChange={(e) => update("county", e.target.value)}
-                className={branchInputClass}
-              />
-            </label>
-            <label className="space-y-1">
               <span className="text-sm font-medium text-[#374151]">Postcode</span>
               <input
                 required
@@ -187,13 +184,20 @@ export function BranchFormDialog({
                 className={branchInputClass}
               />
             </label>
-            <label className="space-y-1">
+            <label className="space-y-1 sm:col-span-2">
               <span className="text-sm font-medium text-[#374151]">Country</span>
-              <input
+              <select
+                required
                 value={form.country}
                 onChange={(e) => update("country", e.target.value)}
-                className={branchInputClass}
-              />
+                className={branchSelectClass}
+              >
+                {countryOptions.map((country) => (
+                  <option key={country} value={country}>
+                    {country}
+                  </option>
+                ))}
+              </select>
             </label>
             <label className="space-y-1">
               <span className="text-sm font-medium text-[#374151]">Phone</span>

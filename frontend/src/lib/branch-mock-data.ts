@@ -1,4 +1,8 @@
-import type { BranchRecord } from "@/lib/branch-types";
+import type { BranchCommunicationSettings, BranchRecord } from "@/lib/branch-types";
+import {
+  defaultInvoiceSettings,
+  sampleMessageTemplates,
+} from "@/lib/branch-communication-defaults";
 
 const DEFAULT_HOURS = {
   monday: "09:00 – 18:00",
@@ -13,6 +17,23 @@ const DEFAULT_HOURS = {
 function createBranch(partial: Omit<BranchRecord, "createdAt" | "updatedAt">): BranchRecord {
   const now = new Date().toISOString();
   return { ...partial, createdAt: now, updatedAt: now };
+}
+
+function withCommunicationDefaults(
+  base: Omit<BranchCommunicationSettings, "invoice" | "messageTemplates"> & {
+    invoice?: Partial<BranchCommunicationSettings["invoice"]>;
+    messageTemplates?: BranchCommunicationSettings["messageTemplates"];
+  },
+): BranchCommunicationSettings {
+  return {
+    ...base,
+    invoice: {
+      ...defaultInvoiceSettings(base.receiptHeader || ""),
+      legalName: base.receiptHeader || "",
+      ...base.invoice,
+    },
+    messageTemplates: base.messageTemplates ?? [],
+  };
 }
 
 export const DEFAULT_BRANCHES: BranchRecord[] = [
@@ -82,14 +103,26 @@ export const DEFAULT_BRANCHES: BranchRecord[] = [
       publishedProducts: 156,
       seoTitle: "Main Branch — Phone Repair London",
     },
-    communication: {
+    communication: withCommunicationDefaults({
       emailSender: "main@fonedoctors.com",
       smsSender: "FoneDoctors",
       receiptHeader: "Fone Doctors — Main Branch",
       receiptFooter: "Thank you for your business",
       notificationsEnabled: true,
       documentTemplate: "Standard repair receipt",
-    },
+      invoice: {
+        invoicePrefix: "INV-MB-",
+        nextInvoiceNumber: 1042,
+        paymentTerms: "net_14",
+        dueDays: 14,
+        showVatBreakdown: true,
+        footerTerms: "Goods remain the property of Fone Doctors until paid in full.",
+        defaultNotes: "All repairs include a 90-day warranty on parts and labour.",
+        legalName: "Fone Doctors Main Branch Ltd",
+        showBranchAddress: true,
+      },
+      messageTemplates: sampleMessageTemplates(),
+    }),
     reporting: {
       salesTargetMonthly: 85000,
       repairTargetMonthly: 420,
@@ -174,14 +207,14 @@ export const DEFAULT_BRANCHES: BranchRecord[] = [
       publishedProducts: 89,
       seoTitle: "Bradford Phone Repair",
     },
-    communication: {
+    communication: withCommunicationDefaults({
       emailSender: "bradford@fonedoctors.com",
       smsSender: "FoneDoctors",
       receiptHeader: "Fone Doctors — Bradford",
       receiptFooter: "Visit us again soon",
       notificationsEnabled: true,
       documentTemplate: "Standard repair receipt",
-    },
+    }),
     reporting: {
       salesTargetMonthly: 42000,
       repairTargetMonthly: 220,
@@ -266,14 +299,14 @@ export const DEFAULT_BRANCHES: BranchRecord[] = [
       publishedProducts: 0,
       seoTitle: "",
     },
-    communication: {
+    communication: withCommunicationDefaults({
       emailSender: "london@fonedoctors.com",
       smsSender: "FoneDoctors",
       receiptHeader: "",
       receiptFooter: "",
       notificationsEnabled: false,
       documentTemplate: "—",
-    },
+    }),
     reporting: {
       salesTargetMonthly: 0,
       repairTargetMonthly: 0,
@@ -362,14 +395,14 @@ export const DEFAULT_BRANCHES: BranchRecord[] = [
       publishedProducts: 0,
       seoTitle: "",
     },
-    communication: {
+    communication: withCommunicationDefaults({
       emailSender: "warehouse@fonedoctors.com",
       smsSender: "FoneDoctors",
       receiptHeader: "—",
       receiptFooter: "—",
       notificationsEnabled: false,
       documentTemplate: "Dispatch note",
-    },
+    }),
     reporting: {
       salesTargetMonthly: 0,
       repairTargetMonthly: 0,
@@ -455,14 +488,14 @@ export function createDefaultBranchRecord(
       publishedProducts: 0,
       seoTitle: payload.name,
     },
-    communication: {
+    communication: withCommunicationDefaults({
       emailSender: payload.contact.email,
       smsSender: "FoneDoctors",
       receiptHeader: payload.name,
       receiptFooter: "Thank you",
       notificationsEnabled: true,
       documentTemplate: "Standard repair receipt",
-    },
+    }),
     reporting: {
       salesTargetMonthly: 50000,
       repairTargetMonthly: 200,

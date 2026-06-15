@@ -2,7 +2,10 @@
 
 import { Loader2, Save } from "lucide-react";
 import { useEffect, useState } from "react";
+import { BranchOpeningHoursDayField } from "@/components/branches/branch-opening-hours-day-field";
 import { BranchPageHeader } from "@/components/branches/branch-page-header";
+import { BranchInvoiceSettingsCard } from "@/components/branches/branch-invoice-settings-card";
+import { BranchMessageTemplatesCard } from "@/components/branches/branch-message-templates-card";
 import { BranchStatusBadge } from "@/components/branches/branch-status-badge";
 import {
   BranchFieldGrid,
@@ -19,6 +22,7 @@ import { useBranch, useUpdateBranch, useUpdateBranchStatus } from "@/hooks/use-b
 import { getBranchNavItem } from "@/lib/branch-nav-items";
 import {
   BRANCH_TYPE_LABELS,
+  type BranchCommunicationSettings,
   type BranchRecord,
   type BranchStatus,
   type UpdateBranchPayload,
@@ -224,7 +228,7 @@ function SetupSection({
       <BranchSectionCard title="Opening hours">
         <div className="grid gap-3 sm:grid-cols-2">
           {days.map((day) => (
-            <Field
+            <BranchOpeningHoursDayField
               key={day}
               label={day.charAt(0).toUpperCase() + day.slice(1)}
               value={branch.openingHours[day]}
@@ -492,23 +496,36 @@ function CommunicationSection({
   onChange: (b: BranchRecord) => void;
   onSave: (p: UpdateBranchPayload) => void;
 }) {
+  const updateCommunication = (communication: BranchCommunicationSettings) => {
+    onChange({ ...branch, communication });
+  };
+
   return (
-    <BranchSectionCard title="Communication & documents">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Email sender" value={branch.communication.emailSender} onChange={(v) => onChange({ ...branch, communication: { ...branch.communication, emailSender: v } })} />
-        <Field label="SMS sender" value={branch.communication.smsSender} onChange={(v) => onChange({ ...branch, communication: { ...branch.communication, smsSender: v } })} />
-        <Field label="Receipt header" value={branch.communication.receiptHeader} onChange={(v) => onChange({ ...branch, communication: { ...branch.communication, receiptHeader: v } })} />
-        <Field label="Receipt footer" value={branch.communication.receiptFooter} onChange={(v) => onChange({ ...branch, communication: { ...branch.communication, receiptFooter: v } })} />
-        <label className="space-y-1 sm:col-span-2">
-          <span className="text-sm font-medium text-[#374151]">Document template</span>
-          <input value={branch.communication.documentTemplate} onChange={(e) => onChange({ ...branch, communication: { ...branch.communication, documentTemplate: e.target.value } })} className={branchInputClass} />
-        </label>
-        <ToggleRow label="Notifications enabled" checked={branch.communication.notificationsEnabled} onChange={(v) => onChange({ ...branch, communication: { ...branch.communication, notificationsEnabled: v } })} />
-      </div>
-      <Button type="button" className="mt-4 border-0 bg-(--repair-primary) text-(--repair-on-primary)" onClick={() => onSave({ communication: branch.communication })}>
+    <div className="space-y-4">
+      <BranchSectionCard
+        title="Communication & documents"
+        description="Sender details, receipts, and notification defaults."
+      >
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Email sender" value={branch.communication.emailSender} onChange={(v) => updateCommunication({ ...branch.communication, emailSender: v })} />
+          <Field label="SMS sender" value={branch.communication.smsSender} onChange={(v) => updateCommunication({ ...branch.communication, smsSender: v })} />
+          <Field label="Receipt header" value={branch.communication.receiptHeader} onChange={(v) => updateCommunication({ ...branch.communication, receiptHeader: v })} />
+          <Field label="Receipt footer" value={branch.communication.receiptFooter} onChange={(v) => updateCommunication({ ...branch.communication, receiptFooter: v })} />
+          <label className="space-y-1 sm:col-span-2">
+            <span className="text-sm font-medium text-[#374151]">Document template</span>
+            <input value={branch.communication.documentTemplate} onChange={(e) => updateCommunication({ ...branch.communication, documentTemplate: e.target.value })} className={branchInputClass} />
+          </label>
+          <ToggleRow label="Notifications enabled" checked={branch.communication.notificationsEnabled} onChange={(v) => updateCommunication({ ...branch.communication, notificationsEnabled: v })} />
+        </div>
+      </BranchSectionCard>
+
+      <BranchInvoiceSettingsCard branch={branch} onCommunicationChange={updateCommunication} />
+      <BranchMessageTemplatesCard branch={branch} onCommunicationChange={updateCommunication} />
+
+      <Button type="button" className="border-0 bg-(--repair-primary) text-(--repair-on-primary)" onClick={() => onSave({ communication: branch.communication })}>
         Save communication settings
       </Button>
-    </BranchSectionCard>
+    </div>
   );
 }
 

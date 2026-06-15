@@ -75,11 +75,17 @@ export function getApiErrorMessage(error: unknown, fallback = "Something went wr
     const data = error.response?.data as ApiErrorResponse | undefined;
     if (data?.message) return data.message;
     if (data?.error?.message) return data.error.message;
+    if (error.response?.status === 409) {
+      return "That value is already in use — try a different branch code.";
+    }
     if (error.response?.status === 500) {
       return "Server error — ensure the POS backend is running on the correct port.";
     }
     if (error.code === "ERR_NETWORK") {
       return `Cannot reach API at ${APP_CONFIG.apiUrl} — start the backend (port 4000) or use mock login on /login.`;
+    }
+    if (error.code === "ECONNABORTED" || /timeout/i.test(error.message)) {
+      return "Request timed out — ensure the backend is running and the database connection in backend/.env is valid (use pooler port 5432, not 6543).";
     }
     return error.message || fallback;
   }

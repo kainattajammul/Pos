@@ -107,6 +107,14 @@ router.post(
   asyncHandler(BranchController.restore),
 );
 
+router.delete(
+  "/:branchUuid",
+  requirePermission(BRANCH_PERMISSIONS.DELETE),
+  branchActionRules,
+  validateRequest,
+  asyncHandler(BranchController.delete),
+);
+
 router.get(
   "/:branchUuid/opening-status",
   requirePermission(BRANCH_PERMISSIONS.VIEW),

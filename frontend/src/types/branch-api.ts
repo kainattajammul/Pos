@@ -50,9 +50,15 @@ export interface ApiBranchListItem {
   branch_code: string;
   name: string;
   branch_type: ApiBranchType;
+  address_line_1: string | null;
+  address_line_2: string | null;
   city: string | null;
+  county: string | null;
+  postcode: string | null;
+  country: string | null;
   phone: string | null;
   email: string | null;
+  contact_person_name: string | null;
   status: ApiBranchStatus;
   opening_status: ApiOpeningStatus;
   is_primary: boolean;

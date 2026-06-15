@@ -5,6 +5,7 @@ import {
   archiveBranch,
   createBranch,
   deactivateBranch,
+  deleteBranch,
   getBranchOpeningStatus,
   getBranchProfile,
   listBranches,
@@ -150,6 +151,19 @@ export const BranchController = {
     return ApiResponse.success(res, {
       message: "Branch restored successfully.",
       data: toPublicBranchProfile(branch, openingStatus, branch.closures ?? []),
+    });
+  },
+
+  async delete(req, res) {
+    const data = await deleteBranch(
+      req.shopId,
+      req.params.branchUuid,
+      auditContext(req),
+    );
+
+    return ApiResponse.success(res, {
+      message: "Branch deleted successfully.",
+      data,
     });
   },
 

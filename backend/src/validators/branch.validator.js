@@ -7,6 +7,8 @@ import {
   DAYS_OF_WEEK,
 } from "../constants/branchEnums.js";
 import {
+  BRANCH_IDENTIFIER_MESSAGE,
+  isBranchIdentifier,
   isValidIanaTimezone,
   isValidTimeString,
 } from "../utils/branchHelpers.js";
@@ -17,7 +19,10 @@ export const shopIdParamRules = [
 ];
 
 export const branchUuidParamRules = [
-  param("branchUuid").isUUID().withMessage("branchUuid must be a valid UUID"),
+  param("branchUuid").custom((value) => {
+    if (isBranchIdentifier(value)) return true;
+    throw new Error(BRANCH_IDENTIFIER_MESSAGE);
+  }),
 ];
 
 export const closureIdParamRules = [

@@ -1,4 +1,5 @@
 import { prisma } from "../config/database.js";
+import { isBranchNumericId, isBranchUuid } from "../utils/branchHelpers.js";
 
 const branchInclude = {
   openingHours: { orderBy: { dayOfWeek: "asc" } },
@@ -19,6 +20,17 @@ export const BranchModel = {
       },
       include: branchInclude,
     });
+  },
+
+  async resolveByIdentifier(identifier, shopId) {
+    const value = String(identifier ?? "").trim();
+    if (isBranchUuid(value)) {
+      return this.findByUuid(value, shopId);
+    }
+    if (isBranchNumericId(value)) {
+      return this.findById(Number(value), shopId);
+    }
+    return null;
   },
 
   async findById(id, shopId) {

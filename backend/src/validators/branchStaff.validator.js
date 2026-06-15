@@ -4,10 +4,11 @@ import {
   PERMISSION_EFFECTS,
   STAFF_SHIFT_STATUSES,
 } from "../constants/branchStaffEnums.js";
+import { branchUuidParamRules } from "./branch.validator.js";
 
 export const branchStaffContextRules = [
   param("shopId").isInt({ min: 1 }),
-  param("branchUuid").isUUID(),
+  ...branchUuidParamRules,
 ];
 
 export const assignmentUuidRules = [

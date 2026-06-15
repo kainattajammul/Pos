@@ -138,6 +138,6 @@ export const queryKeys = {
   branches: {
     all: ["branches"] as const,
     list: (shopId: number) => ["branches", "list", shopId] as const,
-    detail: (uuid: string) => ["branches", "detail", uuid] as const,
+    detail: (shopId: number, uuid: string) => ["branches", "detail", shopId, uuid] as const,
   },
 } as const;

@@ -14,6 +14,12 @@ async function start() {
     );
     process.exit(1);
   }
+  if (!prisma.branchOpeningHour || !prisma.branchClosure) {
+    console.error(
+      "Prisma client is out of date (missing branch profile models). Stop the server, run: npm run db:generate && npm run db:migrate:deploy, then npm start",
+    );
+    process.exit(1);
+  }
 
   try {
     await connectDatabase();

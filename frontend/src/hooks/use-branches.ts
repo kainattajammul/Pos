@@ -5,9 +5,11 @@ import { toast } from "sonner";
 import { APP_CONFIG } from "@/constants/config";
 import { queryKeys } from "@/constants/query-keys";
 import { getApiErrorMessage } from "@/lib/axios";
+import { isBranchIdentifier } from "@/lib/branch-identifier";
 import {
   archiveBranch,
   createBranch,
+  deleteBranch,
   fetchBranch,
   fetchBranches,
   restoreBranch,
@@ -29,12 +31,11 @@ export function useBranches(shopId: number, filters?: Partial<BranchListFilters>
   });
 }
 
-export function useBranch(uuid: string) {
-  const shopId = APP_CONFIG.defaultShopId;
+export function useBranch(uuid: string, shopId: number = APP_CONFIG.defaultShopId) {
   return useQuery({
-    queryKey: queryKeys.branches.detail(uuid),
+    queryKey: queryKeys.branches.detail(shopId, uuid),
     queryFn: () => fetchBranch(shopId, uuid),
-    enabled: Boolean(uuid),
+    enabled: Boolean(uuid) && isBranchIdentifier(uuid),
     staleTime: 15_000,
   });
 }
@@ -45,10 +46,18 @@ export function useCreateBranch(shopId: number) {
     mutationFn: (payload: Omit<CreateBranchPayload, "shopId">) =>
       createBranch({ ...payload, shopId }),
     onSuccess: (data) => {
+      queryClient.setQueryData(queryKeys.branches.detail(shopId, data.uuid), data);
       queryClient.invalidateQueries({ queryKey: queryKeys.branches.all });
       toast.success(`Branch "${data.name}" created`);
     },
-    onError: (error) => toast.error(getApiErrorMessage(error, "Failed to create branch")),
+    onError: (error) => {
+      const message = getApiErrorMessage(error, "Failed to create branch");
+      toast.error(
+        /database|authentication|credentials|circuitbreaker/i.test(message)
+          ? "Database connection failed — update backend/.env with your Supabase password, then restart the API."
+          : message,
+      );
+    },
   });
 }
 
@@ -106,5 +115,17 @@ export function useRestoreBranch(shopId: number) {
       toast.success(`Branch "${data.name}" restored`);
     },
     onError: (error) => toast.error(getApiErrorMessage(error, "Failed to restore branch")),
+  });
+}
+
+export function useDeleteBranch(shopId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (uuid: string) => deleteBranch(shopId, uuid),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.branches.all });
+      toast.success("Branch deleted");
+    },
+    onError: (error) => toast.error(getApiErrorMessage(error, "Failed to delete branch")),
   });
 }

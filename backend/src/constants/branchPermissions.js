@@ -7,6 +7,7 @@ export const BRANCH_PERMISSIONS = {
   MANAGE_CLOSURES: "branches.manage_closures",
   ARCHIVE: "branches.archive",
   RESTORE: "branches.restore",
+  DELETE: "branches.delete",
 };
 
 export const BRANCH_PERMISSION_SEED = [
@@ -18,6 +19,7 @@ export const BRANCH_PERMISSION_SEED = [
   { key: BRANCH_PERMISSIONS.MANAGE_CLOSURES, module: "branches" },
   { key: BRANCH_PERMISSIONS.ARCHIVE, module: "branches" },
   { key: BRANCH_PERMISSIONS.RESTORE, module: "branches" },
+  { key: BRANCH_PERMISSIONS.DELETE, module: "branches" },
 ];
 
 /** Dev bypass and unauthenticated local dev get full branch access. */

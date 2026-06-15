@@ -130,6 +130,10 @@ export async function restoreBranch(shopId: number, uuid: string): Promise<Branc
   return mapProfileToBranchRecord(data.data, shopId);
 }
 
+export async function deleteBranch(shopId: number, uuid: string): Promise<void> {
+  await apiClient.delete(`${branchesPath(shopId)}/${uuid}`);
+}
+
 export async function updateBranchOpeningHours(
   shopId: number,
   uuid: string,

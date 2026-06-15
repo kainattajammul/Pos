@@ -5,6 +5,12 @@ import { closureTypeToDb } from "../constants/branchEnums.js";
 import { writeAuditLog } from "./auditLog.service.js";
 import { normalizeText } from "../utils/branchHelpers.js";
 
+async function resolveBranchOrThrow(shopId, branchUuidOrId) {
+  const branch = await BranchModel.resolveByIdentifier(branchUuidOrId, shopId);
+  if (!branch) throw new ApiError(HTTP.NOT_FOUND, "Branch not found");
+  return branch;
+}
+
 function assertBranchAllowsClosureOps(branch) {
   if (branch.status === "ARCHIVED" || branch.archivedAt) {
     throw new ApiError(HTTP.CONFLICT, "Archived branches cannot manage closures until restored");
@@ -12,14 +18,12 @@ function assertBranchAllowsClosureOps(branch) {
 }
 
 export async function listBranchClosures(shopId, branchUuid) {
-  const branch = await BranchModel.findByUuid(branchUuid, shopId);
-  if (!branch) throw new ApiError(HTTP.NOT_FOUND, "Branch not found");
+  const branch = await resolveBranchOrThrow(shopId, branchUuid);
   return BranchClosureModel.listUpcoming(branch.id, shopId);
 }
 
 export async function createBranchClosure(shopId, branchUuid, payload, auditContext) {
-  const branch = await BranchModel.findByUuid(branchUuid, shopId);
-  if (!branch) throw new ApiError(HTTP.NOT_FOUND, "Branch not found");
+  const branch = await resolveBranchOrThrow(shopId, branchUuid);
   assertBranchAllowsClosureOps(branch);
 
   const startsAt = new Date(payload.starts_at);
@@ -58,8 +62,7 @@ export async function createBranchClosure(shopId, branchUuid, payload, auditCont
 }
 
 export async function updateBranchClosure(shopId, branchUuid, closureId, payload, auditContext) {
-  const branch = await BranchModel.findByUuid(branchUuid, shopId);
-  if (!branch) throw new ApiError(HTTP.NOT_FOUND, "Branch not found");
+  const branch = await resolveBranchOrThrow(shopId, branchUuid);
   assertBranchAllowsClosureOps(branch);
 
   const existing = await BranchClosureModel.findById(closureId, branch.id, shopId);
@@ -100,8 +103,7 @@ export async function updateBranchClosure(shopId, branchUuid, closureId, payload
 }
 
 export async function deleteBranchClosure(shopId, branchUuid, closureId, auditContext) {
-  const branch = await BranchModel.findByUuid(branchUuid, shopId);
-  if (!branch) throw new ApiError(HTTP.NOT_FOUND, "Branch not found");
+  const branch = await resolveBranchOrThrow(shopId, branchUuid);
 
   const existing = await BranchClosureModel.findById(closureId, branch.id, shopId);
   if (!existing) throw new ApiError(HTTP.NOT_FOUND, "Closure not found");

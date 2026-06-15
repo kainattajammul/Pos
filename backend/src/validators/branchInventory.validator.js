@@ -1,8 +1,9 @@
 import { body, param, query } from "express-validator";
+import { branchUuidParamRules } from "./branch.validator.js";
 
 export const branchInventoryContextRules = [
   param("shopId").isInt({ min: 1 }),
-  param("branchUuid").isUUID(),
+  ...branchUuidParamRules,
 ];
 
 export const inventoryUuidRules = [

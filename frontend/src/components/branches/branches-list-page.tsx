@@ -10,6 +10,7 @@ import {
   Plus,
   Power,
   Search,
+  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -20,6 +21,7 @@ import {
 import { BranchPageHeader } from "@/components/branches/branch-page-header";
 import { BranchStatCard } from "@/components/branches/branch-ui-primitives";
 import { BranchStatusBadge } from "@/components/branches/branch-status-badge";
+import { DeleteUserDialog } from "@/components/users/delete-user-dialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -33,9 +35,12 @@ import {
   useArchiveBranch,
   useBranches,
   useCreateBranch,
+  useDeleteBranch,
   useUpdateBranch,
   useUpdateBranchStatus,
 } from "@/hooks/use-branches";
+import { fetchBranch } from "@/services/branch.service";
+import { getApiErrorMessage } from "@/lib/axios";
 import {
   BRANCH_TYPE_LABELS,
   type BranchRecord,
@@ -43,20 +48,24 @@ import {
   type BranchType,
 } from "@/lib/branch-types";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export function BranchesListPage() {
   const shopId = APP_CONFIG.defaultShopId;
-  const { data: branches = [], isLoading } = useBranches(shopId);
+  const { data: branches = [], isLoading, isError, error, refetch } = useBranches(shopId);
   const createBranch = useCreateBranch(shopId);
   const updateBranch = useUpdateBranch(shopId);
   const updateStatus = useUpdateBranchStatus(shopId);
   const archiveBranch = useArchiveBranch(shopId);
+  const deleteBranch = useDeleteBranch(shopId);
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<BranchStatus | "all">("all");
   const [typeFilter, setTypeFilter] = useState<BranchType | "all">("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingBranch, setEditingBranch] = useState<BranchRecord | null>(null);
+  const [editLoading, setEditLoading] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<BranchRecord | null>(null);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -88,36 +97,52 @@ export function BranchesListPage() {
     setDialogOpen(true);
   };
 
-  const openEdit = (branch: BranchRecord) => {
-    setEditingBranch(branch);
-    setDialogOpen(true);
+  const openEdit = async (branch: BranchRecord) => {
+    setEditLoading(true);
+    try {
+      const full = await fetchBranch(shopId, branch.uuid);
+      setEditingBranch(full);
+      setDialogOpen(true);
+    } catch {
+      toast.error("Could not load branch details for editing.");
+    } finally {
+      setEditLoading(false);
+    }
   };
 
-  const handleFormSubmit = async (values: BranchFormValues) => {
+  const handleFormSubmit = (values: BranchFormValues) => {
+    const closeOnSuccess = { onSuccess: () => setDialogOpen(false) };
+
     if (editingBranch) {
-      await updateBranch.mutateAsync({
-        uuid: editingBranch.uuid,
-        payload: {
-          name: values.name,
-          type: values.type,
-          address: {
-            line1: values.line1,
-            line2: values.line2,
-            city: values.city,
-            county: values.county,
-            postcode: values.postcode,
-            country: values.country,
-          },
-          contact: {
-            phone: values.phone,
-            email: values.email,
-            managerName: values.managerName,
-            emergencyContact: editingBranch.contact.emergencyContact,
+      updateBranch.mutate(
+        {
+          uuid: editingBranch.uuid,
+          payload: {
+            name: values.name,
+            type: values.type,
+            address: {
+              line1: values.line1,
+              line2: values.line2,
+              city: values.city,
+              county: values.county,
+              postcode: values.postcode,
+              country: values.country,
+            },
+            contact: {
+              phone: values.phone,
+              email: values.email,
+              managerName: values.managerName,
+              emergencyContact: editingBranch.contact.emergencyContact,
+            },
           },
         },
-      });
-    } else {
-      await createBranch.mutateAsync({
+        closeOnSuccess,
+      );
+      return;
+    }
+
+    createBranch.mutate(
+      {
         code: values.code,
         name: values.name,
         type: values.type,
@@ -133,31 +158,35 @@ export function BranchesListPage() {
           phone: values.phone,
           email: values.email,
           managerName: values.managerName,
-          emergencyContact: values.phone,
+          emergencyContact: "",
         },
-      });
-    }
-    setDialogOpen(false);
+      },
+      closeOnSuccess,
+    );
   };
 
   const handleStatus = (branch: BranchRecord, status: BranchStatus) => {
     if (status === "archived") {
-      void archiveBranch.mutateAsync(branch.uuid);
+      archiveBranch.mutate(branch.uuid);
       return;
     }
     if (branch.status === "archived" && status === "active") {
-      void updateStatus.mutateAsync({
+      updateStatus.mutate({
         uuid: branch.uuid,
         status: "active",
         currentStatus: branch.status,
       });
       return;
     }
-    void updateStatus.mutateAsync({
+    updateStatus.mutate({
       uuid: branch.uuid,
       status,
       currentStatus: branch.status,
     });
+  };
+
+  const handleDelete = (branch: BranchRecord) => {
+    setDeleteTarget(branch);
   };
 
   return (
@@ -227,9 +256,23 @@ export function BranchesListPage() {
           <div className="flex min-h-[240px] items-center justify-center">
             <Loader2 className="size-8 animate-spin text-(--repair-primary)" />
           </div>
+        ) : isError ? (
+          <div className="flex min-h-[240px] flex-col items-center justify-center gap-3 px-4 py-12 text-center">
+            <p className="max-w-md text-sm text-[#6B7280]">
+              {getApiErrorMessage(
+                error,
+                "Could not load branches. Check that the backend is running and the database is connected.",
+              )}
+            </p>
+            <Button type="button" variant="outline" size="sm" onClick={() => void refetch()}>
+              Retry
+            </Button>
+          </div>
         ) : filtered.length === 0 ? (
           <div className="px-4 py-12 text-center text-sm text-[#6B7280]">
-            No branches match your filters.
+            {branches.length === 0
+              ? "No branches yet. Click Create branch to add your first one."
+              : "No branches match your filters."}
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -292,7 +335,7 @@ export function BranchesListPage() {
                             <Eye className="size-4" />
                             View branch
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => openEdit(branch)}>
+                          <DropdownMenuItem onClick={() => void openEdit(branch)} disabled={editLoading}>
                             <Pencil className="size-4" />
                             Edit profile
                           </DropdownMenuItem>
@@ -328,6 +371,15 @@ export function BranchesListPage() {
                               Restore & activate
                             </DropdownMenuItem>
                           )}
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            variant="destructive"
+                            onClick={() => handleDelete(branch)}
+                            disabled={deleteBranch.isPending}
+                          >
+                            <Trash2 className="size-4" />
+                            Delete branch
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </td>
@@ -365,6 +417,24 @@ export function BranchesListPage() {
         branch={editingBranch}
         isSubmitting={createBranch.isPending || updateBranch.isPending}
         onSubmit={handleFormSubmit}
+      />
+
+      <DeleteUserDialog
+        open={deleteTarget != null}
+        onOpenChange={(open) => {
+          if (!open && !deleteBranch.isPending) setDeleteTarget(null);
+        }}
+        entityType="branch"
+        itemLabel={
+          deleteTarget ? `${deleteTarget.name} (${deleteTarget.code})` : ""
+        }
+        isPending={deleteBranch.isPending}
+        onConfirm={() => {
+          if (!deleteTarget) return;
+          deleteBranch.mutate(deleteTarget.uuid, {
+            onSuccess: () => setDeleteTarget(null),
+          });
+        }}
       />
     </div>
   );

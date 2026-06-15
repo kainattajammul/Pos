@@ -35,8 +35,8 @@ async function ensureShopExists(shopId) {
   return shop;
 }
 
-async function getBranchOrThrow(shopId, branchUuid) {
-  const branch = await BranchModel.findByUuid(branchUuid, shopId);
+async function getBranchOrThrow(shopId, branchUuidOrId) {
+  const branch = await BranchModel.resolveByIdentifier(branchUuidOrId, shopId);
   if (!branch) throw new ApiError(HTTP.NOT_FOUND, "Branch not found");
   return branch;
 }
@@ -441,6 +441,29 @@ export async function restoreBranch(shopId, branchUuid, auditContext) {
     userAgent: auditContext.userAgent,
   });
   return { branch: updated, openingStatus: await resolveOpeningStatus(updated) };
+}
+
+export async function deleteBranch(shopId, branchUuid, auditContext) {
+  const branch = await getBranchOrThrow(shopId, branchUuid);
+  if (branch.isPrimary) {
+    throw new ApiError(HTTP.CONFLICT, "The primary branch cannot be deleted.");
+  }
+
+  await BranchModel.softDelete(branch.id, shopId);
+
+  await writeAuditLog({
+    shopId,
+    branchId: branch.id,
+    userId: auditContext.userId,
+    action: "branch.deleted",
+    entity: "branch",
+    entityId: branch.uuid,
+    oldValues: { branch_code: branch.branchCode, name: branch.name },
+    ipAddress: auditContext.ipAddress,
+    userAgent: auditContext.userAgent,
+  });
+
+  return { uuid: branch.uuid, name: branch.name };
 }
 
 export async function getBranchOpeningStatus(shopId, branchUuid) {
