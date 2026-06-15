@@ -21,6 +21,7 @@ import {
   updateOpeningHoursRules,
 } from "../validators/branch.validator.js";
 import branchStaffRoutes from "./branchStaff.routes.js";
+import branchInventoryRoutes from "./branchInventory.routes.js";
 
 const router = Router({ mergeParams: true });
 
@@ -155,5 +156,6 @@ router.delete(
 );
 
 router.use("/:branchUuid", branchStaffRoutes);
+router.use("/:branchUuid", branchInventoryRoutes);
 
 export default router;

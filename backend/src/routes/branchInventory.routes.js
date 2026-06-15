@@ -1,0 +1,346 @@
+import { Router } from "express";
+import { BranchInventoryController } from "../controllers/branchInventory.controller.js";
+import { validateRequest } from "../middleware/validate.middleware.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import {
+  authenticateRequest,
+  requireBranchContext,
+  requireBranchPermission,
+} from "../middleware/branchStaffAccess.middleware.js";
+import { BRANCH_INVENTORY_PERMISSIONS as P } from "../constants/branchInventoryPermissions.js";
+import {
+  allocateRules,
+  alertUuidRules,
+  adjustStockRules,
+  branchInventoryContextRules,
+  bulkAllocateRules,
+  createTransferRules,
+  inventoryUuidRules,
+  listStockLevelsRules,
+  productUuidRules,
+  reorderRuleRules,
+  ruleUuidRules,
+  serviceUuidRules,
+  settingsUpdateRules,
+  stockCountRules,
+  transferUuidRules,
+  updateInventoryRules,
+} from "../validators/branchInventory.validator.js";
+
+const router = Router({ mergeParams: true });
+
+router.use(authenticateRequest, requireBranchContext);
+
+// Branch inventory settings (UI section)
+router.get(
+  "/inventory-settings",
+  requireBranchPermission(P.VIEW),
+  branchInventoryContextRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.getSettings),
+);
+router.patch(
+  "/inventory-settings",
+  requireBranchPermission(P.UPDATE),
+  settingsUpdateRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.updateSettings),
+);
+
+// Allocation
+router.get(
+  "/inventory",
+  requireBranchPermission(P.VIEW),
+  branchInventoryContextRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.listInventory),
+);
+router.post(
+  "/inventory/allocate",
+  requireBranchPermission(P.ALLOCATE),
+  allocateRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.allocate),
+);
+router.post(
+  "/inventory/bulk-allocate",
+  requireBranchPermission(P.ALLOCATE),
+  bulkAllocateRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.bulkAllocate),
+);
+router.get(
+  "/inventory/:inventoryUuid",
+  requireBranchPermission(P.VIEW),
+  inventoryUuidRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.getInventoryItem),
+);
+router.patch(
+  "/inventory/:inventoryUuid",
+  requireBranchPermission(P.UPDATE),
+  updateInventoryRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.updateInventoryItem),
+);
+router.post(
+  "/inventory/:inventoryUuid/archive",
+  requireBranchPermission(P.ALLOCATE),
+  inventoryUuidRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.archiveInventoryItem),
+);
+
+// Stock levels & movements
+router.get(
+  "/stock-levels",
+  requireBranchPermission(P.VIEW),
+  listStockLevelsRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.listStockLevels),
+);
+router.get(
+  "/inventory/:inventoryUuid/movements",
+  requireBranchPermission(P.VIEW),
+  inventoryUuidRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.listMovements),
+);
+router.post(
+  "/inventory/:inventoryUuid/adjust",
+  requireBranchPermission(P.ADJUST),
+  adjustStockRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.adjustStock),
+);
+router.post(
+  "/inventory/:inventoryUuid/stock-count",
+  requireBranchPermission(P.STOCK_COUNT),
+  stockCountRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.stockCount),
+);
+
+// Reorder rules
+router.get(
+  "/reorder-rules",
+  requireBranchPermission(P.REORDER_VIEW),
+  branchInventoryContextRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.listReorderRules),
+);
+router.put(
+  "/inventory/:inventoryUuid/reorder-rule",
+  requireBranchPermission(P.REORDER_MANAGE),
+  reorderRuleRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.upsertReorderRule),
+);
+router.post(
+  "/reorder-rules/bulk-update",
+  requireBranchPermission(P.REORDER_MANAGE),
+  branchInventoryContextRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.bulkReorderRules),
+);
+router.get(
+  "/reorder-suggestions",
+  requireBranchPermission(P.REORDER_VIEW),
+  branchInventoryContextRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.reorderSuggestions),
+);
+
+// Alerts
+router.get(
+  "/stock-alerts",
+  requireBranchPermission(P.ALERTS_VIEW),
+  branchInventoryContextRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.listAlerts),
+);
+router.post(
+  "/stock-alerts/:alertUuid/acknowledge",
+  requireBranchPermission(P.ALERTS_ACKNOWLEDGE),
+  alertUuidRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.acknowledgeAlert),
+);
+router.post(
+  "/stock-alerts/:alertUuid/dismiss",
+  requireBranchPermission(P.ALERTS_DISMISS),
+  alertUuidRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.dismissAlert),
+);
+
+// Transfers
+router.get(
+  "/stock-transfers",
+  requireBranchPermission(P.TRANSFER_VIEW),
+  branchInventoryContextRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.listTransfers),
+);
+router.post(
+  "/stock-transfers",
+  requireBranchPermission(P.TRANSFER_REQUEST),
+  createTransferRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.createTransfer),
+);
+router.get(
+  "/stock-transfers/:transferUuid",
+  requireBranchPermission(P.TRANSFER_VIEW),
+  transferUuidRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.getTransfer),
+);
+router.post(
+  "/stock-transfers/:transferUuid/submit",
+  requireBranchPermission(P.TRANSFER_REQUEST),
+  transferUuidRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.submitTransfer),
+);
+router.post(
+  "/stock-transfers/:transferUuid/approve",
+  requireBranchPermission(P.TRANSFER_APPROVE),
+  transferUuidRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.approveTransfer),
+);
+router.post(
+  "/stock-transfers/:transferUuid/reject",
+  requireBranchPermission(P.TRANSFER_REJECT),
+  transferUuidRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.rejectTransfer),
+);
+router.post(
+  "/stock-transfers/:transferUuid/dispatch",
+  requireBranchPermission(P.TRANSFER_DISPATCH),
+  transferUuidRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.dispatchTransfer),
+);
+router.post(
+  "/stock-transfers/:transferUuid/receive",
+  requireBranchPermission(P.TRANSFER_RECEIVE),
+  transferUuidRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.receiveTransfer),
+);
+router.post(
+  "/stock-transfers/:transferUuid/cancel",
+  requireBranchPermission(P.TRANSFER_CANCEL),
+  transferUuidRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.cancelTransfer),
+);
+
+// Product availability
+router.get(
+  "/product-availability",
+  requireBranchPermission(P.PRODUCT_AVAILABILITY_VIEW),
+  branchInventoryContextRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.listProductAvailability),
+);
+router.get(
+  "/products/:productUuid/availability",
+  requireBranchPermission(P.PRODUCT_AVAILABILITY_VIEW),
+  productUuidRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.getProductAvailability),
+);
+router.patch(
+  "/products/:productUuid/availability",
+  requireBranchPermission(P.PRODUCT_AVAILABILITY_MANAGE),
+  productUuidRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.updateProductAvailability),
+);
+router.get(
+  "/product-availability-rules",
+  requireBranchPermission(P.PRODUCT_AVAILABILITY_VIEW),
+  branchInventoryContextRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.listAvailabilityRules),
+);
+router.post(
+  "/product-availability-rules",
+  requireBranchPermission(P.PRODUCT_AVAILABILITY_MANAGE),
+  branchInventoryContextRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.createAvailabilityRule),
+);
+router.patch(
+  "/product-availability-rules/:ruleUuid",
+  requireBranchPermission(P.PRODUCT_AVAILABILITY_MANAGE),
+  ruleUuidRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.updateAvailabilityRule),
+);
+router.delete(
+  "/product-availability-rules/:ruleUuid",
+  requireBranchPermission(P.PRODUCT_AVAILABILITY_MANAGE),
+  ruleUuidRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.deleteAvailabilityRule),
+);
+
+// Service availability
+router.get(
+  "/service-availability",
+  requireBranchPermission(P.SERVICE_AVAILABILITY_VIEW),
+  branchInventoryContextRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.listServiceAvailability),
+);
+router.get(
+  "/services/:serviceUuid/availability",
+  requireBranchPermission(P.SERVICE_AVAILABILITY_VIEW),
+  serviceUuidRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.getServiceAvailability),
+);
+router.patch(
+  "/services/:serviceUuid/availability",
+  requireBranchPermission(P.SERVICE_AVAILABILITY_MANAGE),
+  serviceUuidRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.updateServiceAvailability),
+);
+router.post(
+  "/services/bulk-availability",
+  requireBranchPermission(P.SERVICE_AVAILABILITY_MANAGE),
+  branchInventoryContextRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.bulkServiceAvailability),
+);
+
+// Valuation
+router.get(
+  "/stock-valuation",
+  requireBranchPermission(P.VALUATION_VIEW),
+  branchInventoryContextRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.getValuation),
+);
+router.get(
+  "/stock-valuation/history",
+  requireBranchPermission(P.VALUATION_VIEW),
+  branchInventoryContextRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.valuationHistory),
+);
+router.post(
+  "/stock-valuation/snapshot",
+  requireBranchPermission(P.VALUATION_EXPORT),
+  branchInventoryContextRules,
+  validateRequest,
+  asyncHandler(BranchInventoryController.createValuationSnapshot),
+);
+
+export default router;

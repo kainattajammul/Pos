@@ -121,9 +121,14 @@ export async function resolveBranchContext(req) {
   if (!branch) throw new ApiError(HTTP.NOT_FOUND, "Branch not found");
 
   if (req.user?.devBypass || env.devAuthBypass) {
+    let devUserId = req.user?.id ?? null;
+    if (!devUserId) {
+      const fallbackUser = await prisma.user.findFirst({ orderBy: { id: "asc" }, select: { id: true } });
+      devUserId = fallbackUser?.id ?? null;
+    }
     req.authContext = {
       authUserId: null,
-      userId: req.user?.id ?? null,
+      userId: devUserId,
       shopId,
       branchIds: [branch.uuid],
       shopPermissions: null,

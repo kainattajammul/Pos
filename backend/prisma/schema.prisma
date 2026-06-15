@@ -153,6 +153,18 @@ model Shop {
   staffShifts         BranchStaffShift[]
   staffPerformance    BranchStaffPerformance[]
   securityRules       BranchSecurityRule[]
+  products            Product[]
+  productCategories   ProductCategory[]
+  services            Service[]
+  branchInventories   BranchInventory[]
+  branchInventorySettings BranchInventorySettings[]
+  stockTransfers      BranchStockTransfer[]
+  productAvailability BranchProductAvailability[]
+  productAvailabilityRules BranchProductAvailabilityRule[]
+  serviceAvailability BranchServiceAvailability[]
+  stockValuationSnapshots BranchStockValuationSnapshot[]
+  stockReorderRules       BranchStockReorderRule[]
+  lowStockAlerts          BranchLowStockAlert[]
 
   @@map("shops")
 }
@@ -215,6 +227,16 @@ model Branch {
   staffPerformance BranchStaffPerformance[]
   securityRules    BranchSecurityRule[]
   shiftRecurrences BranchStaffShiftRecurrence[]
+  inventorySettings BranchInventorySettings?
+  branchInventories BranchInventory[]
+  incomingTransfers BranchStockTransfer[] @relation("TransferDestinationBranch")
+  outgoingTransfers BranchStockTransfer[] @relation("TransferSourceBranch")
+  stockAlerts       BranchLowStockAlert[]
+  reorderRules      BranchStockReorderRule[]
+  productAvailability BranchProductAvailability[]
+  productAvailabilityRules BranchProductAvailabilityRule[]
+  serviceAvailability BranchServiceAvailability[]
+  valuationSnapshots BranchStockValuationSnapshot[]
 
   @@unique([shopId, slug])
   @@unique([shopId, branchCode])
@@ -841,6 +863,619 @@ model RepairDevicePart {
   @@index([repairDeviceId])
 
   @@map("repair_device_parts")
+}
+
+// ─── Catalog (shop-scoped products & services) ───────────────────────────────
+
+enum ProductStatus {
+  ACTIVE
+  DRAFT
+  ARCHIVED
+}
+
+enum AllocationMode {
+  SHARED
+  DEDICATED
+}
+
+enum StockMovementType {
+  OPENING_BALANCE
+  PURCHASE_RECEIPT
+  SALE
+  SALE_RETURN
+  REPAIR_PART_USED
+  REPAIR_PART_RETURNED
+  RESERVATION
+  RESERVATION_RELEASE
+  TRANSFER_REQUESTED
+  TRANSFER_APPROVED
+  TRANSFER_DISPATCHED
+  TRANSFER_RECEIVED
+  TRANSFER_REJECTED
+  TRANSFER_CANCELLED
+  STOCK_ADJUSTMENT_INCREASE
+  STOCK_ADJUSTMENT_DECREASE
+  DAMAGE
+  DAMAGE_RECOVERY
+  WRITE_OFF
+  STOCK_COUNT_CORRECTION
+}
+
+enum StockAlertType {
+  LOW_STOCK
+  OUT_OF_STOCK
+  OVERSTOCK
+  NEGATIVE_STOCK
+  REORDER_REQUIRED
+}
+
+enum StockAlertStatus {
+  OPEN
+  ACKNOWLEDGED
+  RESOLVED
+  DISMISSED
+}
+
+enum StockTransferStatus {
+  DRAFT
+  REQUESTED
+  PENDING_APPROVAL
+  APPROVED
+  PARTIALLY_APPROVED
+  REJECTED
+  READY_FOR_DISPATCH
+  DISPATCHED
+  PARTIALLY_RECEIVED
+  RECEIVED
+  CANCELLED
+}
+
+enum ProductAvailabilityStatus {
+  AVAILABLE
+  UNAVAILABLE
+  TEMPORARILY_UNAVAILABLE
+  HIDDEN
+  ONLINE_ONLY
+  IN_STORE_ONLY
+  PREORDER
+  BACKORDER
+  DISCONTINUED
+}
+
+enum ServiceAvailabilityStatus {
+  AVAILABLE
+  UNAVAILABLE
+  TEMPORARILY_UNAVAILABLE
+  LIMITED
+  APPOINTMENT_ONLY
+  WALK_IN_ONLY
+  HIDDEN
+}
+
+enum StockValuationMethod {
+  WEIGHTED_AVERAGE
+  LATEST_PURCHASE_COST
+  STANDARD_COST
+  FIFO
+}
+
+model ProductCategory {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique @default(uuid()) @db.Uuid
+  shopId    Int      @map("shop_id")
+  name      String
+  slug      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  shop     Shop      @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  products Product[]
+
+  @@unique([shopId, slug])
+  @@index([shopId])
+  @@map("product_categories")
+}
+
+model Product {
+  id           Int           @id @default(autoincrement())
+  uuid         String        @unique @default(uuid()) @db.Uuid
+  shopId       Int           @map("shop_id")
+  categoryId   Int?          @map("category_id")
+  name         String
+  sku          String?
+  barcode      String?
+  brand        String?
+  model        String?
+  description  String?
+  imageUrl     String?       @map("image_url")
+  status       ProductStatus @default(ACTIVE)
+  standardCost Decimal?      @map("standard_cost") @db.Decimal(14, 4)
+  salePrice    Decimal?      @map("sale_price") @db.Decimal(14, 2)
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  archivedAt   DateTime?     @map("archived_at")
+
+  shop       Shop             @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  category   ProductCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  variants   ProductVariant[]
+  branchInventories BranchInventory[]
+  transferItems BranchStockTransferItem[]
+  productAvailability BranchProductAvailability[]
+  productAvailabilityRules BranchProductAvailabilityRule[]
+
+  @@index([shopId])
+  @@index([shopId, status])
+  @@index([sku])
+  @@index([barcode])
+  @@map("products")
+}
+
+model ProductVariant {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique @default(uuid()) @db.Uuid
+  shopId    Int      @map("shop_id")
+  productId Int      @map("product_id")
+  name      String?
+  sku       String
+  barcode   String?
+  salePrice Decimal? @map("sale_price") @db.Decimal(14, 2)
+  isDefault Boolean  @default(false) @map("is_default")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  archivedAt DateTime? @map("archived_at")
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  branchInventories BranchInventory[]
+  transferItems BranchStockTransferItem[]
+  productAvailability BranchProductAvailability[]
+  productAvailabilityRules BranchProductAvailabilityRule[]
+
+  @@unique([productId, sku])
+  @@index([shopId])
+  @@index([productId])
+  @@index([sku])
+  @@index([barcode])
+  @@map("product_variants")
+}
+
+model Service {
+  id          Int      @id @default(autoincrement())
+  uuid        String   @unique @default(uuid()) @db.Uuid
+  shopId      Int      @map("shop_id")
+  name        String
+  slug        String
+  description String?
+  basePrice   Decimal? @map("base_price") @db.Decimal(14, 2)
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  archivedAt  DateTime? @map("archived_at")
+
+  shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branchAvailability BranchServiceAvailability[]
+
+  @@unique([shopId, slug])
+  @@index([shopId])
+  @@map("services")
+}
+
+// ─── Branch inventory settings (branch section UI) ───────────────────────────
+
+model BranchInventorySettings {
+  id                       Int                  @id @default(autoincrement())
+  shopId                   Int                  @map("shop_id")
+  branchId                 Int                  @unique @map("branch_id")
+  allocationMode           AllocationMode       @default(DEDICATED) @map("allocation_mode")
+  lowStockThreshold        Int                  @default(25) @map("low_stock_threshold")
+  reorderRulesText         String?              @map("reorder_rules_text")
+  transferApprovalRequired Boolean              @default(true) @map("transfer_approval_required")
+  valuationMethod          StockValuationMethod @default(WEIGHTED_AVERAGE) @map("valuation_method")
+  allowNegativeStock       Boolean              @default(false) @map("allow_negative_stock")
+  currency                 String               @default("GBP")
+  createdAt                DateTime             @default(now()) @map("created_at")
+  updatedAt                DateTime             @updatedAt @map("updated_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([shopId])
+  @@map("branch_inventory_settings")
+}
+
+model BranchInventory {
+  id                 Int      @id @default(autoincrement())
+  uuid               String   @unique @default(uuid()) @db.Uuid
+  shopId             Int      @map("shop_id")
+  branchId           Int      @map("branch_id")
+  productId          Int      @map("product_id")
+  productVariantId   Int?     @map("product_variant_id")
+
+  sku                String?
+  barcode            String?
+
+  quantityOnHand     Int      @default(0) @map("quantity_on_hand")
+  quantityReserved   Int      @default(0) @map("quantity_reserved")
+  quantityIncoming   Int      @default(0) @map("quantity_incoming")
+  quantityOutgoing   Int      @default(0) @map("quantity_outgoing")
+  quantityDamaged    Int      @default(0) @map("quantity_damaged")
+  quantityInRepair   Int      @default(0) @map("quantity_in_repair")
+
+  averageCost        Decimal? @map("average_cost") @db.Decimal(14, 4)
+  latestPurchaseCost Decimal? @map("latest_purchase_cost") @db.Decimal(14, 4)
+  branchSellingPrice Decimal? @map("branch_selling_price") @db.Decimal(14, 2)
+
+  isAllocated        Boolean  @default(true) @map("is_allocated")
+  isSellable         Boolean  @default(true) @map("is_sellable")
+  isPurchasable      Boolean  @default(true) @map("is_purchasable")
+  isTransferable     Boolean  @default(true) @map("is_transferable")
+
+  shelfLocation      String?  @map("shelf_location")
+  binLocation        String?  @map("bin_location")
+
+  lastStockMovementAt DateTime? @map("last_stock_movement_at")
+  lastCountedAt       DateTime? @map("last_counted_at")
+
+  version            Int      @default(1)
+
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+  archivedAt         DateTime? @map("archived_at")
+
+  shop           Shop            @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch         Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  product        Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productVariant ProductVariant? @relation(fields: [productVariantId], references: [id], onDelete: SetNull)
+
+  reorderRule    BranchStockReorderRule?
+  alerts         BranchLowStockAlert[]
+  movements      BranchStockMovement[]
+  sourceTransferItems BranchStockTransferItem[] @relation("SourceInventory")
+  destinationTransferItems BranchStockTransferItem[] @relation("DestinationInventory")
+
+  @@index([shopId, branchId])
+  @@index([branchId, quantityOnHand])
+  @@index([productId])
+  @@index([productVariantId])
+  @@index([sku])
+  @@index([barcode])
+  @@map("branch_inventories")
+}
+
+model BranchStockMovement {
+  id                Int               @id @default(autoincrement())
+  uuid              String            @unique @default(uuid()) @db.Uuid
+  shopId            Int               @map("shop_id")
+  branchId          Int               @map("branch_id")
+  branchInventoryId Int               @map("branch_inventory_id")
+
+  movementType      StockMovementType @map("movement_type")
+  quantity          Int
+  quantityBefore    Int               @map("quantity_before")
+  quantityAfter     Int               @map("quantity_after")
+
+  unitCost          Decimal?          @map("unit_cost") @db.Decimal(14, 4)
+  totalCost         Decimal?          @map("total_cost") @db.Decimal(16, 4)
+
+  referenceType     String?           @map("reference_type")
+  referenceId       String?           @map("reference_id")
+
+  transferId        Int?              @map("transfer_id")
+  transferItemId    Int?              @map("transfer_item_id")
+
+  reasonCode        String?           @map("reason_code")
+  notes             String?
+
+  performedById     Int?              @map("performed_by_id")
+  approvedById      Int?              @map("approved_by_id")
+
+  createdAt         DateTime          @default(now()) @map("created_at")
+
+  inventory BranchInventory @relation(fields: [branchInventoryId], references: [id], onDelete: Cascade)
+
+  @@index([shopId, branchId])
+  @@index([branchInventoryId, createdAt])
+  @@index([movementType])
+  @@index([referenceType, referenceId])
+  @@index([transferId])
+  @@map("branch_stock_movements")
+}
+
+model BranchStockReorderRule {
+  id                  Int      @id @default(autoincrement())
+  uuid                String   @unique @default(uuid()) @db.Uuid
+  shopId              Int      @map("shop_id")
+  branchId            Int      @map("branch_id")
+  branchInventoryId   Int      @unique @map("branch_inventory_id")
+
+  isEnabled           Boolean  @default(true) @map("is_enabled")
+  reorderPoint        Int      @map("reorder_point")
+  reorderQuantity     Int      @map("reorder_quantity")
+  minimumStockLevel   Int?     @map("minimum_stock_level")
+  maximumStockLevel   Int?     @map("maximum_stock_level")
+  safetyStockLevel    Int?     @map("safety_stock_level")
+  preferredSupplierId Int?     @map("preferred_supplier_id")
+  leadTimeDays        Int?     @map("lead_time_days")
+  autoCreateRequest   Boolean  @default(false) @map("auto_create_request")
+
+  createdById         Int?     @map("created_by_id")
+  updatedById         Int?     @map("updated_by_id")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  shop      Shop            @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch    Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  inventory BranchInventory @relation(fields: [branchInventoryId], references: [id], onDelete: Cascade)
+
+  @@index([shopId, branchId])
+  @@map("branch_stock_reorder_rules")
+}
+
+model BranchLowStockAlert {
+  id                Int              @id @default(autoincrement())
+  uuid              String           @unique @default(uuid()) @db.Uuid
+  shopId            Int              @map("shop_id")
+  branchId          Int              @map("branch_id")
+  branchInventoryId Int              @map("branch_inventory_id")
+
+  alertType         StockAlertType   @map("alert_type")
+  status            StockAlertStatus @default(OPEN)
+  currentQuantity   Int              @map("current_quantity")
+  reorderPoint      Int?             @map("reorder_point")
+  message           String?
+
+  triggeredAt       DateTime         @default(now()) @map("triggered_at")
+  acknowledgedAt    DateTime?        @map("acknowledged_at")
+  acknowledgedById  Int?             @map("acknowledged_by_id")
+  resolvedAt        DateTime?        @map("resolved_at")
+  resolvedById      Int?               @map("resolved_by_id")
+
+  shop      Shop            @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch    Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  inventory BranchInventory @relation(fields: [branchInventoryId], references: [id], onDelete: Cascade)
+
+  @@index([shopId, branchId])
+  @@index([branchInventoryId, status])
+  @@map("branch_low_stock_alerts")
+}
+
+model BranchStockTransfer {
+  id                  Int                 @id @default(autoincrement())
+  uuid                String              @unique @default(uuid()) @db.Uuid
+  transferNumber      String              @unique @map("transfer_number")
+
+  shopId              Int                 @map("shop_id")
+  sourceBranchId      Int                 @map("source_branch_id")
+  destinationBranchId Int                 @map("destination_branch_id")
+
+  status              StockTransferStatus @default(DRAFT)
+
+  requestedById       Int                 @map("requested_by_id")
+  requestedAt         DateTime            @default(now()) @map("requested_at")
+
+  approvedById        Int?                @map("approved_by_id")
+  approvedAt          DateTime?           @map("approved_at")
+
+  dispatchedById      Int?                @map("dispatched_by_id")
+  dispatchedAt        DateTime?           @map("dispatched_at")
+
+  receivedById        Int?                @map("received_by_id")
+  receivedAt          DateTime?           @map("received_at")
+
+  rejectedById        Int?                @map("rejected_by_id")
+  rejectedAt          DateTime?           @map("rejected_at")
+  rejectionReason     String?             @map("rejection_reason")
+
+  cancelledById       Int?                @map("cancelled_by_id")
+  cancelledAt         DateTime?           @map("cancelled_at")
+  cancellationReason  String?             @map("cancellation_reason")
+
+  requestNotes        String?             @map("request_notes")
+  approvalNotes       String?             @map("approval_notes")
+  dispatchNotes       String?             @map("dispatch_notes")
+  receivingNotes      String?             @map("receiving_notes")
+
+  expectedDeliveryAt  DateTime?           @map("expected_delivery_at")
+
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt @map("updated_at")
+
+  shop              Shop                         @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  sourceBranch      Branch                       @relation("TransferSourceBranch", fields: [sourceBranchId], references: [id], onDelete: Cascade)
+  destinationBranch Branch                       @relation("TransferDestinationBranch", fields: [destinationBranchId], references: [id], onDelete: Cascade)
+  items             BranchStockTransferItem[]
+  history           BranchStockTransferHistory[]
+
+  @@index([shopId])
+  @@index([sourceBranchId, status])
+  @@index([destinationBranchId, status])
+  @@index([requestedAt])
+  @@map("branch_stock_transfers")
+}
+
+model BranchStockTransferItem {
+  id                     Int      @id @default(autoincrement())
+  uuid                   String   @unique @default(uuid()) @db.Uuid
+  transferId             Int      @map("transfer_id")
+
+  productId              Int      @map("product_id")
+  productVariantId       Int?     @map("product_variant_id")
+
+  sourceInventoryId      Int      @map("source_inventory_id")
+  destinationInventoryId Int?     @map("destination_inventory_id")
+
+  requestedQuantity      Int      @map("requested_quantity")
+  approvedQuantity       Int?     @map("approved_quantity")
+  dispatchedQuantity     Int?     @map("dispatched_quantity")
+  receivedQuantity       Int?     @map("received_quantity")
+  damagedQuantity        Int      @default(0) @map("damaged_quantity")
+  rejectedQuantity       Int      @default(0) @map("rejected_quantity")
+
+  unitCost               Decimal? @map("unit_cost") @db.Decimal(14, 4)
+  totalCost              Decimal? @map("total_cost") @db.Decimal(16, 4)
+
+  notes                  String?
+
+  createdAt              DateTime @default(now()) @map("created_at")
+  updatedAt              DateTime @updatedAt @map("updated_at")
+
+  transfer             BranchStockTransfer @relation(fields: [transferId], references: [id], onDelete: Cascade)
+  product              Product             @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productVariant       ProductVariant?     @relation(fields: [productVariantId], references: [id], onDelete: SetNull)
+  sourceInventory      BranchInventory     @relation("SourceInventory", fields: [sourceInventoryId], references: [id], onDelete: Cascade)
+  destinationInventory BranchInventory?    @relation("DestinationInventory", fields: [destinationInventoryId], references: [id], onDelete: SetNull)
+
+  @@unique([transferId, sourceInventoryId])
+  @@index([productId])
+  @@index([productVariantId])
+  @@map("branch_stock_transfer_items")
+}
+
+model BranchStockTransferHistory {
+  id            Int                  @id @default(autoincrement())
+  transferId    Int                  @map("transfer_id")
+
+  fromStatus    StockTransferStatus? @map("from_status")
+  toStatus      StockTransferStatus  @map("to_status")
+
+  action        String
+  notes         String?
+  performedById Int?                 @map("performed_by_id")
+  createdAt     DateTime             @default(now()) @map("created_at")
+
+  transfer BranchStockTransfer @relation(fields: [transferId], references: [id], onDelete: Cascade)
+
+  @@index([transferId, createdAt])
+  @@map("branch_stock_transfer_history")
+}
+
+model BranchProductAvailability {
+  id               Int                       @id @default(autoincrement())
+  uuid             String                    @unique @default(uuid()) @db.Uuid
+  shopId           Int                       @map("shop_id")
+  branchId         Int                       @map("branch_id")
+  productId        Int                       @map("product_id")
+  productVariantId Int?                      @map("product_variant_id")
+
+  status           ProductAvailabilityStatus @default(AVAILABLE)
+  isVisible        Boolean                   @default(true) @map("is_visible")
+  isSellable       Boolean                   @default(true) @map("is_sellable")
+  allowBackorder   Boolean                   @default(false) @map("allow_backorder")
+  allowClickAndCollect Boolean               @default(false) @map("allow_click_and_collect")
+  allowDelivery    Boolean                   @default(false) @map("allow_delivery")
+  allowInStoreSale Boolean                   @default(true) @map("allow_in_store_sale")
+
+  availableFrom    DateTime?                 @map("available_from")
+  availableUntil   DateTime?                 @map("available_until")
+
+  unavailableReason String?                  @map("unavailable_reason")
+
+  createdAt        DateTime                  @default(now()) @map("created_at")
+  updatedAt        DateTime                  @updatedAt @map("updated_at")
+
+  shop           Shop            @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch         Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  product        Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productVariant ProductVariant? @relation(fields: [productVariantId], references: [id], onDelete: SetNull)
+
+  @@index([shopId, branchId])
+  @@map("branch_product_availability")
+}
+
+model BranchProductAvailabilityRule {
+  id               Int      @id @default(autoincrement())
+  uuid             String   @unique @default(uuid()) @db.Uuid
+  shopId           Int      @map("shop_id")
+  branchId         Int      @map("branch_id")
+  productId        Int?     @map("product_id")
+  productVariantId Int?     @map("product_variant_id")
+
+  ruleType         String   @map("rule_type")
+  priority         Int      @default(100)
+  conditions       Json
+  actions          Json
+  isEnabled        Boolean  @default(true) @map("is_enabled")
+
+  createdById      Int?     @map("created_by_id")
+  updatedById      Int?     @map("updated_by_id")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  shop           Shop            @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch         Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  product        Product?        @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productVariant ProductVariant? @relation(fields: [productVariantId], references: [id], onDelete: SetNull)
+
+  @@index([shopId, branchId])
+  @@index([branchId, ruleType])
+  @@map("branch_product_availability_rules")
+}
+
+model BranchServiceAvailability {
+  id                    Int                       @id @default(autoincrement())
+  uuid                  String                    @unique @default(uuid()) @db.Uuid
+  shopId                Int                       @map("shop_id")
+  branchId              Int                       @map("branch_id")
+  serviceId             Int                       @map("service_id")
+
+  status                ServiceAvailabilityStatus @default(AVAILABLE)
+  isVisible             Boolean                   @default(true) @map("is_visible")
+  isBookable            Boolean                   @default(true) @map("is_bookable")
+  acceptsWalkIns        Boolean                   @default(true) @map("accepts_walk_ins")
+  acceptsOnlineBookings Boolean                   @default(true) @map("accepts_online_bookings")
+
+  branchPrice           Decimal?                  @map("branch_price") @db.Decimal(14, 2)
+  estimatedMinutes      Int?                      @map("estimated_minutes")
+  dailyCapacity         Int?                      @map("daily_capacity")
+
+  availableFrom         DateTime?                 @map("available_from")
+  availableUntil        DateTime?                 @map("available_until")
+  unavailableReason     String?                   @map("unavailable_reason")
+
+  availabilityRules     Json?                     @map("availability_rules")
+
+  createdAt             DateTime                  @default(now()) @map("created_at")
+  updatedAt             DateTime                  @updatedAt @map("updated_at")
+
+  shop    Shop    @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch  Branch  @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, serviceId])
+  @@index([shopId, branchId])
+  @@index([serviceId])
+  @@map("branch_service_availability")
+}
+
+model BranchStockValuationSnapshot {
+  id                 Int                  @id @default(autoincrement())
+  uuid               String               @unique @default(uuid()) @db.Uuid
+  shopId             Int                  @map("shop_id")
+  branchId           Int                  @map("branch_id")
+
+  valuationDate      DateTime             @map("valuation_date")
+  valuationMethod    StockValuationMethod @map("valuation_method")
+  currency           String
+
+  totalQuantity      Int                  @map("total_quantity")
+  availableQuantity  Int                  @map("available_quantity")
+  reservedQuantity   Int                  @map("reserved_quantity")
+  damagedQuantity    Int                  @map("damaged_quantity")
+
+  totalCostValue     Decimal              @map("total_cost_value") @db.Decimal(18, 4)
+  availableCostValue Decimal              @map("available_cost_value") @db.Decimal(18, 4)
+  totalRetailValue   Decimal              @map("total_retail_value") @db.Decimal(18, 4)
+  potentialMargin    Decimal              @map("potential_margin") @db.Decimal(18, 4)
+
+  breakdown          Json?
+
+  createdAt          DateTime             @default(now()) @map("created_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, valuationDate, valuationMethod])
+  @@index([shopId, branchId])
+  @@map("branch_stock_valuation_snapshots")
 }
 
 model SalesCommissionAgent {
