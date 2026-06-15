@@ -139,5 +139,17 @@ export const queryKeys = {
     all: ["branches"] as const,
     list: (shopId: number) => ["branches", "list", shopId] as const,
     detail: (shopId: number, uuid: string) => ["branches", "detail", shopId, uuid] as const,
+    inventorySettings: (shopId: number, uuid: string) =>
+      ["branches", "inventory-settings", shopId, uuid] as const,
+    operationsSettings: (shopId: number, uuid: string) =>
+      ["branches", "operations-settings", shopId, uuid] as const,
+    financeSettings: (shopId: number, uuid: string) =>
+      ["branches", "finance-settings", shopId, uuid] as const,
+    communicationSettings: (shopId: number, uuid: string) =>
+      ["branches", "communication-settings", shopId, uuid] as const,
+    reportingSettings: (shopId: number, uuid: string) =>
+      ["branches", "reporting-settings", shopId, uuid] as const,
+    systemSettings: (shopId: number, uuid: string) =>
+      ["branches", "system-settings", shopId, uuid] as const,
   },
 } as const;

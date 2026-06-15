@@ -165,6 +165,58 @@ model Shop {
   stockValuationSnapshots BranchStockValuationSnapshot[]
   stockReorderRules       BranchStockReorderRule[]
   lowStockAlerts          BranchLowStockAlert[]
+  customers               Customer[]
+  branchCustomers         BranchCustomer[]
+  branchSales             BranchSale[]
+  repairTickets           BranchRepairTicket[]
+  repairCapacity          BranchRepairCapacity[]
+  appointments            BranchAppointment[]
+  operationSettings       BranchOperationSettings[]
+  operationOptions        BranchOperationOption[]
+  dropoffRules            BranchDropoffRule[]
+  serviceAreas            BranchServiceArea[]
+  deliveries              BranchDelivery[]
+  customerActivities      BranchCustomerActivity[]
+  customerVisibilityRules BranchCustomerVisibilityRule[]
+  warranties              BranchWarranty[]
+  warrantyClaims          BranchWarrantyClaim[]
+  financeSettings         BranchFinanceSettings[]
+  registers               BranchRegister[]
+  cashDrawers             BranchCashDrawer[]
+  registerSessions        BranchRegisterSession[]
+  cashMovements           BranchCashMovement[]
+  paymentSettings         BranchPaymentSettings[]
+  branchPayments          BranchPayment[]
+  branchRefunds           BranchRefund[]
+  branchInvoices          BranchInvoice[]
+  taxProfiles             BranchTaxProfile[]
+  taxRates                BranchTaxRate[]
+  endOfDayClosings        BranchEndOfDayClosing[]
+  checklistTemplates      BranchChecklistTemplate[]
+  checklistRuns           BranchChecklistRun[]
+  targets                 BranchTarget[]
+  commissionRules         BranchCommissionRule[]
+  commissions             BranchCommission[]
+  expenses                BranchExpense[]
+  notificationSettings    BranchNotificationSettings[]
+  documentSettings        BranchDocumentSettings[]
+  receiptSettings         BranchReceiptSettings[]
+  branchInvoiceSettings   BranchInvoiceSettings[]
+  emailSenderSettings     BranchEmailSenderSettings[]
+  smsSenderSettings       BranchSmsSenderSettings[]
+  communicationLogs       BranchCommunicationLog[]
+  messageTemplates        BranchMessageTemplate[]
+  branchDocuments         BranchDocument[]
+  reportingSettings       BranchReportingSettings[]
+  reportExports           BranchReportExport[]
+  reportSnapshots         BranchReportSnapshot[]
+  syncConnections         BranchSyncConnection[]
+  syncJobs                BranchSyncJob[]
+  branchSettings          BranchSetting[]
+  branchSettingHistory    BranchSettingHistory[]
+  securityEvents          BranchSecurityEvent[]
+  businessEntities        BusinessEntity[]
+  branchOwnerships        BranchOwnership[]
 
   @@map("shops")
 }
@@ -237,6 +289,56 @@ model Branch {
   productAvailabilityRules BranchProductAvailabilityRule[]
   serviceAvailability BranchServiceAvailability[]
   valuationSnapshots BranchStockValuationSnapshot[]
+  branchCustomers    BranchCustomer[]
+  sales              BranchSale[]
+  repairTickets      BranchRepairTicket[]
+  repairCapacity     BranchRepairCapacity[]
+  appointments       BranchAppointment[]
+  operationSettings  BranchOperationSettings?
+  operationOptions   BranchOperationOption?
+  dropoffRules       BranchDropoffRule[]
+  serviceAreas       BranchServiceArea[]
+  deliveries         BranchDelivery[]
+  customerActivities BranchCustomerActivity[]
+  customerVisibilityRule BranchCustomerVisibilityRule?
+  warranties         BranchWarranty[]
+  warrantyClaims     BranchWarrantyClaim[]
+  financeSettings    BranchFinanceSettings?
+  registers          BranchRegister[]
+  cashDrawers        BranchCashDrawer[]
+  registerSessions   BranchRegisterSession[]
+  cashMovements      BranchCashMovement[]
+  paymentSettings    BranchPaymentSettings?
+  branchPayments     BranchPayment[]
+  branchRefunds      BranchRefund[]
+  branchInvoices     BranchInvoice[]
+  taxProfile         BranchTaxProfile?
+  taxRates           BranchTaxRate[]
+  endOfDayClosings   BranchEndOfDayClosing[]
+  checklistTemplates BranchChecklistTemplate[]
+  checklistRuns      BranchChecklistRun[]
+  targets            BranchTarget[]
+  commissionRules    BranchCommissionRule[]
+  commissions        BranchCommission[]
+  expenses           BranchExpense[]
+  notificationSettings BranchNotificationSettings?
+  documentSettings   BranchDocumentSettings?
+  receiptSettings    BranchReceiptSettings?
+  branchInvoiceSettings BranchInvoiceSettings?
+  emailSenderSettings BranchEmailSenderSettings?
+  smsSenderSettings  BranchSmsSenderSettings?
+  communicationLogs  BranchCommunicationLog[]
+  messageTemplates   BranchMessageTemplate[]
+  branchDocuments    BranchDocument[]
+  reportingSettings  BranchReportingSettings?
+  reportExports      BranchReportExport[]
+  reportSnapshots    BranchReportSnapshot[]
+  syncConnections    BranchSyncConnection[]
+  syncJobs           BranchSyncJob[]
+  branchSettings     BranchSetting[]
+  branchSettingHistory BranchSettingHistory[]
+  securityEvents     BranchSecurityEvent[]
+  branchOwnerships   BranchOwnership[]
 
   @@unique([shopId, slug])
   @@unique([shopId, branchCode])
@@ -323,6 +425,7 @@ model AuditLog {
   @@index([branchId])
   @@index([userId])
   @@index([action])
+  @@index([createdAt])
   @@map("audit_logs")
 }
 
@@ -663,8 +766,15 @@ model BranchSecurityRule {
   ruleKey     String @map("rule_key")
   name        String
   description String?
+  category    SecurityRuleCategory @default(AUTHORISATION)
   value       Json
+  enforcementMode SecurityEnforcementMode @default(ENFORCE) @map("enforcement_mode")
+  priority    Int @default(100)
   isEnabled   Boolean @default(true) @map("is_enabled")
+  isSystemRule Boolean @default(false) @map("is_system_rule")
+  effectiveFrom DateTime? @map("effective_from")
+  effectiveUntil DateTime? @map("effective_until")
+  version     Int @default(1)
 
   createdById Int? @map("created_by")
   updatedById Int? @map("updated_by")
@@ -1478,6 +1588,2404 @@ model BranchStockValuationSnapshot {
   @@map("branch_stock_valuation_snapshots")
 }
 
+// ─── Module 4: Branch Sales, Repairs & Operations ─────────────────────────────
+
+enum BranchSaleChannel {
+  IN_STORE
+  ONLINE
+  CLICK_AND_COLLECT
+  PHONE
+  REPAIR_COUNTER
+  DELIVERY
+  OTHER
+}
+
+enum BranchSaleStatus {
+  DRAFT
+  PENDING
+  COMPLETED
+  PARTIALLY_REFUNDED
+  REFUNDED
+  CANCELLED
+  VOIDED
+}
+
+enum BranchSalePaymentStatus {
+  UNPAID
+  PARTIALLY_PAID
+  PAID
+  REFUNDED
+}
+
+enum BranchSaleFulfilmentStatus {
+  PENDING
+  PARTIAL
+  FULFILLED
+  CANCELLED
+}
+
+enum RepairTicketStatus {
+  DRAFT
+  BOOKED
+  AWAITING_DROPOFF
+  RECEIVED
+  DIAGNOSING
+  AWAITING_CUSTOMER_APPROVAL
+  APPROVED
+  PARTS_REQUIRED
+  PARTS_ORDERED
+  READY_FOR_REPAIR
+  IN_PROGRESS
+  QUALITY_CHECK
+  COMPLETED
+  READY_FOR_COLLECTION
+  OUT_FOR_DELIVERY
+  COLLECTED
+  DELIVERED
+  ON_HOLD
+  CANCELLED
+  UNREPAIRABLE
+  ARCHIVED
+}
+
+enum RepairPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum RepairIntakeMethod {
+  WALK_IN
+  APPOINTMENT
+  CUSTOMER_DROPOFF
+  STAFF_PICKUP
+  COURIER
+  POSTAL
+}
+
+enum RepairReturnMethod {
+  CUSTOMER_COLLECTION
+  STAFF_DELIVERY
+  COURIER
+  POSTAL
+}
+
+enum RepairHistoryEventType {
+  CREATED
+  UPDATED
+  STATUS_CHANGED
+  TECHNICIAN_ASSIGNED
+  TECHNICIAN_REASSIGNED
+  DIAGNOSIS_ADDED
+  ESTIMATE_CREATED
+  CUSTOMER_APPROVED
+  CUSTOMER_REJECTED
+  PART_ADDED
+  PART_REMOVED
+  NOTE_ADDED
+  APPOINTMENT_LINKED
+  PAYMENT_RECORDED
+  COMPLETED
+  READY_FOR_COLLECTION
+  COLLECTED
+  DELIVERED
+  CANCELLED
+  WARRANTY_CREATED
+  WARRANTY_CLAIM_CREATED
+}
+
+enum BranchAppointmentType {
+  IN_STORE
+  DEVICE_DROPOFF
+  DEVICE_COLLECTION
+  HOME_PICKUP
+  HOME_DELIVERY
+  REMOTE_CONSULTATION
+}
+
+enum BranchAppointmentStatus {
+  PENDING
+  CONFIRMED
+  CHECKED_IN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+  RESCHEDULED
+}
+
+enum BranchDropoffType {
+  IN_STORE_COUNTER
+  SECURE_LOCKER
+  RECEPTION
+  CURBSIDE
+  COURIER
+  POSTAL
+  THIRD_PARTY_LOCATION
+}
+
+enum BranchDeliveryStatus {
+  PENDING
+  SCHEDULED
+  READY_FOR_DISPATCH
+  DISPATCHED
+  OUT_FOR_DELIVERY
+  DELIVERED
+  FAILED
+  CANCELLED
+  RETURNED_TO_BRANCH
+}
+
+enum ServiceAreaType {
+  POSTCODE
+  POSTCODE_PREFIX
+  CITY
+  COUNTY
+  RADIUS
+  CUSTOM_ZONE
+  EXCLUDED_AREA
+}
+
+enum BranchCustomerVisibilityMode {
+  SHOP_WIDE
+  ASSIGNED_BRANCHES
+  HOME_BRANCH_ONLY
+  INTERACTION_BRANCHES
+  RESTRICTED
+}
+
+enum CustomerActivityType {
+  CUSTOMER_CREATED
+  CUSTOMER_UPDATED
+  SALE_CREATED
+  SALE_COMPLETED
+  REFUND_CREATED
+  APPOINTMENT_BOOKED
+  APPOINTMENT_RESCHEDULED
+  APPOINTMENT_CANCELLED
+  REPAIR_CREATED
+  REPAIR_STATUS_CHANGED
+  REPAIR_COMPLETED
+  DEVICE_COLLECTED
+  DELIVERY_CREATED
+  DELIVERY_COMPLETED
+  WARRANTY_CREATED
+  WARRANTY_CLAIM_CREATED
+  NOTE_ADDED
+  COMMUNICATION_SENT
+}
+
+enum WarrantyType {
+  REPAIR
+  PRODUCT
+  PART
+  SERVICE
+  EXTENDED
+}
+
+enum WarrantyStatus {
+  ACTIVE
+  EXPIRED
+  VOIDED
+  FULLY_CLAIMED
+}
+
+enum WarrantyClaimStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  INSPECTION_REQUIRED
+  APPROVED
+  PARTIALLY_APPROVED
+  REJECTED
+  REPAIR_IN_PROGRESS
+  REPLACEMENT_APPROVED
+  REFUND_APPROVED
+  COMPLETED
+  CANCELLED
+}
+
+model Customer {
+  id           Int      @id @default(autoincrement())
+  uuid         String   @unique @default(uuid()) @db.Uuid
+  shopId       Int      @map("shop_id")
+
+  firstName    String?  @map("first_name")
+  lastName     String?  @map("last_name")
+  displayName  String   @map("display_name")
+  email        String?
+  phone        String?
+  mobile       String?
+
+  addressLine1 String?  @map("address_line_1")
+  addressLine2 String?  @map("address_line_2")
+  city         String?
+  county       String?
+  postcode     String?
+  country      String?  @default("United Kingdom")
+
+  notes        String?
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  archivedAt   DateTime? @map("archived_at")
+
+  shop              Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branchCustomers   BranchCustomer[]
+  sales             BranchSale[]
+  repairTickets     BranchRepairTicket[]
+  appointments      BranchAppointment[]
+  activities        BranchCustomerActivity[]
+  warranties        BranchWarranty[]
+  warrantyClaims    BranchWarrantyClaim[]
+  deliveries        BranchDelivery[]
+  branchPayments    BranchPayment[]
+  branchRefunds     BranchRefund[]
+  branchInvoices    BranchInvoice[]
+  communicationLogs BranchCommunicationLog[]
+
+  @@index([shopId])
+  @@index([shopId, email])
+  @@index([shopId, phone])
+  @@map("customers")
+}
+
+model BranchCustomer {
+  id                     Int      @id @default(autoincrement())
+  uuid                   String   @unique @default(uuid()) @db.Uuid
+  shopId                 Int      @map("shop_id")
+  branchId               Int      @map("branch_id")
+  customerId             Int      @map("customer_id")
+
+  firstInteractionAt     DateTime @default(now()) @map("first_interaction_at")
+  lastInteractionAt      DateTime @default(now()) @map("last_interaction_at")
+
+  totalSalesCount        Int      @default(0) @map("total_sales_count")
+  totalRepairsCount      Int      @default(0) @map("total_repairs_count")
+  totalAppointmentsCount Int      @default(0) @map("total_appointments_count")
+
+  totalSpend             Decimal  @default(0) @map("total_spend") @db.Decimal(16, 2)
+  outstandingBalance     Decimal  @default(0) @map("outstanding_balance") @db.Decimal(16, 2)
+
+  preferredBranch        Boolean  @default(false) @map("preferred_branch")
+  isBlocked              Boolean  @default(false) @map("is_blocked")
+  blockReason            String?  @map("block_reason")
+  notes                  String?
+
+  createdAt              DateTime @default(now()) @map("created_at")
+  updatedAt              DateTime @updatedAt @map("updated_at")
+
+  shop     Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch   Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, customerId])
+  @@index([shopId, branchId])
+  @@index([customerId])
+  @@map("branch_customers")
+}
+
+model BranchCustomerActivity {
+  id            Int                  @id @default(autoincrement())
+  uuid          String               @unique @default(uuid()) @db.Uuid
+  shopId        Int                  @map("shop_id")
+  branchId      Int                  @map("branch_id")
+  customerId    Int                  @map("customer_id")
+
+  activityType  CustomerActivityType @map("activity_type")
+  title         String
+  description   String?
+
+  referenceType String?              @map("reference_type")
+  referenceId   String?              @map("reference_id")
+
+  metadata      Json?
+  performedById Int?                 @map("performed_by_id")
+  createdAt     DateTime             @default(now()) @map("created_at")
+
+  shop     Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch   Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([shopId, branchId])
+  @@index([customerId, createdAt])
+  @@index([referenceType, referenceId])
+  @@map("branch_customer_activities")
+}
+
+model BranchCustomerVisibilityRule {
+  id                       Int                          @id @default(autoincrement())
+  shopId                   Int                          @map("shop_id")
+  branchId                 Int                          @unique @map("branch_id")
+
+  visibilityMode           BranchCustomerVisibilityMode @default(INTERACTION_BRANCHES) @map("visibility_mode")
+  allowCrossBranchSearch   Boolean                      @default(false) @map("allow_cross_branch_search")
+  allowContactDetailsView  Boolean                      @default(true) @map("allow_contact_details_view")
+  allowAddressView         Boolean                      @default(false) @map("allow_address_view")
+  allowActivityHistoryView Boolean                      @default(true) @map("allow_activity_history_view")
+  allowSalesHistoryView    Boolean                      @default(true) @map("allow_sales_history_view")
+  allowRepairHistoryView   Boolean                      @default(true) @map("allow_repair_history_view")
+  allowWarrantyHistoryView Boolean                      @default(true) @map("allow_warranty_history_view")
+  allowCustomerExport      Boolean                      @default(false) @map("allow_customer_export")
+  maskSensitiveFields      Boolean                      @default(false) @map("mask_sensitive_fields")
+
+  createdById              Int?                         @map("created_by_id")
+  updatedById              Int?                         @map("updated_by_id")
+  createdAt                DateTime                     @default(now()) @map("created_at")
+  updatedAt                DateTime                     @updatedAt @map("updated_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([shopId])
+  @@map("branch_customer_visibility_rules")
+}
+
+model BranchOperationSettings {
+  id                       Int      @id @default(autoincrement())
+  shopId                   Int      @map("shop_id")
+  branchId                 Int      @unique @map("branch_id")
+
+  appointmentSlotsPerDay   Int      @default(16) @map("appointment_slots_per_day")
+  pickupEnabled            Boolean  @default(true) @map("pickup_enabled")
+  deliveryRadiusKm         Decimal  @default(10) @map("delivery_radius_km") @db.Decimal(10, 2)
+  walkInReserveSlots       Int      @default(3) @map("walk_in_reserve_slots")
+
+  createdAt                DateTime @default(now()) @map("created_at")
+  updatedAt                DateTime @updatedAt @map("updated_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([shopId])
+  @@map("branch_operation_settings")
+}
+
+model BranchOperationOption {
+  id                           Int      @id @default(autoincrement())
+  uuid                         String   @unique @default(uuid()) @db.Uuid
+  shopId                       Int      @map("shop_id")
+  branchId                     Int      @unique @map("branch_id")
+
+  allowCustomerCollection      Boolean  @default(true) @map("allow_customer_collection")
+  allowHomePickup              Boolean  @default(false) @map("allow_home_pickup")
+  allowCourierPickup           Boolean  @default(false) @map("allow_courier_pickup")
+  allowPostalDropoff           Boolean  @default(false) @map("allow_postal_dropoff")
+  allowBranchDelivery          Boolean  @default(false) @map("allow_branch_delivery")
+  allowCourierDelivery         Boolean  @default(false) @map("allow_courier_delivery")
+  allowPostalReturn            Boolean  @default(false) @map("allow_postal_return")
+
+  pickupFee                    Decimal? @map("pickup_fee") @db.Decimal(14, 2)
+  deliveryFee                  Decimal? @map("delivery_fee") @db.Decimal(14, 2)
+  freePickupMinimum            Decimal? @map("free_pickup_minimum") @db.Decimal(14, 2)
+  freeDeliveryMinimum          Decimal? @map("free_delivery_minimum") @db.Decimal(14, 2)
+
+  minimumPickupNoticeMinutes   Int?     @map("minimum_pickup_notice_minutes")
+  minimumDeliveryNoticeMinutes Int?     @map("minimum_delivery_notice_minutes")
+
+  pickupInstructions           String?  @map("pickup_instructions")
+  collectionInstructions       String?  @map("collection_instructions")
+  deliveryInstructions         String?  @map("delivery_instructions")
+
+  createdAt                    DateTime @default(now()) @map("created_at")
+  updatedAt                    DateTime @updatedAt @map("updated_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([shopId])
+  @@map("branch_operation_options")
+}
+
+model BranchDropoffRule {
+  id                   Int               @id @default(autoincrement())
+  uuid                 String            @unique @default(uuid()) @db.Uuid
+  shopId               Int               @map("shop_id")
+  branchId             Int               @map("branch_id")
+
+  name                 String
+  dropoffType          BranchDropoffType @map("dropoff_type")
+  isEnabled            Boolean           @default(true) @map("is_enabled")
+
+  locationName         String?           @map("location_name")
+  address              String?
+  instructions         String?
+
+  requiresAppointment  Boolean           @default(false) @map("requires_appointment")
+  requiresRepairTicket Boolean           @default(true) @map("requires_repair_ticket")
+  requiresIdCheck      Boolean           @default(false) @map("requires_id_check")
+  requiresPackaging    Boolean           @default(false) @map("requires_packaging")
+  requiresDeviceBackup Boolean           @default(false) @map("requires_device_backup")
+  requiresPasscode     Boolean           @default(false) @map("requires_passcode")
+
+  minimumNoticeMinutes Int?              @map("minimum_notice_minutes")
+  allowedFromTime      String?           @map("allowed_from_time") @db.VarChar(5)
+  allowedUntilTime     String?           @map("allowed_until_time") @db.VarChar(5)
+
+  acceptedDeviceTypes  Json?             @map("accepted_device_types")
+  restrictedItems      Json?             @map("restricted_items")
+  requiredDocuments    Json?             @map("required_documents")
+
+  priority             Int               @default(100)
+  createdAt            DateTime          @default(now()) @map("created_at")
+  updatedAt            DateTime          @updatedAt @map("updated_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([shopId, branchId])
+  @@map("branch_dropoff_rules")
+}
+
+model BranchServiceArea {
+  id                       Int             @id @default(autoincrement())
+  uuid                     String          @unique @default(uuid()) @db.Uuid
+  shopId                   Int             @map("shop_id")
+  branchId                 Int             @map("branch_id")
+
+  name                     String
+  areaType                 ServiceAreaType @map("area_type")
+  isEnabled                Boolean         @default(true) @map("is_enabled")
+  priority                 Int             @default(100)
+
+  postcode                 String?
+  postcodePrefix           String?         @map("postcode_prefix")
+  city                     String?
+  county                   String?
+  country                  String?
+
+  latitude                 Decimal?        @db.Decimal(10, 7)
+  longitude                Decimal?        @db.Decimal(10, 7)
+  radiusKm                 Decimal?        @map("radius_km") @db.Decimal(10, 2)
+
+  allowPickup              Boolean         @default(false) @map("allow_pickup")
+  allowDelivery            Boolean         @default(false) @map("allow_delivery")
+
+  pickupFee                Decimal?        @map("pickup_fee") @db.Decimal(14, 2)
+  deliveryFee              Decimal?        @map("delivery_fee") @db.Decimal(14, 2)
+  minimumOrderValue        Decimal?        @map("minimum_order_value") @db.Decimal(14, 2)
+  estimatedDeliveryMinutes Int?            @map("estimated_delivery_minutes")
+
+  availableFrom            DateTime?       @map("available_from")
+  availableUntil           DateTime?       @map("available_until")
+
+  createdAt                DateTime        @default(now()) @map("created_at")
+  updatedAt                DateTime        @updatedAt @map("updated_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([shopId, branchId])
+  @@index([postcode])
+  @@index([postcodePrefix])
+  @@map("branch_service_areas")
+}
+
+model BranchDelivery {
+  id                Int                  @id @default(autoincrement())
+  uuid              String               @unique @default(uuid()) @db.Uuid
+  shopId            Int                  @map("shop_id")
+  branchId          Int                  @map("branch_id")
+  customerId        Int?                 @map("customer_id")
+
+  repairTicketId    Int?                 @map("repair_ticket_id")
+  saleId            Int?                 @map("sale_id")
+
+  status            BranchDeliveryStatus @default(PENDING)
+  deliveryMethod    String?              @map("delivery_method")
+
+  addressLine1      String?              @map("address_line_1")
+  addressLine2      String?              @map("address_line_2")
+  city              String?
+  postcode          String?
+
+  deliveryFee       Decimal?             @map("delivery_fee") @db.Decimal(14, 2)
+  scheduledAt       DateTime?            @map("scheduled_at")
+  courierReference  String?              @map("courier_reference")
+  trackingNumber    String?              @map("tracking_number")
+  deliveryNotes     String?              @map("delivery_notes")
+  proofOfDelivery   Json?                @map("proof_of_delivery")
+  deliveredAt       DateTime?            @map("delivered_at")
+  failedReason      String?              @map("failed_reason")
+
+  createdById       Int?                 @map("created_by_id")
+  createdAt         DateTime             @default(now()) @map("created_at")
+  updatedAt         DateTime             @updatedAt @map("updated_at")
+
+  shop         Shop                @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch       Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  customer     Customer?           @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  repairTicket BranchRepairTicket? @relation(fields: [repairTicketId], references: [id], onDelete: SetNull)
+  sale         BranchSale?         @relation(fields: [saleId], references: [id], onDelete: SetNull)
+
+  @@index([shopId, branchId])
+  @@index([status])
+  @@map("branch_deliveries")
+}
+
+model BranchSale {
+  id                Int                        @id @default(autoincrement())
+  uuid              String                     @unique @default(uuid()) @db.Uuid
+  saleNumber        String                     @unique @map("sale_number")
+
+  shopId            Int                        @map("shop_id")
+  branchId          Int                        @map("branch_id")
+  customerId        Int?                       @map("customer_id")
+  cashierId         Int?                       @map("cashier_id")
+
+  repairTicketId    Int?                       @map("repair_ticket_id")
+  appointmentId     Int?                       @map("appointment_id")
+
+  status            BranchSaleStatus           @default(DRAFT)
+  channel           BranchSaleChannel          @default(IN_STORE)
+  paymentStatus     BranchSalePaymentStatus    @default(UNPAID) @map("payment_status")
+  fulfilmentStatus  BranchSaleFulfilmentStatus @default(PENDING) @map("fulfilment_status")
+
+  subtotal          Decimal                    @default(0) @db.Decimal(16, 2)
+  discountTotal     Decimal                    @default(0) @map("discount_total") @db.Decimal(16, 2)
+  taxTotal          Decimal                    @default(0) @map("tax_total") @db.Decimal(16, 2)
+  total             Decimal                    @default(0) @db.Decimal(16, 2)
+  costTotal         Decimal                    @default(0) @map("cost_total") @db.Decimal(16, 4)
+
+  vatRate           Decimal?                   @map("vat_rate") @db.Decimal(5, 2)
+  currency          String                     @default("GBP")
+  notes             String?
+
+  completedAt       DateTime?                  @map("completed_at")
+  cancelledAt       DateTime?                  @map("cancelled_at")
+  idempotencyKey    String?                    @unique @map("idempotency_key")
+  version           Int                        @default(1)
+
+  createdAt         DateTime                   @default(now()) @map("created_at")
+  updatedAt         DateTime                   @updatedAt @map("updated_at")
+
+  shop         Shop                @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch       Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  customer     Customer?           @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  repairTicket BranchRepairTicket? @relation(fields: [repairTicketId], references: [id], onDelete: SetNull)
+  appointment  BranchAppointment?  @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+
+  lineItems    BranchSaleLineItem[]
+  payments     BranchSalePayment[]
+  deliveries   BranchDelivery[]
+  warranties   BranchWarranty[]
+  branchPayments BranchPayment[]
+  branchRefunds  BranchRefund[]
+  branchInvoices BranchInvoice[]
+  commissions    BranchCommission[]
+
+  @@index([shopId, branchId])
+  @@index([branchId, status])
+  @@index([customerId])
+  @@index([createdAt])
+  @@map("branch_sales")
+}
+
+model BranchSaleLineItem {
+  id               Int      @id @default(autoincrement())
+  uuid             String   @unique @default(uuid()) @db.Uuid
+  saleId           Int      @map("sale_id")
+
+  itemType         String   @map("item_type")
+  productId        Int?     @map("product_id")
+  productVariantId Int?     @map("product_variant_id")
+  serviceId        Int?     @map("service_id")
+  branchInventoryId Int?    @map("branch_inventory_id")
+
+  name             String
+  sku              String?
+  quantity         Int
+  unitPrice        Decimal  @map("unit_price") @db.Decimal(14, 2)
+  unitCost         Decimal? @map("unit_cost") @db.Decimal(14, 4)
+  discountAmount   Decimal  @default(0) @map("discount_amount") @db.Decimal(14, 2)
+  taxAmount        Decimal  @default(0) @map("tax_amount") @db.Decimal(14, 2)
+  lineTotal        Decimal  @map("line_total") @db.Decimal(16, 2)
+
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  sale BranchSale @relation(fields: [saleId], references: [id], onDelete: Cascade)
+
+  @@index([saleId])
+  @@map("branch_sale_line_items")
+}
+
+model BranchSalePayment {
+  id            Int      @id @default(autoincrement())
+  uuid          String   @unique @default(uuid()) @db.Uuid
+  saleId        Int      @map("sale_id")
+
+  paymentMethod String   @map("payment_method")
+  amount        Decimal  @db.Decimal(16, 2)
+  reference     String?
+  paidAt        DateTime @default(now()) @map("paid_at")
+
+  sale BranchSale @relation(fields: [saleId], references: [id], onDelete: Cascade)
+
+  @@index([saleId])
+  @@map("branch_sale_payments")
+}
+
+model BranchRepairTicket {
+  id                    Int                @id @default(autoincrement())
+  uuid                  String             @unique @default(uuid()) @db.Uuid
+  ticketNumber          String             @unique @map("ticket_number")
+
+  shopId                Int                @map("shop_id")
+  branchId              Int                @map("branch_id")
+  customerId            Int?               @map("customer_id")
+
+  assignedTechnicianId  Int?               @map("assigned_technician_id")
+  createdById           Int?               @map("created_by_id")
+  updatedById           Int?               @map("updated_by_id")
+
+  serviceId             Int?               @map("service_id")
+
+  status                RepairTicketStatus @default(DRAFT)
+  priority              RepairPriority     @default(NORMAL)
+  repairType            String?            @map("repair_type")
+
+  deviceCategory        String?            @map("device_category")
+  manufacturer          String?
+  model                 String?
+  colour                String?
+  serialNumber          String?            @map("serial_number")
+  imei                  String?
+
+  customerIssue         String             @map("customer_issue")
+  technicianDiagnosis   String?            @map("technician_diagnosis")
+  internalNotes         String?            @map("internal_notes")
+  customerNotes         String?            @map("customer_notes")
+
+  estimatedCost         Decimal?           @map("estimated_cost") @db.Decimal(14, 2)
+  approvedCost          Decimal?           @map("approved_cost") @db.Decimal(14, 2)
+  finalCost             Decimal?           @map("final_cost") @db.Decimal(14, 2)
+
+  estimatedCompletionAt DateTime?          @map("estimated_completion_at")
+  completedAt           DateTime?          @map("completed_at")
+  collectedAt           DateTime?          @map("collected_at")
+  cancelledAt           DateTime?          @map("cancelled_at")
+
+  intakeMethod          RepairIntakeMethod @default(WALK_IN) @map("intake_method")
+  returnMethod          RepairReturnMethod @default(CUSTOMER_COLLECTION) @map("return_method")
+
+  warrantyPeriodDays    Int?               @map("warranty_period_days")
+  warrantyExpiresAt     DateTime?          @map("warranty_expires_at")
+
+  version               Int                @default(1)
+  createdAt             DateTime           @default(now()) @map("created_at")
+  updatedAt             DateTime           @updatedAt @map("updated_at")
+  archivedAt            DateTime?          @map("archived_at")
+
+  shop       Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch     Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  history        BranchRepairHistory[]
+  statusHistory  BranchRepairStatusHistory[]
+  parts          BranchRepairPart[]
+  sales          BranchSale[]
+  deliveries     BranchDelivery[]
+  warranties     BranchWarranty[]
+  appointments   BranchAppointment[]
+  branchPayments BranchPayment[]
+  branchRefunds  BranchRefund[]
+  branchInvoices BranchInvoice[]
+  commissions    BranchCommission[]
+
+  @@index([shopId, branchId])
+  @@index([branchId, status])
+  @@index([customerId])
+  @@index([assignedTechnicianId])
+  @@index([createdAt])
+  @@index([estimatedCompletionAt])
+  @@map("branch_repair_tickets")
+}
+
+model BranchRepairPart {
+  id                Int      @id @default(autoincrement())
+  uuid              String   @unique @default(uuid()) @db.Uuid
+  repairTicketId    Int      @map("repair_ticket_id")
+  branchInventoryId Int?     @map("branch_inventory_id")
+
+  name              String
+  quantity          Int      @default(1)
+  unitCost          Decimal? @map("unit_cost") @db.Decimal(14, 4)
+  unitPrice         Decimal? @map("unit_price") @db.Decimal(14, 2)
+  isRequired        Boolean  @default(false) @map("is_required")
+  isUsed            Boolean  @default(false) @map("is_used")
+
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  repairTicket BranchRepairTicket @relation(fields: [repairTicketId], references: [id], onDelete: Cascade)
+
+  @@index([repairTicketId])
+  @@map("branch_repair_parts")
+}
+
+model BranchRepairHistory {
+  id             Int                    @id @default(autoincrement())
+  uuid           String                 @unique @default(uuid()) @db.Uuid
+  shopId         Int                    @map("shop_id")
+  branchId       Int                    @map("branch_id")
+  repairTicketId Int                    @map("repair_ticket_id")
+
+  eventType      RepairHistoryEventType @map("event_type")
+  title          String
+  description    String?
+  oldValues      Json?                  @map("old_values")
+  newValues      Json?                  @map("new_values")
+
+  performedById  Int?                   @map("performed_by_id")
+  createdAt      DateTime               @default(now()) @map("created_at")
+
+  repairTicket BranchRepairTicket @relation(fields: [repairTicketId], references: [id], onDelete: Cascade)
+
+  @@index([shopId, branchId])
+  @@index([repairTicketId, createdAt])
+  @@map("branch_repair_history")
+}
+
+model BranchRepairStatusHistory {
+  id             Int                @id @default(autoincrement())
+  repairTicketId Int                @map("repair_ticket_id")
+
+  fromStatus     RepairTicketStatus? @map("from_status")
+  toStatus       RepairTicketStatus  @map("to_status")
+  notes          String?
+  performedById  Int?               @map("performed_by_id")
+  createdAt      DateTime           @default(now()) @map("created_at")
+
+  repairTicket BranchRepairTicket @relation(fields: [repairTicketId], references: [id], onDelete: Cascade)
+
+  @@index([repairTicketId, createdAt])
+  @@map("branch_repair_status_history")
+}
+
+model BranchRepairCapacity {
+  id                     Int      @id @default(autoincrement())
+  uuid                   String   @unique @default(uuid()) @db.Uuid
+  shopId                 Int      @map("shop_id")
+  branchId               Int      @map("branch_id")
+
+  serviceId              Int?     @map("service_id")
+  deviceCategory         String?  @map("device_category")
+  dayOfWeek              Int?     @map("day_of_week")
+
+  maxRepairsPerDay       Int?     @map("max_repairs_per_day")
+  maxConcurrentRepairs   Int?     @map("max_concurrent_repairs")
+  defaultDurationMinutes Int?     @map("default_duration_minutes")
+  emergencyCapacity      Int      @default(0) @map("emergency_capacity")
+
+  useTechnicianCapacity  Boolean  @default(true) @map("use_technician_capacity")
+  isEnabled              Boolean  @default(true) @map("is_enabled")
+
+  effectiveFrom          DateTime? @map("effective_from")
+  effectiveUntil         DateTime? @map("effective_until")
+
+  createdById            Int?     @map("created_by_id")
+  updatedById            Int?     @map("updated_by_id")
+  createdAt              DateTime @default(now()) @map("created_at")
+  updatedAt              DateTime @updatedAt @map("updated_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([shopId, branchId])
+  @@index([branchId, serviceId])
+  @@map("branch_repair_capacity")
+}
+
+model BranchAppointment {
+  id                   Int                     @id @default(autoincrement())
+  uuid                 String                  @unique @default(uuid()) @db.Uuid
+  appointmentNumber    String                  @unique @map("appointment_number")
+
+  shopId               Int                     @map("shop_id")
+  branchId             Int                     @map("branch_id")
+  customerId           Int?                    @map("customer_id")
+  serviceId            Int?                    @map("service_id")
+  repairTicketId       Int?                    @map("repair_ticket_id")
+
+  assignedStaffId      Int?                    @map("assigned_staff_id")
+  assignedTechnicianId Int?                    @map("assigned_technician_id")
+
+  appointmentType      BranchAppointmentType   @map("appointment_type")
+  status               BranchAppointmentStatus @default(PENDING)
+
+  startsAt             DateTime                @map("starts_at")
+  endsAt               DateTime                @map("ends_at")
+  durationMinutes      Int                     @map("duration_minutes")
+  bufferMinutes        Int                     @default(0) @map("buffer_minutes")
+
+  customerName         String?                 @map("customer_name")
+  customerEmail        String?                 @map("customer_email")
+  customerPhone        String?                 @map("customer_phone")
+
+  deviceCategory       String?                 @map("device_category")
+  manufacturer         String?
+  model                String?
+  issueSummary         String?                 @map("issue_summary")
+
+  customerNotes        String?                 @map("customer_notes")
+  internalNotes        String?                 @map("internal_notes")
+
+  confirmationSentAt   DateTime?               @map("confirmation_sent_at")
+  reminderSentAt       DateTime?               @map("reminder_sent_at")
+  checkedInAt          DateTime?               @map("checked_in_at")
+  completedAt          DateTime?               @map("completed_at")
+  cancelledAt          DateTime?               @map("cancelled_at")
+  cancellationReason   String?                 @map("cancellation_reason")
+
+  idempotencyKey       String?                 @unique @map("idempotency_key")
+  createdById          Int?                    @map("created_by_id")
+  updatedById          Int?                    @map("updated_by_id")
+  createdAt            DateTime                @default(now()) @map("created_at")
+  updatedAt            DateTime                @updatedAt @map("updated_at")
+
+  shop         Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch       Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  customer     Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  repairTicket BranchRepairTicket? @relation(fields: [repairTicketId], references: [id], onDelete: SetNull)
+
+  sales        BranchSale[]
+
+  @@index([shopId, branchId])
+  @@index([branchId, startsAt])
+  @@index([customerId])
+  @@index([status])
+  @@map("branch_appointments")
+}
+
+model BranchWarranty {
+  id                  Int            @id @default(autoincrement())
+  uuid                String         @unique @default(uuid()) @db.Uuid
+  warrantyNumber      String         @unique @map("warranty_number")
+
+  shopId              Int            @map("shop_id")
+  branchId            Int            @map("branch_id")
+  customerId          Int?           @map("customer_id")
+
+  repairTicketId      Int?           @map("repair_ticket_id")
+  saleId              Int?           @map("sale_id")
+  saleItemId          Int?           @map("sale_item_id")
+
+  warrantyType        WarrantyType   @map("warranty_type")
+  status              WarrantyStatus @default(ACTIVE)
+
+  startsAt            DateTime       @map("starts_at")
+  expiresAt           DateTime       @map("expires_at")
+
+  coverageDescription String?        @map("coverage_description")
+  exclusions          String?
+  termsSnapshot       Json?          @map("terms_snapshot")
+
+  createdById         Int?           @map("created_by_id")
+  createdAt           DateTime       @default(now()) @map("created_at")
+  updatedAt           DateTime       @updatedAt @map("updated_at")
+
+  shop         Shop                @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch       Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  customer     Customer?           @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  repairTicket BranchRepairTicket? @relation(fields: [repairTicketId], references: [id], onDelete: SetNull)
+  sale         BranchSale?         @relation(fields: [saleId], references: [id], onDelete: SetNull)
+
+  claims BranchWarrantyClaim[]
+
+  @@index([shopId, branchId])
+  @@index([customerId])
+  @@index([repairTicketId])
+  @@index([saleId])
+  @@index([expiresAt])
+  @@map("branch_warranties")
+}
+
+model BranchWarrantyClaim {
+  id                  Int                 @id @default(autoincrement())
+  uuid                String              @unique @default(uuid()) @db.Uuid
+  claimNumber         String              @unique @map("claim_number")
+
+  shopId              Int                 @map("shop_id")
+  branchId            Int                 @map("branch_id")
+  warrantyId          Int                 @map("warranty_id")
+  customerId          Int?                @map("customer_id")
+
+  status              WarrantyClaimStatus @default(SUBMITTED)
+  claimReason         String              @map("claim_reason")
+  reportedIssue       String              @map("reported_issue")
+  assessmentNotes     String?             @map("assessment_notes")
+  resolutionNotes     String?             @map("resolution_notes")
+
+  submittedAt         DateTime            @default(now()) @map("submitted_at")
+  assessedAt          DateTime?           @map("assessed_at")
+  approvedAt          DateTime?           @map("approved_at")
+  rejectedAt          DateTime?           @map("rejected_at")
+  completedAt         DateTime?           @map("completed_at")
+
+  submittedById       Int?                @map("submitted_by_id")
+  assessedById        Int?                @map("assessed_by_id")
+  approvedById        Int?                @map("approved_by_id")
+  completedById       Int?                @map("completed_by_id")
+
+  rejectionReason     String?             @map("rejection_reason")
+  replacementRepairId Int?                @map("replacement_repair_id")
+
+  version             Int                 @default(1)
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt @map("updated_at")
+
+  shop     Shop           @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch   Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  warranty BranchWarranty @relation(fields: [warrantyId], references: [id], onDelete: Cascade)
+  customer Customer?      @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  history BranchWarrantyClaimHistory[]
+
+  @@index([shopId, branchId])
+  @@index([warrantyId])
+  @@index([customerId])
+  @@index([status])
+  @@map("branch_warranty_claims")
+}
+
+model BranchWarrantyClaimHistory {
+  id            Int                 @id @default(autoincrement())
+  claimId       Int                 @map("claim_id")
+
+  fromStatus    WarrantyClaimStatus? @map("from_status")
+  toStatus      WarrantyClaimStatus  @map("to_status")
+  action        String
+  notes         String?
+  performedById Int?                @map("performed_by_id")
+  createdAt     DateTime            @default(now()) @map("created_at")
+
+  claim BranchWarrantyClaim @relation(fields: [claimId], references: [id], onDelete: Cascade)
+
+  @@index([claimId, createdAt])
+  @@map("branch_warranty_claim_history")
+}
+
+// ─── Module 5: Branch Payments, Register & Finance ────────────────────────────
+
+enum BranchRegisterStatus {
+  ACTIVE
+  INACTIVE
+  MAINTENANCE
+  ARCHIVED
+}
+
+enum BranchCashDrawerStatus {
+  AVAILABLE
+  ASSIGNED
+  IN_USE
+  MAINTENANCE
+  ARCHIVED
+}
+
+enum BranchRegisterSessionStatus {
+  OPEN
+  SUSPENDED
+  PENDING_CLOSE
+  CLOSED
+  FORCED_CLOSED
+}
+
+enum BranchCashMovementType {
+  OPENING_FLOAT
+  CASH_SALE
+  CASH_REFUND
+  CASH_IN
+  CASH_OUT
+  SAFE_DROP
+  PETTY_CASH
+  CORRECTION
+  CLOSING_COUNT
+}
+
+enum BranchPaymentMethod {
+  CASH
+  CARD
+  BANK_TRANSFER
+  PAYPAL
+  APPLE_PAY
+  GOOGLE_PAY
+  STORE_CREDIT
+  GIFT_CARD
+  SPLIT
+  OTHER
+}
+
+enum BranchPaymentStatus {
+  PENDING
+  AUTHORISED
+  PAID
+  PARTIALLY_REFUNDED
+  REFUNDED
+  FAILED
+  CANCELLED
+  VOIDED
+}
+
+enum BranchRefundStatus {
+  REQUESTED
+  PENDING_APPROVAL
+  APPROVED
+  PROCESSING
+  COMPLETED
+  PARTIALLY_COMPLETED
+  REJECTED
+  FAILED
+  CANCELLED
+}
+
+enum BranchInvoiceStatus {
+  DRAFT
+  ISSUED
+  PARTIALLY_PAID
+  PAID
+  OVERDUE
+  VOIDED
+  CANCELLED
+  CREDITED
+}
+
+enum BranchExpenseStatus {
+  DRAFT
+  SUBMITTED
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  PAID
+  CANCELLED
+}
+
+enum BranchEndOfDayStatus {
+  DRAFT
+  PENDING_REVIEW
+  REVIEWED
+  APPROVED
+  CLOSED
+  REOPENED
+}
+
+enum BranchChecklistType {
+  OPENING
+  CLOSING
+}
+
+enum BranchChecklistItemType {
+  CHECKBOX
+  TEXT
+  NUMBER
+  MONEY
+  PHOTO
+  SIGNATURE
+  CONFIRMATION
+}
+
+enum BranchChecklistRunStatus {
+  IN_PROGRESS
+  COMPLETED
+  APPROVED
+  REJECTED
+}
+
+enum BranchTargetPeriod {
+  DAILY
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  YEARLY
+  CUSTOM
+}
+
+enum BranchTargetType {
+  SALES_REVENUE
+  SALES_COUNT
+  SALES_MARGIN
+  REPAIR_REVENUE
+  REPAIR_COUNT
+  REPAIR_COMPLETION
+  COMBINED_REVENUE
+}
+
+enum BranchCommissionRuleType {
+  PERCENTAGE
+  FIXED
+  TIERED
+  TARGET_BASED
+}
+
+enum BranchCommissionStatus {
+  CALCULATED
+  PENDING_APPROVAL
+  APPROVED
+  PAID
+  REVERSED
+  CANCELLED
+}
+
+enum TaxType {
+  VAT
+  GST
+  SALES_TAX
+  CUSTOM
+  NONE
+}
+
+enum TaxRoundingMethod {
+  HALF_UP
+  HALF_DOWN
+  UP
+  DOWN
+  BANKERS
+}
+
+model BranchFinanceSettings {
+  id                 Int      @id @default(autoincrement())
+  shopId             Int      @map("shop_id")
+  branchId           Int      @unique @map("branch_id")
+
+  defaultRegisterId  Int?     @map("default_register_id")
+  vatRate            Decimal  @default(20) @map("vat_rate") @db.Decimal(5, 2)
+  vatRateLabel       String   @default("20%") @map("vat_rate_label")
+  currency           String   @default("GBP")
+  timezone           String   @default("Europe/London")
+  endOfDayRequired   Boolean  @default(true) @map("end_of_day_required")
+  cashDrawerRequired Boolean  @default(true) @map("cash_drawer_required")
+
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  shop            Shop            @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch          Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  defaultRegister BranchRegister? @relation("DefaultRegister", fields: [defaultRegisterId], references: [id], onDelete: SetNull)
+
+  @@index([shopId])
+  @@map("branch_finance_settings")
+}
+
+model BranchRegister {
+  id                    Int                  @id @default(autoincrement())
+  uuid                  String               @unique @default(uuid()) @db.Uuid
+  shopId                Int                  @map("shop_id")
+  branchId              Int                  @map("branch_id")
+
+  registerCode          String               @map("register_code")
+  name                  String
+  description           String?
+  location              String?
+  status                BranchRegisterStatus @default(ACTIVE)
+  isDefault             Boolean              @default(false) @map("is_default")
+  supportedPaymentMethods Json?              @map("supported_payment_methods")
+  deviceIdentifier      String?              @map("device_identifier")
+
+  archivedAt            DateTime?            @map("archived_at")
+  createdById           Int?                 @map("created_by_id")
+  updatedById           Int?                 @map("updated_by_id")
+  createdAt             DateTime             @default(now()) @map("created_at")
+  updatedAt             DateTime             @updatedAt @map("updated_at")
+
+  shop              Shop                    @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch            Branch                  @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  cashDrawers       BranchCashDrawer[]
+  sessions          BranchRegisterSession[]
+  defaultForFinance BranchFinanceSettings[] @relation("DefaultRegister")
+
+  @@unique([branchId, registerCode])
+  @@index([shopId, branchId])
+  @@index([status])
+  @@map("branch_registers")
+}
+
+model BranchCashDrawer {
+  id                Int                    @id @default(autoincrement())
+  uuid              String                 @unique @default(uuid()) @db.Uuid
+  shopId            Int                    @map("shop_id")
+  branchId          Int                    @map("branch_id")
+  registerId        Int                    @map("register_id")
+
+  drawerCode        String                 @map("drawer_code")
+  name              String
+  status            BranchCashDrawerStatus @default(AVAILABLE)
+  lastOpenedAt      DateTime?              @map("last_opened_at")
+  lastClosedAt      DateTime?              @map("last_closed_at")
+  archivedAt        DateTime?              @map("archived_at")
+
+  createdAt         DateTime               @default(now()) @map("created_at")
+  updatedAt         DateTime               @updatedAt @map("updated_at")
+
+  shop     Shop                    @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch   Branch                  @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  register BranchRegister          @relation(fields: [registerId], references: [id], onDelete: Cascade)
+  sessions BranchRegisterSession[]
+
+  @@unique([registerId, drawerCode])
+  @@index([shopId, branchId])
+  @@map("branch_cash_drawers")
+}
+
+model BranchRegisterSession {
+  id                Int                         @id @default(autoincrement())
+  uuid              String                      @unique @default(uuid()) @db.Uuid
+  shopId            Int                         @map("shop_id")
+  branchId          Int                         @map("branch_id")
+  registerId        Int                         @map("register_id")
+  cashDrawerId      Int                         @map("cash_drawer_id")
+  assignedStaffId   Int?                        @map("assigned_staff_id")
+
+  status            BranchRegisterSessionStatus @default(OPEN)
+  openingFloat      Decimal                     @default(0) @map("opening_float") @db.Decimal(16, 2)
+  expectedCash      Decimal?                    @map("expected_cash") @db.Decimal(16, 2)
+  countedCash       Decimal?                    @map("counted_cash") @db.Decimal(16, 2)
+  cashDifference    Decimal?                    @map("cash_difference") @db.Decimal(16, 2)
+  openingNotes      String?                     @map("opening_notes")
+  closingNotes      String?                     @map("closing_notes")
+  discrepancyReason String?                     @map("discrepancy_reason")
+
+  openedAt          DateTime                    @default(now()) @map("opened_at")
+  closedAt          DateTime?                   @map("closed_at")
+  openedById        Int?                        @map("opened_by_id")
+  closedById        Int?                        @map("closed_by_id")
+
+  createdAt         DateTime                    @default(now()) @map("created_at")
+  updatedAt         DateTime                    @updatedAt @map("updated_at")
+
+  shop       Shop                 @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch     Branch               @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  register   BranchRegister       @relation(fields: [registerId], references: [id], onDelete: Cascade)
+  cashDrawer BranchCashDrawer     @relation(fields: [cashDrawerId], references: [id], onDelete: Cascade)
+  movements  BranchCashMovement[]
+  payments   BranchPayment[]
+
+  @@index([shopId, branchId])
+  @@index([registerId, status])
+  @@index([cashDrawerId, status])
+  @@map("branch_register_sessions")
+}
+
+model BranchCashMovement {
+  id                Int                    @id @default(autoincrement())
+  uuid              String                 @unique @default(uuid()) @db.Uuid
+  shopId            Int                    @map("shop_id")
+  branchId          Int                    @map("branch_id")
+  registerSessionId Int                    @map("register_session_id")
+
+  movementType      BranchCashMovementType @map("movement_type")
+  amount            Decimal                @db.Decimal(16, 2)
+  reasonCode        String?                @map("reason_code")
+  notes             String?
+
+  paymentId         Int?                   @map("payment_id")
+  refundId          Int?                   @map("refund_id")
+  expenseId         Int?                   @map("expense_id")
+  reversalOfId      Int?                   @unique @map("reversal_of_id")
+
+  performedById     Int?                   @map("performed_by_id")
+  approvedById      Int?                   @map("approved_by_id")
+  createdAt         DateTime               @default(now()) @map("created_at")
+
+  shop            Shop                  @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch          Branch                @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  registerSession BranchRegisterSession @relation(fields: [registerSessionId], references: [id], onDelete: Cascade)
+  payment         BranchPayment?        @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+  refund          BranchRefund?         @relation(fields: [refundId], references: [id], onDelete: SetNull)
+  expense         BranchExpense?        @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+  reversalOf      BranchCashMovement?   @relation("CashMovementReversal", fields: [reversalOfId], references: [id], onDelete: SetNull)
+  reversedBy      BranchCashMovement?   @relation("CashMovementReversal")
+
+  @@index([shopId, branchId])
+  @@index([registerSessionId, createdAt])
+  @@map("branch_cash_movements")
+}
+
+model BranchPaymentSettings {
+  id                          Int      @id @default(autoincrement())
+  shopId                      Int      @map("shop_id")
+  branchId                    Int      @unique @map("branch_id")
+
+  cashEnabled                 Boolean  @default(true) @map("cash_enabled")
+  cardEnabled                 Boolean  @default(true) @map("card_enabled")
+  bankTransferEnabled         Boolean  @default(false) @map("bank_transfer_enabled")
+  paypalEnabled               Boolean  @default(false) @map("paypal_enabled")
+  applePayEnabled             Boolean  @default(false) @map("apple_pay_enabled")
+  googlePayEnabled            Boolean  @default(false) @map("google_pay_enabled")
+  storeCreditEnabled          Boolean  @default(false) @map("store_credit_enabled")
+  giftCardEnabled             Boolean  @default(false) @map("gift_card_enabled")
+  splitPaymentsEnabled        Boolean  @default(true) @map("split_payments_enabled")
+  partialPaymentsEnabled      Boolean  @default(true) @map("partial_payments_enabled")
+  deferredPaymentsEnabled     Boolean  @default(false) @map("deferred_payments_enabled")
+  repairDepositsEnabled       Boolean  @default(true) @map("repair_deposits_enabled")
+  minimumDepositPercent       Decimal  @default(0) @map("minimum_deposit_percent") @db.Decimal(5, 2)
+  maximumCashPayment          Decimal? @map("maximum_cash_payment") @db.Decimal(16, 2)
+  refundToOriginalMethod      Boolean  @default(true) @map("refund_to_original_method")
+  managerApprovalForRefunds   Boolean  @default(true) @map("manager_approval_for_refunds")
+  managerApprovalForVoids     Boolean  @default(true) @map("manager_approval_for_voids")
+  automaticReceipts           Boolean  @default(true) @map("automatic_receipts")
+  receiptRequired             Boolean  @default(true) @map("receipt_required")
+  requireOpenSessionForCash   Boolean  @default(true) @map("require_open_session_for_cash")
+
+  createdAt                   DateTime @default(now()) @map("created_at")
+  updatedAt                   DateTime @updatedAt @map("updated_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([shopId])
+  @@map("branch_payment_settings")
+}
+
+model BranchPayment {
+  id                  Int                 @id @default(autoincrement())
+  uuid                String              @unique @default(uuid()) @db.Uuid
+  paymentNumber       String              @unique @map("payment_number")
+
+  shopId              Int                 @map("shop_id")
+  branchId            Int                 @map("branch_id")
+  registerSessionId   Int?                @map("register_session_id")
+  saleId              Int?                @map("sale_id")
+  repairTicketId      Int?                @map("repair_ticket_id")
+  invoiceId           Int?                @map("invoice_id")
+  customerId          Int?                @map("customer_id")
+
+  paymentMethod       BranchPaymentMethod @map("payment_method")
+  status              BranchPaymentStatus @default(PENDING)
+  amount              Decimal             @db.Decimal(16, 2)
+  currency            String              @default("GBP")
+  provider            String?
+  providerReference   String?             @map("provider_reference")
+  transactionReference String?            @map("transaction_reference")
+  failureReason       String?             @map("failure_reason")
+  metadata            Json?
+  idempotencyKey      String?             @unique @map("idempotency_key")
+
+  receivedById        Int?                @map("received_by_id")
+  paidAt              DateTime?           @map("paid_at")
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt @map("updated_at")
+
+  shop            Shop                   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch          Branch                 @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  registerSession BranchRegisterSession? @relation(fields: [registerSessionId], references: [id], onDelete: SetNull)
+  sale            BranchSale?            @relation(fields: [saleId], references: [id], onDelete: SetNull)
+  repairTicket    BranchRepairTicket?    @relation(fields: [repairTicketId], references: [id], onDelete: SetNull)
+  invoice         BranchInvoice?         @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  customer        Customer?              @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  refunds         BranchRefund[]
+  cashMovements   BranchCashMovement[]
+
+  @@index([shopId, branchId])
+  @@index([branchId, status])
+  @@index([saleId])
+  @@index([invoiceId])
+  @@index([paidAt])
+  @@map("branch_payments")
+}
+
+model BranchRefund {
+  id                  Int                @id @default(autoincrement())
+  uuid                String             @unique @default(uuid()) @db.Uuid
+  refundNumber        String             @unique @map("refund_number")
+
+  shopId              Int                @map("shop_id")
+  branchId            Int                @map("branch_id")
+  paymentId           Int                @map("payment_id")
+  saleId              Int?               @map("sale_id")
+  repairTicketId      Int?               @map("repair_ticket_id")
+  invoiceId           Int?               @map("invoice_id")
+  customerId          Int?               @map("customer_id")
+
+  refundMethod        BranchPaymentMethod @map("refund_method")
+  status              BranchRefundStatus @default(REQUESTED)
+  amount              Decimal            @db.Decimal(16, 2)
+  currency            String             @default("GBP")
+  reason              String?
+  rejectionReason     String?            @map("rejection_reason")
+  providerReference   String?            @map("provider_reference")
+
+  requestedById       Int?               @map("requested_by_id")
+  approvedById        Int?               @map("approved_by_id")
+  processedById       Int?               @map("processed_by_id")
+  requestedAt         DateTime           @default(now()) @map("requested_at")
+  approvedAt          DateTime?          @map("approved_at")
+  processedAt         DateTime?          @map("processed_at")
+
+  createdAt           DateTime           @default(now()) @map("created_at")
+  updatedAt           DateTime           @updatedAt @map("updated_at")
+
+  shop          Shop                 @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch        Branch               @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  payment       BranchPayment        @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  sale          BranchSale?          @relation(fields: [saleId], references: [id], onDelete: SetNull)
+  repairTicket  BranchRepairTicket?  @relation(fields: [repairTicketId], references: [id], onDelete: SetNull)
+  invoice       BranchInvoice?       @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  customer      Customer?            @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  cashMovements BranchCashMovement[]
+
+  @@index([shopId, branchId])
+  @@index([paymentId])
+  @@index([status])
+  @@map("branch_refunds")
+}
+
+model BranchInvoice {
+  id              Int                 @id @default(autoincrement())
+  uuid            String              @unique @default(uuid()) @db.Uuid
+  invoiceNumber   String              @unique @map("invoice_number")
+
+  shopId          Int                 @map("shop_id")
+  branchId        Int                 @map("branch_id")
+  customerId      Int?                @map("customer_id")
+  saleId          Int?                @map("sale_id")
+  repairTicketId  Int?                @map("repair_ticket_id")
+
+  status          BranchInvoiceStatus @default(DRAFT)
+  issueDate       DateTime?           @map("issue_date")
+  dueDate         DateTime?           @map("due_date")
+  currency        String              @default("GBP")
+
+  subtotal        Decimal             @default(0) @db.Decimal(16, 2)
+  discountTotal   Decimal             @default(0) @map("discount_total") @db.Decimal(16, 2)
+  taxTotal        Decimal             @default(0) @map("tax_total") @db.Decimal(16, 2)
+  total           Decimal             @default(0) @db.Decimal(16, 2)
+  amountPaid      Decimal             @default(0) @map("amount_paid") @db.Decimal(16, 2)
+  amountDue       Decimal             @default(0) @map("amount_due") @db.Decimal(16, 2)
+
+  billingDetails  Json?               @map("billing_details")
+  branchSnapshot  Json?               @map("branch_snapshot")
+  customerSnapshot Json?              @map("customer_snapshot")
+  taxSnapshot     Json?               @map("tax_snapshot")
+  notes           String?
+  terms           String?
+
+  issuedById      Int?                @map("issued_by_id")
+  issuedAt        DateTime?           @map("issued_at")
+  paidAt          DateTime?           @map("paid_at")
+  voidedAt        DateTime?           @map("voided_at")
+  version         Int                 @default(1)
+
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  shop         Shop                   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch       Branch                 @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  customer     Customer?              @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  sale         BranchSale?            @relation(fields: [saleId], references: [id], onDelete: SetNull)
+  repairTicket BranchRepairTicket?    @relation(fields: [repairTicketId], references: [id], onDelete: SetNull)
+  lineItems    BranchInvoiceLineItem[]
+  payments     BranchPayment[]
+  refunds      BranchRefund[]
+
+  @@index([shopId, branchId])
+  @@index([branchId, status])
+  @@index([customerId])
+  @@map("branch_invoices")
+}
+
+model BranchInvoiceLineItem {
+  id          Int      @id @default(autoincrement())
+  uuid        String   @unique @default(uuid()) @db.Uuid
+  invoiceId   Int      @map("invoice_id")
+
+  itemType    String   @map("item_type")
+  name        String
+  description String?
+  quantity    Decimal  @db.Decimal(12, 4)
+  unitPrice   Decimal  @map("unit_price") @db.Decimal(14, 2)
+  discountAmount Decimal @default(0) @map("discount_amount") @db.Decimal(14, 2)
+  taxAmount   Decimal  @default(0) @map("tax_amount") @db.Decimal(14, 2)
+  lineTotal   Decimal  @map("line_total") @db.Decimal(16, 2)
+
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  invoice BranchInvoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+  @@map("branch_invoice_line_items")
+}
+
+model BranchTaxProfile {
+  id                  Int               @id @default(autoincrement())
+  shopId              Int               @map("shop_id")
+  branchId            Int               @unique @map("branch_id")
+
+  taxEnabled          Boolean           @default(true) @map("tax_enabled")
+  taxType             TaxType           @default(VAT) @map("tax_type")
+  registrationName    String?           @map("registration_name")
+  vatNumber           String?           @map("vat_number")
+  registrationNumber  String?           @map("registration_number")
+  defaultTaxRate      Decimal           @default(20) @map("default_tax_rate") @db.Decimal(5, 2)
+  pricesIncludeTax    Boolean           @default(false) @map("prices_include_tax")
+  taxLabel            String            @default("VAT") @map("tax_label")
+  roundingMethod      TaxRoundingMethod @default(HALF_UP) @map("rounding_method")
+  country             String?           @default("United Kingdom")
+  taxRegion           String?           @map("tax_region")
+  effectiveFrom       DateTime?         @map("effective_from")
+
+  createdAt           DateTime          @default(now()) @map("created_at")
+  updatedAt           DateTime          @updatedAt @map("updated_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([shopId])
+  @@map("branch_tax_profiles")
+}
+
+model BranchTaxRate {
+  id          Int      @id @default(autoincrement())
+  uuid        String   @unique @default(uuid()) @db.Uuid
+  shopId      Int      @map("shop_id")
+  branchId    Int      @map("branch_id")
+
+  name        String
+  rate        Decimal  @db.Decimal(5, 2)
+  appliesTo   String   @map("applies_to")
+  isZeroRated Boolean  @default(false) @map("is_zero_rated")
+  isExempt    Boolean  @default(false) @map("is_exempt")
+  effectiveFrom DateTime? @map("effective_from")
+  effectiveUntil DateTime? @map("effective_until")
+  isActive    Boolean  @default(true) @map("is_active")
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([shopId, branchId])
+  @@map("branch_tax_rates")
+}
+
+model BranchEndOfDayClosing {
+  id                Int                  @id @default(autoincrement())
+  uuid              String               @unique @default(uuid()) @db.Uuid
+  shopId            Int                  @map("shop_id")
+  branchId          Int                  @map("branch_id")
+
+  businessDate      DateTime             @map("business_date") @db.Date
+  status            BranchEndOfDayStatus @default(DRAFT)
+  timezone          String               @default("Europe/London")
+
+  openingFloats     Decimal              @default(0) @map("opening_floats") @db.Decimal(16, 2)
+  cashSales         Decimal              @default(0) @map("cash_sales") @db.Decimal(16, 2)
+  cardSales         Decimal              @default(0) @map("card_sales") @db.Decimal(16, 2)
+  otherPayments     Decimal              @default(0) @map("other_payments") @db.Decimal(16, 2)
+  cashDeposits      Decimal              @default(0) @map("cash_deposits") @db.Decimal(16, 2)
+  refunds           Decimal              @default(0) @db.Decimal(16, 2)
+  discounts         Decimal              @default(0) @db.Decimal(16, 2)
+  vatTotal          Decimal              @default(0) @map("vat_total") @db.Decimal(16, 2)
+  repairPayments    Decimal              @default(0) @map("repair_payments") @db.Decimal(16, 2)
+  expenses          Decimal              @default(0) @db.Decimal(16, 2)
+  cashIn            Decimal              @default(0) @map("cash_in") @db.Decimal(16, 2)
+  cashOut           Decimal              @default(0) @map("cash_out") @db.Decimal(16, 2)
+  safeDrops         Decimal              @default(0) @map("safe_drops") @db.Decimal(16, 2)
+  pettyCash         Decimal              @default(0) @map("petty_cash") @db.Decimal(16, 2)
+  expectedCash      Decimal              @default(0) @map("expected_cash") @db.Decimal(16, 2)
+  countedCash       Decimal?             @map("counted_cash") @db.Decimal(16, 2)
+  cashDifference    Decimal?             @map("cash_difference") @db.Decimal(16, 2)
+  discrepancyReason String?              @map("discrepancy_reason")
+  summarySnapshot   Json?                @map("summary_snapshot")
+
+  generatedById     Int?                 @map("generated_by_id")
+  reviewedById      Int?                 @map("reviewed_by_id")
+  approvedById      Int?                 @map("approved_by_id")
+  closedById        Int?                 @map("closed_by_id")
+  generatedAt       DateTime             @default(now()) @map("generated_at")
+  reviewedAt        DateTime?            @map("reviewed_at")
+  approvedAt        DateTime?            @map("approved_at")
+  closedAt          DateTime?            @map("closed_at")
+
+  createdAt         DateTime             @default(now()) @map("created_at")
+  updatedAt         DateTime             @updatedAt @map("updated_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, businessDate])
+  @@index([shopId, branchId])
+  @@map("branch_end_of_day_closings")
+}
+
+model BranchChecklistTemplate {
+  id          Int                 @id @default(autoincrement())
+  uuid        String              @unique @default(uuid()) @db.Uuid
+  shopId      Int                 @map("shop_id")
+  branchId    Int                 @map("branch_id")
+
+  checklistType BranchChecklistType @map("checklist_type")
+  name        String
+  items       Json
+  isActive    Boolean             @default(true) @map("is_active")
+
+  createdAt   DateTime            @default(now()) @map("created_at")
+  updatedAt   DateTime            @updatedAt @map("updated_at")
+
+  shop  Shop                @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  runs  BranchChecklistRun[]
+
+  @@index([shopId, branchId])
+  @@map("branch_checklist_templates")
+}
+
+model BranchChecklistRun {
+  id           Int                      @id @default(autoincrement())
+  uuid         String                   @unique @default(uuid()) @db.Uuid
+  shopId       Int                      @map("shop_id")
+  branchId     Int                      @map("branch_id")
+  templateId   Int                      @map("template_id")
+
+  checklistType BranchChecklistType     @map("checklist_type")
+  status       BranchChecklistRunStatus @default(IN_PROGRESS)
+  responses    Json                     @default("[]")
+  businessDate DateTime                 @map("business_date") @db.Date
+  notes        String?
+
+  completedById Int?                    @map("completed_by_id")
+  approvedById  Int?                     @map("approved_by_id")
+  completedAt   DateTime?               @map("completed_at")
+  approvedAt    DateTime?               @map("approved_at")
+
+  createdAt    DateTime                 @default(now()) @map("created_at")
+  updatedAt    DateTime                 @updatedAt @map("updated_at")
+
+  shop     Shop                    @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch   Branch                  @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  template BranchChecklistTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@index([shopId, branchId, businessDate])
+  @@map("branch_checklist_runs")
+}
+
+model BranchTarget {
+  id              Int                @id @default(autoincrement())
+  uuid            String             @unique @default(uuid()) @db.Uuid
+  shopId          Int                @map("shop_id")
+  branchId        Int                @map("branch_id")
+
+  targetType      BranchTargetType   @map("target_type")
+  period          BranchTargetPeriod
+  targetValue     Decimal            @map("target_value") @db.Decimal(16, 2)
+  periodStart     DateTime           @map("period_start")
+  periodEnd       DateTime           @map("period_end")
+  staffId         Int?               @map("staff_id")
+  serviceId       Int?               @map("service_id")
+  categoryId      Int?               @map("category_id")
+  notes           String?
+  isActive        Boolean            @default(true) @map("is_active")
+
+  createdById     Int?               @map("created_by_id")
+  createdAt       DateTime           @default(now()) @map("created_at")
+  updatedAt       DateTime           @updatedAt @map("updated_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([shopId, branchId, periodStart])
+  @@map("branch_targets")
+}
+
+model BranchCommissionRule {
+  id              Int                      @id @default(autoincrement())
+  uuid            String                   @unique @default(uuid()) @db.Uuid
+  shopId          Int                      @map("shop_id")
+  branchId        Int                      @map("branch_id")
+
+  name            String
+  ruleType        BranchCommissionRuleType @map("rule_type")
+  appliesTo       String                   @map("applies_to")
+  percentageRate  Decimal?                 @map("percentage_rate") @db.Decimal(5, 2)
+  fixedAmount     Decimal?                 @map("fixed_amount") @db.Decimal(16, 2)
+  tierConfig      Json?                    @map("tier_config")
+  roleId          Int?                     @map("role_id")
+  userId          Int?                     @map("user_id")
+  priority        Int                      @default(0)
+  minimumThreshold Decimal?                @map("minimum_threshold") @db.Decimal(16, 2)
+  maximumCommission Decimal?               @map("maximum_commission") @db.Decimal(16, 2)
+  calculateOnNet  Boolean                  @default(false) @map("calculate_on_net")
+  effectiveFrom   DateTime?                @map("effective_from")
+  effectiveUntil  DateTime?                @map("effective_until")
+  isActive        Boolean                  @default(true) @map("is_active")
+
+  createdAt       DateTime                 @default(now()) @map("created_at")
+  updatedAt       DateTime                 @updatedAt @map("updated_at")
+
+  shop        Shop              @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch      Branch            @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  commissions BranchCommission[]
+
+  @@index([shopId, branchId])
+  @@map("branch_commission_rules")
+}
+
+model BranchCommission {
+  id              Int                    @id @default(autoincrement())
+  uuid            String                 @unique @default(uuid()) @db.Uuid
+  shopId          Int                    @map("shop_id")
+  branchId        Int                    @map("branch_id")
+  ruleId          Int                    @map("rule_id")
+
+  saleId          Int?                   @map("sale_id")
+  repairTicketId  Int?                   @map("repair_ticket_id")
+  userId          Int?                   @map("user_id")
+
+  status          BranchCommissionStatus @default(CALCULATED)
+  baseAmount      Decimal                @map("base_amount") @db.Decimal(16, 2)
+  commissionAmount Decimal               @map("commission_amount") @db.Decimal(16, 2)
+  currency        String                 @default("GBP")
+  calculationSnapshot Json?              @map("calculation_snapshot")
+
+  approvedById    Int?                   @map("approved_by_id")
+  paidAt          DateTime?              @map("paid_at")
+  reversedAt      DateTime?              @map("reversed_at")
+  createdAt       DateTime               @default(now()) @map("created_at")
+  updatedAt       DateTime               @updatedAt @map("updated_at")
+
+  shop         Shop                 @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch       Branch               @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  rule         BranchCommissionRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  sale         BranchSale?          @relation(fields: [saleId], references: [id], onDelete: SetNull)
+  repairTicket BranchRepairTicket?  @relation(fields: [repairTicketId], references: [id], onDelete: SetNull)
+
+  @@unique([ruleId, saleId, userId])
+  @@index([shopId, branchId])
+  @@index([status])
+  @@map("branch_commissions")
+}
+
+model BranchExpense {
+  id              Int                 @id @default(autoincrement())
+  uuid            String              @unique @default(uuid()) @db.Uuid
+  expenseNumber   String              @unique @map("expense_number")
+
+  shopId          Int                 @map("shop_id")
+  branchId        Int                 @map("branch_id")
+
+  category        String
+  supplier        String?
+  expenseDate     DateTime            @map("expense_date") @db.Date
+  description     String
+  subtotal        Decimal             @db.Decimal(16, 2)
+  taxAmount       Decimal             @default(0) @map("tax_amount") @db.Decimal(16, 2)
+  total           Decimal             @db.Decimal(16, 2)
+  currency        String              @default("GBP")
+  paymentMethod   BranchPaymentMethod? @map("payment_method")
+  paymentReference String?            @map("payment_reference")
+  receiptUrl      String?             @map("receipt_url")
+  status          BranchExpenseStatus @default(DRAFT)
+  rejectionReason String?             @map("rejection_reason")
+  recurringConfig Json?               @map("recurring_config")
+  notes           String?
+
+  submittedById   Int?                @map("submitted_by_id")
+  approvedById    Int?                @map("approved_by_id")
+  paidAt          DateTime?           @map("paid_at")
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  shop          Shop                 @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch        Branch               @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  cashMovements BranchCashMovement[]
+
+  @@index([shopId, branchId])
+  @@index([branchId, status])
+  @@index([expenseDate])
+  @@map("branch_expenses")
+}
+
+// ─── Module 7: Branch Communication & Documents ─────────────────────────────
+
+enum NotificationChannel {
+  EMAIL
+  SMS
+  PUSH
+  IN_APP
+}
+
+enum CommunicationChannel {
+  EMAIL
+  SMS
+  PUSH
+  IN_APP
+}
+
+enum CommunicationStatus {
+  QUEUED
+  PROCESSING
+  SENT
+  DELIVERED
+  FAILED
+  BOUNCED
+  REJECTED
+  CANCELLED
+}
+
+enum EmailProvider {
+  SUPABASE_FUNCTION
+  RESEND
+  SENDGRID
+  POSTMARK
+  MAILGUN
+  SMTP
+  OTHER
+}
+
+enum SmsProvider {
+  TWILIO
+  VONAGE
+  MESSAGEBIRD
+  AWS_SNS
+  OTHER
+}
+
+enum SmsSenderType {
+  ALPHANUMERIC
+  PHONE_NUMBER
+  SHORT_CODE
+}
+
+enum SenderVerificationStatus {
+  PENDING
+  VERIFIED
+  FAILED
+  DISABLED
+}
+
+enum DocumentPaperSize {
+  A4
+  A5
+  LETTER
+  LEGAL
+  RECEIPT_58MM
+  RECEIPT_80MM
+}
+
+enum DocumentOrientation {
+  PORTRAIT
+  LANDSCAPE
+}
+
+enum BranchDocumentType {
+  RECEIPT
+  INVOICE
+  CREDIT_NOTE
+  REPAIR_RECEIPT
+  REPAIR_ESTIMATE
+  REPAIR_TERMS
+  WARRANTY_DOCUMENT
+  COLLECTION_FORM
+  DELIVERY_NOTE
+  CUSTOMER_CONSENT
+  BRANCH_REPORT
+  OTHER
+}
+
+enum BranchDocumentStatus {
+  DRAFT
+  GENERATED
+  ISSUED
+  SENT
+  ARCHIVED
+  VOIDED
+}
+
+model BranchNotificationSettings {
+  id                          Int      @id @default(autoincrement())
+  shopId                      Int      @map("shop_id")
+  branchId                    Int      @unique @map("branch_id")
+
+  notificationsEnabled        Boolean  @default(true) @map("notifications_enabled")
+  emailEnabled                Boolean  @default(true) @map("email_enabled")
+  smsEnabled                  Boolean  @default(false) @map("sms_enabled")
+  pushEnabled                 Boolean  @default(false) @map("push_enabled")
+  inAppEnabled                Boolean  @default(true) @map("in_app_enabled")
+
+  sendAppointmentConfirmation Boolean  @default(true) @map("send_appointment_confirmation")
+  sendAppointmentReminder     Boolean  @default(true) @map("send_appointment_reminder")
+  appointmentReminderMinutes  Int      @default(1440) @map("appointment_reminder_minutes")
+
+  sendRepairCreated           Boolean  @default(true) @map("send_repair_created")
+  sendRepairStatusUpdates     Boolean  @default(true) @map("send_repair_status_updates")
+  sendRepairReady             Boolean  @default(true) @map("send_repair_ready")
+  sendRepairCollected         Boolean  @default(false) @map("send_repair_collected")
+
+  sendPaymentConfirmation     Boolean  @default(true) @map("send_payment_confirmation")
+  sendRefundUpdates           Boolean  @default(true) @map("send_refund_updates")
+  sendInvoiceIssued           Boolean  @default(true) @map("send_invoice_issued")
+  sendInvoiceOverdue          Boolean  @default(true) @map("send_invoice_overdue")
+
+  sendPickupUpdates           Boolean  @default(true) @map("send_pickup_updates")
+  sendDeliveryUpdates         Boolean  @default(true) @map("send_delivery_updates")
+  sendWarrantyUpdates         Boolean  @default(true) @map("send_warranty_updates")
+
+  notifyBranchManagers        Boolean  @default(true) @map("notify_branch_managers")
+  notifyAssignedStaff         Boolean  @default(true) @map("notify_assigned_staff")
+
+  quietHoursEnabled           Boolean  @default(false) @map("quiet_hours_enabled")
+  quietHoursStart             String?  @map("quiet_hours_start")
+  quietHoursEnd               String?  @map("quiet_hours_end")
+  fallbackChannel             NotificationChannel? @map("fallback_channel")
+  timezone                    String?
+
+  createdById                 Int?     @map("created_by_id")
+  updatedById                 Int?     @map("updated_by_id")
+  createdAt                   DateTime @default(now()) @map("created_at")
+  updatedAt                   DateTime @updatedAt @map("updated_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([shopId])
+  @@map("branch_notification_settings")
+}
+
+model BranchDocumentSettings {
+  id                 Int                 @id @default(autoincrement())
+  shopId             Int                 @map("shop_id")
+  branchId           Int                 @unique @map("branch_id")
+
+  documentPrefix     String?             @map("document_prefix")
+  defaultPaperSize   DocumentPaperSize   @default(A4) @map("default_paper_size")
+  defaultOrientation DocumentOrientation @default(PORTRAIT) @map("default_orientation")
+
+  logoStoragePath    String?             @map("logo_storage_path")
+  headerText         String?             @map("header_text")
+  footerText         String?             @map("footer_text")
+  legalBusinessName  String?             @map("legal_business_name")
+  registrationNumber String?             @map("registration_number")
+  vatNumber          String?             @map("vat_number")
+
+  showBranchAddress  Boolean             @default(true) @map("show_branch_address")
+  showBranchPhone    Boolean             @default(true) @map("show_branch_phone")
+  showBranchEmail    Boolean             @default(true) @map("show_branch_email")
+  showWebsite        Boolean             @default(true) @map("show_website")
+  showVatNumber      Boolean             @default(true) @map("show_vat_number")
+
+  watermarkEnabled   Boolean             @default(false) @map("watermark_enabled")
+  watermarkText      String?             @map("watermark_text")
+  includeTerms       Boolean             @default(false) @map("include_terms")
+  defaultTerms       String?             @map("default_terms")
+  defaultNotes       String?             @map("default_notes")
+  documentTemplate   String?             @map("document_template")
+
+  documentLanguage   String              @default("en") @map("document_language")
+  dateFormat         String?             @map("date_format")
+  timeFormat         String?             @map("time_format")
+  storageBucket      String?             @map("storage_bucket")
+  storageFolderPrefix String?            @map("storage_folder_prefix")
+
+  createdById        Int?                @map("created_by_id")
+  updatedById        Int?                @map("updated_by_id")
+  createdAt          DateTime            @default(now()) @map("created_at")
+  updatedAt          DateTime            @updatedAt @map("updated_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([shopId])
+  @@map("branch_document_settings")
+}
+
+model BranchReceiptSettings {
+  id                   Int               @id @default(autoincrement())
+  shopId               Int               @map("shop_id")
+  branchId             Int               @unique @map("branch_id")
+
+  receiptPrefix        String?           @map("receipt_prefix")
+  receiptPaperSize     DocumentPaperSize @default(RECEIPT_80MM) @map("receipt_paper_size")
+
+  showLogo             Boolean           @default(true) @map("show_logo")
+  showBranchName       Boolean           @default(true) @map("show_branch_name")
+  showBranchAddress    Boolean           @default(true) @map("show_branch_address")
+  showBranchPhone      Boolean           @default(true) @map("show_branch_phone")
+  showBranchEmail      Boolean           @default(false) @map("show_branch_email")
+  showWebsite          Boolean           @default(false) @map("show_website")
+  showVatNumber        Boolean           @default(true) @map("show_vat_number")
+  showCashierName      Boolean           @default(true) @map("show_cashier_name")
+  showRegisterName     Boolean           @default(true) @map("show_register_name")
+  showCustomerName     Boolean           @default(false) @map("show_customer_name")
+  showPaymentMethod    Boolean           @default(true) @map("show_payment_method")
+  showTaxBreakdown     Boolean           @default(true) @map("show_tax_breakdown")
+  showDiscountBreakdown Boolean          @default(true) @map("show_discount_breakdown")
+
+  headerMessage        String?           @map("header_message")
+  footerMessage        String?           @map("footer_message")
+  returnPolicyText     String?           @map("return_policy_text")
+  warrantyText         String?           @map("warranty_text")
+
+  printAutomatically   Boolean           @default(false) @map("print_automatically")
+  emailAutomatically   Boolean           @default(false) @map("email_automatically")
+  smsReceiptLink       Boolean           @default(false) @map("sms_receipt_link")
+  includeQrCode        Boolean           @default(false) @map("include_qr_code")
+  qrCodeTarget         String?           @map("qr_code_target")
+
+  createdById          Int?              @map("created_by_id")
+  updatedById          Int?              @map("updated_by_id")
+  createdAt            DateTime          @default(now()) @map("created_at")
+  updatedAt            DateTime          @updatedAt @map("updated_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([shopId])
+  @@map("branch_receipt_settings")
+}
+
+model BranchInvoiceSettings {
+  id                    Int      @id @default(autoincrement())
+  shopId                Int      @map("shop_id")
+  branchId              Int      @unique @map("branch_id")
+
+  invoicePrefix         String   @default("INV") @map("invoice_prefix")
+  nextInvoiceSequence   Int      @default(1) @map("next_invoice_sequence")
+  creditNotePrefix      String?  @map("credit_note_prefix")
+  paymentTermsDays      Int      @default(0) @map("payment_terms_days")
+  defaultDueDateDays    Int      @default(30) @map("default_due_date_days")
+
+  showLogo              Boolean  @default(true) @map("show_logo")
+  showBranchAddress     Boolean  @default(true) @map("show_branch_address")
+  showBranchPhone       Boolean  @default(true) @map("show_branch_phone")
+  showBranchEmail       Boolean  @default(true) @map("show_branch_email")
+  showVatNumber         Boolean  @default(true) @map("show_vat_number")
+  showPaymentInstructions Boolean @default(true) @map("show_payment_instructions")
+  showTaxBreakdown      Boolean  @default(true) @map("show_tax_breakdown")
+
+  defaultNotes          String?  @map("default_notes")
+  defaultTerms          String?  @map("default_terms")
+  paymentInstructions   String?  @map("payment_instructions")
+  bankDetailsText       String?  @map("bank_details_text")
+
+  autoIssueInvoices     Boolean  @default(false) @map("auto_issue_invoices")
+  autoEmailInvoices     Boolean  @default(false) @map("auto_email_invoices")
+  sendPaymentReminder   Boolean  @default(false) @map("send_payment_reminder")
+  reminderDaysBeforeDue Int?     @map("reminder_days_before_due")
+  overdueReminderDays   Int?     @map("overdue_reminder_days")
+
+  createdById           Int?     @map("created_by_id")
+  updatedById           Int?     @map("updated_by_id")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([shopId])
+  @@map("branch_invoice_settings")
+}
+
+model BranchEmailSenderSettings {
+  id                     Int                      @id @default(autoincrement())
+  shopId                 Int                      @map("shop_id")
+  branchId               Int                      @unique @map("branch_id")
+
+  provider               EmailProvider            @default(OTHER)
+  senderName             String                   @default("") @map("sender_name")
+  senderEmail            String                   @default("") @map("sender_email")
+  replyToEmail           String?                  @map("reply_to_email")
+
+  isEnabled              Boolean                  @default(false) @map("is_enabled")
+  isVerified             Boolean                  @default(false) @map("is_verified")
+  verificationStatus     SenderVerificationStatus @default(PENDING) @map("verification_status")
+
+  providerAccountRef     String?                  @map("provider_account_ref")
+  encryptedCredentialRef String?                  @map("encrypted_credential_ref")
+  defaultSubjectPrefix   String?                  @map("default_subject_prefix")
+  footerSignature        String?                  @map("footer_signature")
+
+  lastTestedAt           DateTime?                @map("last_tested_at")
+  lastTestStatus         String?                  @map("last_test_status")
+  lastTestError          String?                  @map("last_test_error")
+
+  createdById            Int?                     @map("created_by_id")
+  updatedById            Int?                     @map("updated_by_id")
+  createdAt              DateTime                 @default(now()) @map("created_at")
+  updatedAt              DateTime                 @updatedAt @map("updated_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([shopId])
+  @@map("branch_email_sender_settings")
+}
+
+model BranchSmsSenderSettings {
+  id                     Int                      @id @default(autoincrement())
+  shopId                 Int                      @map("shop_id")
+  branchId               Int                      @unique @map("branch_id")
+
+  provider               SmsProvider              @default(OTHER)
+  senderType             SmsSenderType            @default(ALPHANUMERIC) @map("sender_type")
+  senderId               String?                  @map("sender_id")
+  phoneNumber            String?                  @map("phone_number")
+
+  isEnabled              Boolean                  @default(false) @map("is_enabled")
+  isVerified             Boolean                  @default(false) @map("is_verified")
+  verificationStatus     SenderVerificationStatus @default(PENDING) @map("verification_status")
+
+  providerAccountRef     String?                  @map("provider_account_ref")
+  encryptedCredentialRef String?                  @map("encrypted_credential_ref")
+  countryCode            String?                  @map("country_code")
+  defaultRegion          String?                  @map("default_region")
+
+  lastTestedAt           DateTime?                @map("last_tested_at")
+  lastTestStatus         String?                  @map("last_test_status")
+  lastTestError          String?                  @map("last_test_error")
+
+  createdById            Int?                     @map("created_by_id")
+  updatedById            Int?                     @map("updated_by_id")
+  createdAt              DateTime                 @default(now()) @map("created_at")
+  updatedAt              DateTime                 @updatedAt @map("updated_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([shopId])
+  @@map("branch_sms_sender_settings")
+}
+
+model BranchMessageTemplate {
+  id               Int                  @id @default(autoincrement())
+  uuid             String               @unique @default(uuid()) @db.Uuid
+  shopId           Int                  @map("shop_id")
+  branchId         Int                  @map("branch_id")
+
+  name             String
+  code             String
+  description      String?
+  channel          CommunicationChannel
+  eventType        String               @map("event_type")
+  subject          String?
+  content          String
+
+  language         String               @default("en")
+  version          Int                  @default(1)
+  isActive         Boolean              @default(true) @map("is_active")
+  isDefault        Boolean              @default(false) @map("is_default")
+  isSystemTemplate Boolean              @default(false) @map("is_system_template")
+  allowedVariables Json?                @map("allowed_variables")
+  requiredVariables Json?               @map("required_variables")
+
+  createdById      Int?                 @map("created_by_id")
+  updatedById      Int?                 @map("updated_by_id")
+  createdAt        DateTime             @default(now()) @map("created_at")
+  updatedAt        DateTime             @updatedAt @map("updated_at")
+  archivedAt       DateTime?            @map("archived_at")
+
+  shop     Shop                          @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch   Branch                        @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  versions BranchMessageTemplateVersion[]
+  logs     BranchCommunicationLog[]
+
+  @@unique([branchId, code, channel, language])
+  @@index([shopId, branchId])
+  @@index([eventType])
+  @@index([isActive])
+  @@map("branch_message_templates")
+}
+
+model BranchMessageTemplateVersion {
+  id               Int      @id @default(autoincrement())
+  uuid             String   @unique @default(uuid()) @db.Uuid
+  templateId       Int      @map("template_id")
+  version          Int
+  subject          String?
+  content          String
+  allowedVariables Json?    @map("allowed_variables")
+  changeReason     String?  @map("change_reason")
+  createdById      Int?     @map("created_by_id")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  template BranchMessageTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([templateId, version])
+  @@map("branch_message_template_versions")
+}
+
+model BranchCommunicationLog {
+  id                Int                  @id @default(autoincrement())
+  uuid              String               @unique @default(uuid()) @db.Uuid
+  shopId            Int                  @map("shop_id")
+  branchId          Int                  @map("branch_id")
+  customerId        Int?                 @map("customer_id")
+  templateId        Int?                 @map("template_id")
+
+  channel           CommunicationChannel
+  eventType         String?              @map("event_type")
+  recipient         String
+  recipientMasked   String?              @map("recipient_masked")
+  subject           String?
+  renderedContent   String?              @map("rendered_content")
+  contentHash       String?              @map("content_hash")
+  status            CommunicationStatus  @default(QUEUED)
+  provider          String?
+  providerMessageId String?              @map("provider_message_id")
+  idempotencyKey    String?              @unique @map("idempotency_key")
+
+  referenceType     String?              @map("reference_type")
+  referenceId       String?              @map("reference_id")
+  errorCode         String?              @map("error_code")
+  errorMessage      String?              @map("error_message")
+
+  requestedById     Int?                 @map("requested_by_id")
+  sentAt            DateTime?            @map("sent_at")
+  deliveredAt       DateTime?            @map("delivered_at")
+  failedAt          DateTime?            @map("failed_at")
+  metadata          Json?
+  createdAt         DateTime             @default(now()) @map("created_at")
+  updatedAt         DateTime             @updatedAt @map("updated_at")
+
+  shop     Shop                   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch   Branch                 @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  customer Customer?              @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  template BranchMessageTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
+  @@index([shopId, branchId])
+  @@index([customerId])
+  @@index([status])
+  @@index([providerMessageId])
+  @@index([referenceType, referenceId])
+  @@map("branch_communication_logs")
+}
+
+model BranchDocument {
+  id               Int                  @id @default(autoincrement())
+  uuid             String               @unique @default(uuid()) @db.Uuid
+  documentNumber   String               @unique @map("document_number")
+  shopId           Int                  @map("shop_id")
+  branchId         Int                  @map("branch_id")
+
+  documentType     BranchDocumentType   @map("document_type")
+  status           BranchDocumentStatus @default(DRAFT)
+  title            String
+  description      String?
+
+  referenceType    String?              @map("reference_type")
+  referenceId      String?              @map("reference_id")
+  storageBucket    String               @map("storage_bucket")
+  storagePath      String               @map("storage_path")
+  mimeType         String               @map("mime_type")
+  fileSize         Int                  @map("file_size")
+
+  settingsSnapshot Json?                @map("settings_snapshot")
+  metadata         Json?
+
+  generatedById    Int?                 @map("generated_by_id")
+  uploadedById     Int?                 @map("uploaded_by_id")
+  createdAt        DateTime             @default(now()) @map("created_at")
+  updatedAt        DateTime             @updatedAt @map("updated_at")
+  archivedAt       DateTime?            @map("archived_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([shopId, branchId])
+  @@index([documentType])
+  @@index([referenceType, referenceId])
+  @@map("branch_documents")
+}
+
+// ─── Module 8: Branch Reporting & Analytics ─────────────────────────────────
+
+enum BranchReportExportFormat {
+  CSV
+  XLSX
+  PDF
+}
+
+enum BranchReportExportStatus {
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
+  EXPIRED
+}
+
+model BranchReportingSettings {
+  id                    Int      @id @default(autoincrement())
+  shopId                Int      @map("shop_id")
+  branchId              Int      @unique @map("branch_id")
+
+  salesTargetMonthly    Decimal  @default(0) @map("sales_target_monthly") @db.Decimal(16, 2)
+  repairTargetMonthly   Int      @default(0) @map("repair_target_monthly")
+  commissionRules       String?  @map("commission_rules")
+  lastReportGeneratedAt DateTime? @map("last_report_generated_at")
+  defaultComparisonPeriod String? @map("default_comparison_period")
+
+  createdById           Int?     @map("created_by_id")
+  updatedById           Int?     @map("updated_by_id")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([shopId])
+  @@map("branch_reporting_settings")
+}
+
+model BranchReportExport {
+  id              Int                      @id @default(autoincrement())
+  uuid            String                   @unique @default(uuid()) @db.Uuid
+  shopId          Int                      @map("shop_id")
+  branchId        Int                      @map("branch_id")
+
+  reportCode      String                   @map("report_code")
+  format          BranchReportExportFormat @default(CSV)
+  status          BranchReportExportStatus @default(QUEUED)
+  filters         Json?
+
+  storageBucket   String?                  @map("storage_bucket")
+  storagePath     String?                  @map("storage_path")
+  fileName        String?                  @map("file_name")
+  fileSize        Int?                     @map("file_size")
+
+  expiresAt       DateTime?                @map("expires_at")
+  completedAt     DateTime?                @map("completed_at")
+  failedAt        DateTime?                @map("failed_at")
+  errorMessage    String?                  @map("error_message")
+
+  requestedById   Int?                     @map("requested_by_id")
+  createdAt       DateTime                 @default(now()) @map("created_at")
+  updatedAt       DateTime                 @updatedAt @map("updated_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([shopId, branchId])
+  @@index([status])
+  @@index([reportCode])
+  @@map("branch_report_exports")
+}
+
+model BranchReportSnapshot {
+  id            Int      @id @default(autoincrement())
+  uuid          String   @unique @default(uuid()) @db.Uuid
+  shopId        Int      @map("shop_id")
+  branchId      Int      @map("branch_id")
+
+  reportCode    String   @map("report_code")
+  periodStart   DateTime @map("period_start")
+  periodEnd     DateTime @map("period_end")
+  timezone      String
+  currency      String?
+
+  data          Json
+  sourceVersion String?  @map("source_version")
+  generatedById Int?     @map("generated_by_id")
+  generatedAt   DateTime @default(now()) @map("generated_at")
+
+  isLocked      Boolean  @default(false) @map("is_locked")
+  lockedAt      DateTime? @map("locked_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, reportCode, periodStart, periodEnd])
+  @@index([shopId, branchId])
+  @@index([reportCode, generatedAt])
+  @@map("branch_report_snapshots")
+}
+
 model SalesCommissionAgent {
   id                     Int      @id @default(autoincrement())
 
@@ -1491,4 +3999,450 @@ model SalesCommissionAgent {
   updatedAt              DateTime @updatedAt @map("updated_at")
 
   @@map("sales_commission_agents")
+}
+
+// ─── Module 10: Branch System & Audit ───────────────────────────────────────
+
+enum BranchSyncType {
+  SETTINGS
+  PRODUCTS
+  INVENTORY
+  CUSTOMERS
+  SALES
+  REPAIRS
+  PAYMENTS
+  DOCUMENTS
+  WEBSITE
+  MARKETPLACE
+  ACCOUNTING
+  NOTIFICATIONS
+  REPORTING
+  OFFLINE_DEVICE
+  OTHER
+}
+
+enum SyncDirection {
+  IMPORT
+  EXPORT
+  BIDIRECTIONAL
+}
+
+enum SyncScheduleType {
+  MANUAL
+  REAL_TIME
+  INTERVAL
+  CRON
+}
+
+enum SyncConflictStrategy {
+  SOURCE_WINS
+  DESTINATION_WINS
+  NEWEST_WINS
+  MANUAL_REVIEW
+}
+
+enum SyncConnectionStatus {
+  IDLE
+  QUEUED
+  RUNNING
+  SUCCESS
+  PARTIAL
+  FAILED
+  PAUSED
+  DISABLED
+}
+
+enum SyncJobStatus {
+  QUEUED
+  RUNNING
+  SUCCESS
+  PARTIAL
+  FAILED
+  CANCELLED
+  RETRYING
+}
+
+enum SyncTriggerType {
+  MANUAL
+  SCHEDULED
+  WEBHOOK
+  SYSTEM
+  RETRY
+}
+
+enum SyncItemStatus {
+  PENDING
+  CREATED
+  UPDATED
+  SKIPPED
+  FAILED
+  CONFLICT
+}
+
+enum BranchSettingValueType {
+  STRING
+  NUMBER
+  BOOLEAN
+  JSON
+  DATE
+  TIME
+  ENUM
+  SECRET_REFERENCE
+}
+
+enum SecurityRuleCategory {
+  AUTHENTICATION
+  AUTHORISATION
+  NETWORK
+  DEVICE
+  SESSION
+  FINANCIAL
+  CUSTOMER_DATA
+  INVENTORY
+  REPAIRS
+  DOCUMENTS
+  EXPORTS
+  INTEGRATIONS
+}
+
+enum SecurityEnforcementMode {
+  MONITOR
+  WARN
+  ENFORCE
+}
+
+enum SecurityEventType {
+  ACCESS_DENIED
+  INVALID_PERMISSION
+  LOGIN_RESTRICTED
+  IP_RESTRICTED
+  DEVICE_RESTRICTED
+  RATE_LIMIT_EXCEEDED
+  SENSITIVE_EXPORT_ATTEMPT
+  LARGE_REFUND_ATTEMPT
+  UNAPPROVED_SETTINGS_CHANGE
+  SYNC_CONFLICT
+  SUSPICIOUS_ACTIVITY
+  OTHER
+}
+
+enum SecurityEventStatus {
+  OPEN
+  ACKNOWLEDGED
+  RESOLVED
+  DISMISSED
+}
+
+enum BranchOwnershipType {
+  COMPANY_OWNED
+  FRANCHISE_OWNED
+  JOINT_OWNERSHIP
+  PARTNER_MANAGED
+  LICENSED
+  INDEPENDENT
+}
+
+enum BusinessEntityType {
+  SHOP_COMPANY
+  FRANCHISEE
+  FRANCHISOR
+  PARTNER
+  INDIVIDUAL
+  OTHER
+}
+
+enum BusinessEntityStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  ARCHIVED
+}
+
+enum BranchOwnershipStatus {
+  PENDING
+  ACTIVE
+  EXPIRED
+  TERMINATED
+  SUSPENDED
+}
+
+model BranchSyncConnection {
+  id                   Int      @id @default(autoincrement())
+  uuid                 String   @unique @default(uuid()) @db.Uuid
+  shopId               Int      @map("shop_id")
+  branchId             Int      @map("branch_id")
+
+  connectionCode       String   @map("connection_code")
+  name                 String
+  provider             String
+  syncType             BranchSyncType @map("sync_type")
+  direction            SyncDirection @default(BIDIRECTIONAL)
+  isEnabled            Boolean  @default(true) @map("is_enabled")
+
+  scheduleType         SyncScheduleType @default(MANUAL) @map("schedule_type")
+  scheduleExpression   String?  @map("schedule_expression")
+  conflictStrategy     SyncConflictStrategy @default(MANUAL_REVIEW) @map("conflict_strategy")
+
+  lastSyncStartedAt    DateTime? @map("last_sync_started_at")
+  lastSyncCompletedAt  DateTime? @map("last_sync_completed_at")
+  lastSuccessfulSyncAt DateTime? @map("last_successful_sync_at")
+  nextScheduledSyncAt  DateTime? @map("next_scheduled_sync_at")
+
+  currentStatus        SyncConnectionStatus @default(IDLE) @map("current_status")
+  lastErrorCode        String?  @map("last_error_code")
+  lastErrorMessage     String?  @map("last_error_message")
+
+  providerAccountRef   String?  @map("provider_account_ref")
+  credentialReference  String?  @map("credential_reference")
+
+  createdById          Int?     @map("created_by_id")
+  updatedById          Int?     @map("updated_by_id")
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+  archivedAt           DateTime? @map("archived_at")
+
+  shop    Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch  Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  jobs    BranchSyncJob[]
+
+  @@unique([branchId, connectionCode])
+  @@index([shopId, branchId])
+  @@index([syncType])
+  @@index([currentStatus])
+  @@map("branch_sync_connections")
+}
+
+model BranchSyncJob {
+  id               Int      @id @default(autoincrement())
+  uuid             String   @unique @default(uuid()) @db.Uuid
+  jobNumber        String   @unique @map("job_number")
+
+  shopId           Int      @map("shop_id")
+  branchId         Int      @map("branch_id")
+  connectionId     Int      @map("connection_id")
+
+  status           SyncJobStatus
+  triggerType      SyncTriggerType @map("trigger_type")
+
+  startedAt        DateTime? @map("started_at")
+  completedAt      DateTime? @map("completed_at")
+  failedAt         DateTime? @map("failed_at")
+
+  totalRecords     Int      @default(0) @map("total_records")
+  processedRecords Int      @default(0) @map("processed_records")
+  createdRecords   Int      @default(0) @map("created_records")
+  updatedRecords   Int      @default(0) @map("updated_records")
+  skippedRecords   Int      @default(0) @map("skipped_records")
+  failedRecords    Int      @default(0) @map("failed_records")
+  conflictRecords  Int      @default(0) @map("conflict_records")
+
+  cursor           String?
+  checkpoint       Json?
+  summary          Json?
+
+  errorCode        String?  @map("error_code")
+  errorMessage     String?  @map("error_message")
+  retryCount       Int      @default(0) @map("retry_count")
+
+  triggeredById    Int?     @map("triggered_by_id")
+  requestId        String?  @map("request_id")
+  idempotencyKey   String?  @map("idempotency_key")
+
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  shop       Shop                 @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch     Branch               @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  connection BranchSyncConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  items      BranchSyncJobItem[]
+
+  @@index([shopId, branchId])
+  @@index([connectionId, status])
+  @@index([startedAt])
+  @@map("branch_sync_jobs")
+}
+
+model BranchSyncJobItem {
+  id             Int      @id @default(autoincrement())
+  uuid           String   @unique @default(uuid()) @db.Uuid
+  syncJobId      Int      @map("sync_job_id")
+
+  entityType     String   @map("entity_type")
+  localEntityId  String?  @map("local_entity_id")
+  remoteEntityId String?  @map("remote_entity_id")
+
+  status         SyncItemStatus
+  action         String?
+  errorCode      String?  @map("error_code")
+  errorMessage   String?  @map("error_message")
+  conflictData   Json?    @map("conflict_data")
+
+  processedAt    DateTime? @map("processed_at")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  syncJob BranchSyncJob @relation(fields: [syncJobId], references: [id], onDelete: Cascade)
+
+  @@index([syncJobId, status])
+  @@index([entityType])
+  @@map("branch_sync_job_items")
+}
+
+model BranchSetting {
+  id              Int      @id @default(autoincrement())
+  uuid            String   @unique @default(uuid()) @db.Uuid
+  shopId          Int      @map("shop_id")
+  branchId        Int      @map("branch_id")
+
+  namespace       String
+  key             String
+  value           Json
+  valueType       BranchSettingValueType @map("value_type")
+  isEncrypted     Boolean  @default(false) @map("is_encrypted")
+  isSystemManaged Boolean  @default(false) @map("is_system_managed")
+  isInherited     Boolean  @default(false) @map("is_inherited")
+  version         Int      @default(1)
+
+  createdById     Int?     @map("created_by_id")
+  updatedById     Int?     @map("updated_by_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, namespace, key])
+  @@index([shopId, branchId])
+  @@index([namespace])
+  @@map("branch_settings")
+}
+
+model BranchSettingHistory {
+  id           Int      @id @default(autoincrement())
+  shopId       Int      @map("shop_id")
+  branchId     Int      @map("branch_id")
+
+  namespace    String
+  key          String
+  oldValue     Json?    @map("old_value")
+  newValue     Json?    @map("new_value")
+  version      Int
+  changeReason String?  @map("change_reason")
+  changedById  Int?     @map("changed_by_id")
+  changedAt    DateTime @default(now()) @map("changed_at")
+
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([shopId, branchId])
+  @@index([namespace, key])
+  @@index([changedAt])
+  @@map("branch_setting_history")
+}
+
+model BranchSecurityEvent {
+  id              Int      @id @default(autoincrement())
+  uuid            String   @unique @default(uuid()) @db.Uuid
+  shopId          Int      @map("shop_id")
+  branchId        Int?     @map("branch_id")
+
+  ruleKey         String?  @map("rule_key")
+  eventType       SecurityEventType @map("event_type")
+  severity        String   @default("INFO")
+  status          SecurityEventStatus @default(OPEN)
+
+  actorUserId     Int?     @map("actor_user_id")
+  entityType      String?  @map("entity_type")
+  entityId        String?  @map("entity_id")
+
+  description     String?
+  metadata        Json?
+
+  ipAddress       String?  @map("ip_address")
+  userAgent       String?  @map("user_agent")
+
+  detectedAt      DateTime @default(now()) @map("detected_at")
+  resolvedAt      DateTime? @map("resolved_at")
+  resolvedById    Int?     @map("resolved_by_id")
+  resolutionNotes String?  @map("resolution_notes")
+
+  shop   Shop    @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
+
+  @@index([shopId, branchId])
+  @@index([eventType])
+  @@index([severity])
+  @@index([status])
+  @@index([detectedAt])
+  @@map("branch_security_events")
+}
+
+model BusinessEntity {
+  id                 Int      @id @default(autoincrement())
+  uuid               String   @unique @default(uuid()) @db.Uuid
+  shopId             Int      @map("shop_id")
+
+  legalName          String   @map("legal_name")
+  tradingName        String?  @map("trading_name")
+  entityType         BusinessEntityType @map("entity_type")
+
+  registrationNumber String?  @map("registration_number")
+  taxNumber          String?  @map("tax_number")
+
+  contactName        String?  @map("contact_name")
+  contactEmail       String?  @map("contact_email")
+  contactPhone       String?  @map("contact_phone")
+
+  address            Json?
+
+  status             BusinessEntityStatus @default(ACTIVE)
+
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+  archivedAt         DateTime? @map("archived_at")
+
+  shop               Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branchOwnerships   BranchOwnership[]
+
+  @@index([shopId])
+  @@index([legalName])
+  @@map("business_entities")
+}
+
+model BranchOwnership {
+  id                   Int      @id @default(autoincrement())
+  uuid                 String   @unique @default(uuid()) @db.Uuid
+  shopId               Int      @map("shop_id")
+  branchId             Int      @map("branch_id")
+  businessEntityId     Int      @map("business_entity_id")
+
+  ownershipType        BranchOwnershipType @map("ownership_type")
+  ownershipPercentage  Decimal? @map("ownership_percentage") @db.Decimal(5, 2)
+
+  isPrimaryOwner       Boolean  @default(false) @map("is_primary_owner")
+  isOperatingEntity    Boolean  @default(false) @map("is_operating_entity")
+
+  effectiveFrom        DateTime @map("effective_from")
+  effectiveUntil       DateTime? @map("effective_until")
+
+  status               BranchOwnershipStatus @default(ACTIVE)
+
+  agreementReference   String?  @map("agreement_reference")
+  agreementStoragePath String?  @map("agreement_storage_path")
+
+  notes                String?
+
+  createdById          Int?     @map("created_by_id")
+  updatedById          Int?     @map("updated_by_id")
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  shop           Shop           @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  branch         Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  businessEntity BusinessEntity @relation(fields: [businessEntityId], references: [id], onDelete: Cascade)
+
+  @@index([shopId, branchId])
+  @@index([businessEntityId])
+  @@index([status])
+  @@index([effectiveFrom, effectiveUntil])
+  @@map("branch_ownerships")
 }

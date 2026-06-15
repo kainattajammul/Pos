@@ -16,8 +16,23 @@ import {
   updateBranch,
   updateBranchStatus,
 } from "@/services/branch.service";
+import {
+  updateBranchCommunicationSettings,
+  updateBranchFinanceSettings,
+  updateBranchInventorySettings,
+  updateBranchOperationsSettings,
+  updateBranchReportingSettings,
+  updateBranchSystemSettings,
+} from "@/services/branch-module.service";
 import type {
+  BranchCommunicationSettings,
+  BranchFinanceSettings,
+  BranchInventorySettings,
   BranchListFilters,
+  BranchOperationsSettings,
+  BranchRecord,
+  BranchReportingSettings,
+  BranchSystemSettings,
   BranchStatus,
   CreateBranchPayload,
   UpdateBranchPayload,
@@ -67,6 +82,7 @@ export function useUpdateBranch(shopId: number) {
     mutationFn: ({ uuid, payload }: { uuid: string; payload: UpdateBranchPayload }) =>
       updateBranch(shopId, uuid, payload),
     onSuccess: (data) => {
+      queryClient.setQueryData(queryKeys.branches.detail(shopId, data.uuid), data);
       queryClient.invalidateQueries({ queryKey: queryKeys.branches.all });
       toast.success(`Branch "${data.name}" updated`);
     },
@@ -87,6 +103,7 @@ export function useUpdateBranchStatus(shopId: number) {
       currentStatus?: BranchStatus;
     }) => updateBranchStatus(shopId, uuid, status, currentStatus),
     onSuccess: (data) => {
+      queryClient.setQueryData(queryKeys.branches.detail(shopId, data.uuid), data);
       queryClient.invalidateQueries({ queryKey: queryKeys.branches.all });
       toast.success(`Branch status set to ${data.status}`);
     },
@@ -127,5 +144,143 @@ export function useDeleteBranch(shopId: number) {
       toast.success("Branch deleted");
     },
     onError: (error) => toast.error(getApiErrorMessage(error, "Failed to delete branch")),
+  });
+}
+
+export function useUpdateBranchInventorySettings(shopId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      uuid,
+      settings,
+    }: {
+      uuid: string;
+      settings: BranchInventorySettings;
+    }) => updateBranchInventorySettings(shopId, uuid, settings),
+    onSuccess: (inventory, { uuid }) => {
+      queryClient.setQueryData<BranchRecord | undefined>(
+        queryKeys.branches.detail(shopId, uuid),
+        (current) => (current ? { ...current, inventory } : current),
+      );
+      queryClient.invalidateQueries({ queryKey: queryKeys.branches.all });
+      toast.success("Inventory settings saved");
+    },
+    onError: (error) =>
+      toast.error(getApiErrorMessage(error, "Failed to save inventory settings")),
+  });
+}
+
+export function useUpdateBranchOperationsSettings(shopId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      uuid,
+      settings,
+    }: {
+      uuid: string;
+      settings: BranchOperationsSettings;
+    }) => updateBranchOperationsSettings(shopId, uuid, settings),
+    onSuccess: (operations, { uuid }) => {
+      queryClient.setQueryData<BranchRecord | undefined>(
+        queryKeys.branches.detail(shopId, uuid),
+        (current) => (current ? { ...current, operations } : current),
+      );
+      queryClient.invalidateQueries({ queryKey: queryKeys.branches.all });
+      toast.success("Operations settings saved");
+    },
+    onError: (error) =>
+      toast.error(getApiErrorMessage(error, "Failed to save operations settings")),
+  });
+}
+
+export function useUpdateBranchFinanceSettings(shopId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      uuid,
+      settings,
+    }: {
+      uuid: string;
+      settings: BranchFinanceSettings;
+    }) => updateBranchFinanceSettings(shopId, uuid, settings),
+    onSuccess: (finance, { uuid }) => {
+      queryClient.setQueryData<BranchRecord | undefined>(
+        queryKeys.branches.detail(shopId, uuid),
+        (current) => (current ? { ...current, finance } : current),
+      );
+      queryClient.invalidateQueries({ queryKey: queryKeys.branches.all });
+      toast.success("Finance settings saved");
+    },
+    onError: (error) =>
+      toast.error(getApiErrorMessage(error, "Failed to save finance settings")),
+  });
+}
+
+export function useUpdateBranchCommunicationSettings(shopId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      uuid,
+      settings,
+    }: {
+      uuid: string;
+      settings: BranchCommunicationSettings;
+    }) => updateBranchCommunicationSettings(shopId, uuid, settings),
+    onSuccess: (communication, { uuid }) => {
+      queryClient.setQueryData<BranchRecord | undefined>(
+        queryKeys.branches.detail(shopId, uuid),
+        (current) => (current ? { ...current, communication } : current),
+      );
+      queryClient.invalidateQueries({ queryKey: queryKeys.branches.all });
+      toast.success("Communication settings saved");
+    },
+    onError: (error) =>
+      toast.error(getApiErrorMessage(error, "Failed to save communication settings")),
+  });
+}
+
+export function useUpdateBranchReportingSettings(shopId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      uuid,
+      settings,
+    }: {
+      uuid: string;
+      settings: BranchReportingSettings;
+    }) => updateBranchReportingSettings(shopId, uuid, settings),
+    onSuccess: (reporting, { uuid }) => {
+      queryClient.setQueryData<BranchRecord | undefined>(
+        queryKeys.branches.detail(shopId, uuid),
+        (current) => (current ? { ...current, reporting } : current),
+      );
+      queryClient.invalidateQueries({ queryKey: queryKeys.branches.all });
+      toast.success("Reporting settings saved");
+    },
+    onError: (error) =>
+      toast.error(getApiErrorMessage(error, "Failed to save reporting settings")),
+  });
+}
+
+export function useUpdateBranchSystemSettings(shopId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      uuid,
+      settings,
+    }: {
+      uuid: string;
+      settings: BranchSystemSettings;
+    }) => updateBranchSystemSettings(shopId, uuid, settings),
+    onSuccess: (system, { uuid }) => {
+      queryClient.setQueryData<BranchRecord | undefined>(
+        queryKeys.branches.detail(shopId, uuid),
+        (current) => (current ? { ...current, system } : current),
+      );
+      queryClient.invalidateQueries({ queryKey: queryKeys.branches.all });
+      toast.success("System settings saved");
+    },
+    onError: (error) =>
+      toast.error(getApiErrorMessage(error, "Failed to save system settings")),
   });
 }

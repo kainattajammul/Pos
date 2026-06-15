@@ -15,6 +15,14 @@ import type {
   CreateBranchPayload,
   UpdateBranchPayload,
 } from "@/lib/branch-types";
+import {
+  fetchBranchCommunicationSettings,
+  fetchBranchFinanceSettings,
+  fetchBranchInventorySettings,
+  fetchBranchOperationsSettings,
+  fetchBranchReportingSettings,
+  fetchBranchSystemSettings,
+} from "@/services/branch-module.service";
 import type {
   ApiBranchListItem,
   ApiBranchListParams,
@@ -27,10 +35,26 @@ function branchesPath(shopId: number) {
 }
 
 async function fetchProfile(shopId: number, uuid: string): Promise<BranchRecord> {
-  const { data } = await apiClient.get<ApiSuccessResponse<ApiBranchProfile>>(
-    `${branchesPath(shopId)}/${uuid}`,
-  );
-  return mapProfileToBranchRecord(data.data, shopId);
+  const [{ data }, inventory, operations, finance, communication, reporting, system] = await Promise.all([
+    apiClient.get<ApiSuccessResponse<ApiBranchProfile>>(`${branchesPath(shopId)}/${uuid}`),
+    fetchBranchInventorySettings(shopId, uuid),
+    fetchBranchOperationsSettings(shopId, uuid),
+    fetchBranchFinanceSettings(shopId, uuid),
+    fetchBranchCommunicationSettings(shopId, uuid),
+    fetchBranchReportingSettings(shopId, uuid),
+    fetchBranchSystemSettings(shopId, uuid),
+  ]);
+
+  const record = mapProfileToBranchRecord(data.data, shopId);
+  return {
+    ...record,
+    inventory,
+    operations,
+    finance,
+    communication,
+    reporting,
+    system,
+  };
 }
 
 export async function fetchBranches(
