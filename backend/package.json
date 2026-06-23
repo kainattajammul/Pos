@@ -8,6 +8,7 @@
     "dev": "node --watch src/server.js",
     "dev:fresh": "node scripts/stop-dev-server.mjs && prisma generate && node --watch src/server.js",
     "start": "node src/server.js",
+    "build": "echo \"No build needed for backend\"",
     "db:generate": "prisma generate",
     "postinstall": "prisma generate",
     "db:migrate": "prisma migrate dev",
