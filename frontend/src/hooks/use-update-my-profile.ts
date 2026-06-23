@@ -45,7 +45,7 @@ export function useUpdateMyProfile() {
       profile: UserProfileViewModel;
       values: ProfileEditValues;
     }) => {
-      const fullName = buildFullName(values);
+      const fullName = buildFullName({ prefix: "", ...values });
       const phone = values.mobileNumber.trim() || null;
       const userId = Number(profile.id);
 
