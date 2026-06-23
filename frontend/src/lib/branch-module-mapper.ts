@@ -1,4 +1,5 @@
 import type { BranchCommunicationSettings, BranchFinanceSettings, BranchInventorySettings, BranchOperationsSettings, BranchReportingSettings, BranchSystemSettings } from "@/lib/branch-types";
+import { defaultInvoiceSettings, sampleMessageTemplates } from "@/lib/branch-communication-defaults";
 import type {
   ApiBranchCommunicationSettings,
   ApiBranchFinanceSettings,
@@ -92,6 +93,8 @@ export function mapApiCommunicationSettings(api: ApiBranchCommunicationSettings)
     receiptFooter: api.receipt_footer ?? "",
     notificationsEnabled: api.notifications_enabled,
     documentTemplate: api.document_template ?? "",
+    invoice: defaultInvoiceSettings(),
+    messageTemplates: sampleMessageTemplates(),
   };
 }
 

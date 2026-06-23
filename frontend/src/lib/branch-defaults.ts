@@ -9,6 +9,8 @@ import type {
   BranchStaffSettings,
   BranchSystemSettings,
 } from "@/lib/branch-types";
+import { clearedWebsiteServices } from "@/lib/branch-website-services";
+import { defaultInvoiceSettings, sampleMessageTemplates } from "@/lib/branch-communication-defaults";
 
 export const DEFAULT_INVENTORY: BranchInventorySettings = {
   allocationMode: "dedicated",
@@ -53,6 +55,7 @@ export const DEFAULT_ONLINE: BranchOnlineSettings = {
   clickAndCollect: false,
   publishedProducts: 0,
   seoTitle: "",
+  ...clearedWebsiteServices(),
 };
 
 export const DEFAULT_COMMUNICATION: BranchCommunicationSettings = {
@@ -62,6 +65,8 @@ export const DEFAULT_COMMUNICATION: BranchCommunicationSettings = {
   receiptFooter: "",
   notificationsEnabled: true,
   documentTemplate: "",
+  invoice: defaultInvoiceSettings(),
+  messageTemplates: sampleMessageTemplates(),
 };
 
 export const DEFAULT_REPORTING: BranchReportingSettings = {
