@@ -36,8 +36,8 @@ function devBypassLogin(email) {
 function setRefreshCookie(res, token) {
   res.cookie(REFRESH_COOKIE, token, {
     httpOnly: true,
-    secure: env.isProduction,
-    sameSite: env.isProduction ? "strict" : "lax",
+    secure: true,
+    sameSite: "none",
     maxAge: 30 * 24 * 60 * 60 * 1000,
   });
 }
@@ -143,7 +143,11 @@ export const AuthController = {
   },
 
   async logout(_req, res) {
-    res.clearCookie(REFRESH_COOKIE);
+    res.clearCookie(REFRESH_COOKIE, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
     return ApiResponse.success(res, {
       message: "Logged out successfully",
       data: null,
