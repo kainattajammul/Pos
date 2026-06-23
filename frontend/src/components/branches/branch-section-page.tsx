@@ -23,7 +23,17 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { APP_CONFIG } from "@/constants/config";
-import { useBranch, useUpdateBranch, useUpdateBranchStatus } from "@/hooks/use-branches";
+import {
+  useBranch,
+  useUpdateBranch,
+  useUpdateBranchCommunicationSettings,
+  useUpdateBranchFinanceSettings,
+  useUpdateBranchInventorySettings,
+  useUpdateBranchOperationsSettings,
+  useUpdateBranchReportingSettings,
+  useUpdateBranchSystemSettings,
+  useUpdateBranchStatus,
+} from "@/hooks/use-branches";
 import { getBranchNavItem } from "@/lib/branch-nav-items";
 import { clearedWebsiteServices, countConfiguredWebsiteCategories, isCategoryEnabled, WEBSITE_SERVICE_CATEGORIES } from "@/lib/branch-website-services";
 import { withBranchOnlineDefaults } from "@/lib/branch-api-mapper";
@@ -49,7 +59,23 @@ export function BranchSectionPage({ branchUuid, sectionSlug }: BranchSectionPage
   const shopId = APP_CONFIG.defaultShopId;
   const updateBranch = useUpdateBranch(shopId);
   const updateStatus = useUpdateBranchStatus(shopId);
+  const updateInventory = useUpdateBranchInventorySettings(shopId);
+  const updateOperations = useUpdateBranchOperationsSettings(shopId);
+  const updateFinance = useUpdateBranchFinanceSettings(shopId);
+  const updateCommunication = useUpdateBranchCommunicationSettings(shopId);
+  const updateReporting = useUpdateBranchReportingSettings(shopId);
+  const updateSystem = useUpdateBranchSystemSettings(shopId);
   const [draft, setDraft] = useState<BranchRecord | null>(null);
+
+  const isSaving =
+    updateBranch.isPending ||
+    updateStatus.isPending ||
+    updateInventory.isPending ||
+    updateOperations.isPending ||
+    updateFinance.isPending ||
+    updateCommunication.isPending ||
+    updateReporting.isPending ||
+    updateSystem.isPending;
 
   useEffect(() => {
     if (branch) {
@@ -78,6 +104,48 @@ export function BranchSectionPage({ branchUuid, sectionSlug }: BranchSectionPage
       void updateBranch.mutateAsync({ uuid: branchUuid, payload });
       return;
     }
+    if (sectionSlug === "inventory" && payload.inventory) {
+      void updateInventory.mutateAsync({
+        uuid: branchUuid,
+        settings: { ...draft.inventory, ...payload.inventory },
+      });
+      return;
+    }
+    if (sectionSlug === "operations" && payload.operations) {
+      void updateOperations.mutateAsync({
+        uuid: branchUuid,
+        settings: { ...draft.operations, ...payload.operations },
+      });
+      return;
+    }
+    if (sectionSlug === "finance" && payload.finance) {
+      void updateFinance.mutateAsync({
+        uuid: branchUuid,
+        settings: { ...draft.finance, ...payload.finance },
+      });
+      return;
+    }
+    if (sectionSlug === "communication" && payload.communication) {
+      void updateCommunication.mutateAsync({
+        uuid: branchUuid,
+        settings: { ...draft.communication, ...payload.communication },
+      });
+      return;
+    }
+    if (sectionSlug === "reporting" && payload.reporting) {
+      void updateReporting.mutateAsync({
+        uuid: branchUuid,
+        settings: { ...draft.reporting, ...payload.reporting },
+      });
+      return;
+    }
+    if (sectionSlug === "system" && payload.system) {
+      void updateSystem.mutateAsync({
+        uuid: branchUuid,
+        settings: { ...draft.system, ...payload.system },
+      });
+      return;
+    }
     toast.info("This section is not yet synced to the server.");
   };
 
@@ -98,22 +166,43 @@ export function BranchSectionPage({ branchUuid, sectionSlug }: BranchSectionPage
         persist({ staff: draft.staff });
         break;
       case "inventory":
-        persist({ inventory: draft.inventory });
+        void updateInventory.mutateAsync({
+          uuid: branchUuid,
+          settings: draft.inventory,
+        });
+        break;
+      case "operations":
+        void updateOperations.mutateAsync({
+          uuid: branchUuid,
+          settings: draft.operations,
+        });
         break;
       case "finance":
-        persist({ finance: draft.finance });
+        void updateFinance.mutateAsync({
+          uuid: branchUuid,
+          settings: draft.finance,
+        });
         break;
       case "online":
         persist({ online: draft.online });
         break;
       case "communication":
-        persist({ communication: draft.communication });
+        void updateCommunication.mutateAsync({
+          uuid: branchUuid,
+          settings: draft.communication,
+        });
         break;
       case "reporting":
-        persist({ reporting: draft.reporting });
+        void updateReporting.mutateAsync({
+          uuid: branchUuid,
+          settings: draft.reporting,
+        });
         break;
       case "system":
-        persist({ system: draft.system });
+        void updateSystem.mutateAsync({
+          uuid: branchUuid,
+          settings: draft.system,
+        });
         break;
       default:
         break;
@@ -138,11 +227,11 @@ export function BranchSectionPage({ branchUuid, sectionSlug }: BranchSectionPage
             <BranchStatusBadge status={branch.status} />
             <Button
               type="button"
-              disabled={updateBranch.isPending}
+              disabled={isSaving}
               onClick={handleSaveSection}
               className="gap-2 border-0 bg-(--repair-primary) text-(--repair-on-primary) hover:opacity-90"
             >
-              {updateBranch.isPending ? (
+              {isSaving ? (
                 <Loader2 className="size-4 animate-spin" />
               ) : (
                 <Save className="size-4" />
@@ -163,7 +252,16 @@ export function BranchSectionPage({ branchUuid, sectionSlug }: BranchSectionPage
         <InventorySection branch={draft} onChange={setDraft} onSave={persist} />
       )}
       {sectionSlug === "operations" && (
-        <OperationsSection branch={draft} />
+        <OperationsSection
+          branch={draft}
+          onChange={setDraft}
+          onSave={() =>
+            void updateOperations.mutateAsync({
+              uuid: branchUuid,
+              settings: draft.operations,
+            })
+          }
+        />
       )}
       {sectionSlug === "finance" && (
         <FinanceSection branch={draft} onChange={setDraft} onSave={persist} />
@@ -458,7 +556,15 @@ function InventorySection({
   );
 }
 
-function OperationsSection({ branch }: { branch: BranchRecord }) {
+function OperationsSection({
+  branch,
+  onChange,
+  onSave,
+}: {
+  branch: BranchRecord;
+  onChange: (b: BranchRecord) => void;
+  onSave: () => void;
+}) {
   return (
     <>
       <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
@@ -470,15 +576,57 @@ function OperationsSection({ branch }: { branch: BranchRecord }) {
         <BranchStatCard label="Warranty claims" value={branch.operations.warrantyClaimsOpen} />
       </div>
       <BranchSectionCard title="Sales, repairs & operations">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field
+            label="Appointment slots per day"
+            value={String(branch.operations.appointmentSlotsPerDay)}
+            onChange={(v) =>
+              onChange({
+                ...branch,
+                operations: {
+                  ...branch.operations,
+                  appointmentSlotsPerDay: Number(v) || 0,
+                },
+              })
+            }
+          />
+          <Field
+            label="Delivery radius (km)"
+            value={String(branch.operations.deliveryRadiusKm)}
+            onChange={(v) =>
+              onChange({
+                ...branch,
+                operations: {
+                  ...branch.operations,
+                  deliveryRadiusKm: Number(v) || 0,
+                },
+              })
+            }
+          />
+          <ToggleRow
+            label="Pickup / collection enabled"
+            checked={branch.operations.pickupEnabled}
+            onChange={(v) =>
+              onChange({
+                ...branch,
+                operations: { ...branch.operations, pickupEnabled: v },
+              })
+            }
+          />
+        </div>
         <BranchFieldGrid
           fields={[
             { label: "Repair ticket tracking", value: `${branch.operations.openRepairTickets} open tickets` },
-            { label: "Appointment slots", value: `${branch.operations.appointmentSlotsPerDay} per day` },
-            { label: "Pickup / collection", value: branch.operations.pickupEnabled ? "Enabled" : "Disabled" },
-            { label: "Delivery service area", value: `${branch.operations.deliveryRadiusKm} km radius` },
             { label: "Warranty claims", value: `${branch.operations.warrantyClaimsOpen} open`, fullWidth: true },
           ]}
         />
+        <Button
+          type="button"
+          className="mt-4 border-0 bg-(--repair-primary) text-(--repair-on-primary)"
+          onClick={onSave}
+        >
+          Save operations settings
+        </Button>
       </BranchSectionCard>
     </>
   );
@@ -519,11 +667,15 @@ function FinanceSection({
               onChange={(v) => onChange({ ...branch, finance: { ...branch.finance, timezone: v } })}
             />
           </label>
+          <ToggleRow
+            label="End-of-day closing required"
+            checked={branch.finance.endOfDayRequired}
+            onChange={(v) => onChange({ ...branch, finance: { ...branch.finance, endOfDayRequired: v } })}
+          />
         </div>
         <BranchFieldGrid
           fields={[
             { label: "Cash drawer assigned", value: branch.finance.cashDrawerAssigned ? "Yes" : "No" },
-            { label: "End-of-day closing", value: branch.finance.endOfDayRequired ? "Required" : "Optional" },
           ]}
         />
         <Button type="button" className="mt-4 border-0 bg-(--repair-primary) text-(--repair-on-primary)" onClick={() => onSave({ finance: branch.finance })}>
@@ -676,6 +828,13 @@ function CommunicationSection({
   );
 }
 
+function formatLastReport(value: string) {
+  if (!value || value === "—") return "—";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+  return date.toLocaleString();
+}
+
 function ReportingSection({
   branch,
   onChange,
@@ -690,7 +849,7 @@ function ReportingSection({
       <div className="grid gap-3 sm:grid-cols-3">
         <BranchStatCard label="Sales target / month" value={`£${branch.reporting.salesTargetMonthly.toLocaleString()}`} />
         <BranchStatCard label="Repair target / month" value={branch.reporting.repairTargetMonthly} />
-        <BranchStatCard label="Last report" value={branch.reporting.lastReportGenerated === "—" ? "—" : "Recent"} />
+        <BranchStatCard label="Last report" value={formatLastReport(branch.reporting.lastReportGenerated)} />
       </div>
       <BranchSectionCard title="Reporting & analytics">
         <div className="grid gap-4 sm:grid-cols-2">
@@ -754,7 +913,7 @@ function SystemSection({
       <BranchSectionCard title="System & audit">
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Franchise ownership" value={branch.system.franchiseOwner} onChange={(v) => onChange({ ...branch, system: { ...branch.system, franchiseOwner: v } })} />
-          <Field label="Last sync" value={new Date(branch.system.lastSyncAt).toLocaleString()} onChange={() => {}} disabled />
+          <Field label="Last sync" value={branch.system.lastSyncAt ? new Date(branch.system.lastSyncAt).toLocaleString() : "—"} onChange={() => {}} disabled />
           <ToggleRow label="Two-factor required" checked={branch.system.twoFactorRequired} onChange={(v) => onChange({ ...branch, system: { ...branch.system, twoFactorRequired: v } })} />
         </div>
         <p className="mt-4 text-sm text-[#6B7280]">

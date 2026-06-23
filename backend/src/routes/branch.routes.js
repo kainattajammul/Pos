@@ -22,6 +22,11 @@ import {
 } from "../validators/branch.validator.js";
 import branchStaffRoutes from "./branchStaff.routes.js";
 import branchInventoryRoutes from "./branchInventory.routes.js";
+import branchOperationsRoutes from "./branchOperations.routes.js";
+import branchFinanceRoutes from "./branchFinance.routes.js";
+import branchCommunicationRoutes from "./branchCommunication.routes.js";
+import branchReportingRoutes from "./branchReporting.routes.js";
+import branchSystemRoutes from "./branchSystem.routes.js";
 
 const router = Router({ mergeParams: true });
 
@@ -165,5 +170,10 @@ router.delete(
 
 router.use("/:branchUuid", branchStaffRoutes);
 router.use("/:branchUuid", branchInventoryRoutes);
+router.use("/:branchUuid", branchOperationsRoutes);
+router.use("/:branchUuid", branchFinanceRoutes);
+router.use("/:branchUuid", branchCommunicationRoutes);
+router.use("/:branchUuid", branchReportingRoutes);
+router.use("/:branchUuid", branchSystemRoutes);
 
 export default router;

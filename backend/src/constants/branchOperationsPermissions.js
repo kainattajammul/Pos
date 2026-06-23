@@ -1,0 +1,60 @@
+export const BRANCH_OPERATIONS_PERMISSIONS = {
+  SALES_VIEW: "branch_sales.view",
+  SALES_CREATE: "branch_sales.create",
+  SALES_COMPLETE: "branch_sales.complete",
+  SALES_CANCEL: "branch_sales.cancel",
+  SALES_REFUND: "branch_sales.refund",
+  SALES_VIEW_SUMMARY: "branch_sales.view_summary",
+
+  REPAIRS_VIEW: "branch_repairs.view",
+  REPAIRS_CREATE: "branch_repairs.create",
+  REPAIRS_UPDATE: "branch_repairs.update",
+  REPAIRS_ASSIGN: "branch_repairs.assign",
+  REPAIRS_CHANGE_STATUS: "branch_repairs.change_status",
+  REPAIRS_ADD_DIAGNOSIS: "branch_repairs.add_diagnosis",
+  REPAIRS_CREATE_ESTIMATE: "branch_repairs.create_estimate",
+  REPAIRS_COMPLETE: "branch_repairs.complete",
+  REPAIRS_CANCEL: "branch_repairs.cancel",
+  REPAIRS_ARCHIVE: "branch_repairs.archive",
+  REPAIRS_VIEW_HISTORY: "branch_repairs.view_history",
+
+  REPAIR_CAPACITY_VIEW: "branch_repair_capacity.view",
+  REPAIR_CAPACITY_MANAGE: "branch_repair_capacity.manage",
+  REPAIR_CAPACITY_OVERRIDE: "branch_repair_capacity.override",
+
+  APPOINTMENTS_VIEW: "branch_appointments.view",
+  APPOINTMENTS_CREATE: "branch_appointments.create",
+  APPOINTMENTS_UPDATE: "branch_appointments.update",
+  APPOINTMENTS_CANCEL: "branch_appointments.cancel",
+  APPOINTMENTS_OVERRIDE_CAPACITY: "branch_appointments.override_capacity",
+  APPOINTMENTS_MANAGE_SLOTS: "branch_appointments.manage_slots",
+
+  OPERATIONS_VIEW: "branch_operations.view",
+  OPERATIONS_MANAGE_PICKUP: "branch_operations.manage_pickup",
+  OPERATIONS_MANAGE_DROPOFF: "branch_operations.manage_dropoff",
+  OPERATIONS_MANAGE_DELIVERY: "branch_operations.manage_delivery",
+  OPERATIONS_MANAGE_SERVICE_AREAS: "branch_operations.manage_service_areas",
+
+  CUSTOMERS_VIEW: "branch_customers.view",
+  CUSTOMERS_CREATE: "branch_customers.create",
+  CUSTOMERS_UPDATE: "branch_customers.update",
+  CUSTOMERS_VIEW_CONTACT: "branch_customers.view_contact_details",
+  CUSTOMERS_VIEW_ACTIVITY: "branch_customers.view_activity",
+  CUSTOMERS_VIEW_CROSS_BRANCH: "branch_customers.view_cross_branch",
+  CUSTOMERS_EXPORT: "branch_customers.export",
+  CUSTOMERS_MANAGE_VISIBILITY: "branch_customers.manage_visibility",
+
+  WARRANTIES_VIEW: "branch_warranties.view",
+  WARRANTIES_CREATE: "branch_warranties.create",
+  WARRANTIES_MANAGE: "branch_warranties.manage",
+  WARRANTY_CLAIMS_VIEW: "branch_warranty_claims.view",
+  WARRANTY_CLAIMS_CREATE: "branch_warranty_claims.create",
+  WARRANTY_CLAIMS_REVIEW: "branch_warranty_claims.review",
+  WARRANTY_CLAIMS_APPROVE: "branch_warranty_claims.approve",
+  WARRANTY_CLAIMS_REJECT: "branch_warranty_claims.reject",
+  WARRANTY_CLAIMS_COMPLETE: "branch_warranty_claims.complete",
+};
+
+export const BRANCH_OPERATIONS_PERMISSION_SEED = Object.entries(BRANCH_OPERATIONS_PERMISSIONS).map(
+  ([, key]) => ({ key, module: key.split(".")[0] }),
+);
