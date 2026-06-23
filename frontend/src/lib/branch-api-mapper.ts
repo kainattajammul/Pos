@@ -1,5 +1,6 @@
 import type {
   BranchHoliday,
+  BranchOnlineSettings,
   BranchOpeningHours,
   BranchRecord,
   BranchStatus,
@@ -8,6 +9,10 @@ import type {
   UpdateBranchPayload,
 } from "@/lib/branch-types";
 import { defaultInvoiceSettings } from "@/lib/branch-communication-defaults";
+import {
+  clearedWebsiteServices,
+  normalizeWebsiteServices,
+} from "@/lib/branch-website-services";
 import type {
   ApiBranchListItem,
   ApiBranchProfile,
@@ -137,6 +142,34 @@ export function mapClosuresToHolidays(
   }));
 }
 
+export { clearedWebsiteServices } from "@/lib/branch-website-services";
+
+export function defaultBranchOnlineSettings(): BranchOnlineSettings {
+  return {
+    websiteVisible: false,
+    marketplaceVisible: false,
+    clickAndCollect: false,
+    publishedProducts: 0,
+    seoTitle: "",
+    ...clearedWebsiteServices(),
+  };
+}
+
+export function withBranchOnlineDefaults(
+  online?: Partial<BranchOnlineSettings>,
+): BranchOnlineSettings {
+  const services = normalizeWebsiteServices(online);
+  const merged: BranchOnlineSettings = {
+    ...defaultBranchOnlineSettings(),
+    ...online,
+    ...services,
+  };
+  if (!merged.websiteVisible) {
+    return { ...merged, ...clearedWebsiteServices() };
+  }
+  return merged;
+}
+
 function emptyModuleSettings(): Pick<
   BranchRecord,
   | "staff"
@@ -183,13 +216,7 @@ function emptyModuleSettings(): Pick<
       timezone: "Europe/London",
       endOfDayRequired: false,
     },
-    online: {
-      websiteVisible: false,
-      marketplaceVisible: false,
-      clickAndCollect: false,
-      publishedProducts: 0,
-      seoTitle: "",
-    },
+    online: defaultBranchOnlineSettings(),
     communication: {
       emailSender: "",
       smsSender: "",
@@ -277,6 +304,7 @@ export function mapListItemToBranchRecord(
     openingHours: { ...EMPTY_HOURS },
     holidays: [],
     openingStatus: item.opening_status,
+    online: withBranchOnlineDefaults(defaults.online),
     createdAt: item.created_at,
     updatedAt: item.updated_at,
   };
@@ -314,6 +342,7 @@ export function mapProfileToBranchRecord(
     holidays: mapClosuresToHolidays(profile.upcoming_closures),
     openingStatus: profile.opening_status,
     timezone: profile.timezone,
+    online: withBranchOnlineDefaults(defaults.online),
     communication: {
       ...defaults.communication,
       emailSender: defaults.contact.email,

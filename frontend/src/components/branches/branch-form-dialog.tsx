@@ -12,9 +12,9 @@ import {
   branchInputClass,
   branchSelectClass,
 } from "@/components/branches/branch-ui-primitives";
+import { BranchCountrySelect } from "@/components/branches/branch-country-select";
 import type { BranchRecord, BranchType } from "@/lib/branch-types";
 import { BRANCH_TYPE_LABELS } from "@/lib/branch-types";
-import { getCountryOptions } from "@/lib/countries";
 
 export interface BranchFormValues {
   code: string;
@@ -90,8 +90,6 @@ export function BranchFormDialog({
   const update = <K extends keyof BranchFormValues>(key: K, value: BranchFormValues[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
-
-  const countryOptions = getCountryOptions(form.country);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -184,21 +182,13 @@ export function BranchFormDialog({
                 className={branchInputClass}
               />
             </label>
-            <label className="space-y-1 sm:col-span-2">
+            <div className="space-y-1 sm:col-span-2">
               <span className="text-sm font-medium text-[#374151]">Country</span>
-              <select
-                required
+              <BranchCountrySelect
                 value={form.country}
-                onChange={(e) => update("country", e.target.value)}
-                className={branchSelectClass}
-              >
-                {countryOptions.map((country) => (
-                  <option key={country} value={country}>
-                    {country}
-                  </option>
-                ))}
-              </select>
-            </label>
+                onChange={(country) => update("country", country)}
+              />
+            </div>
             <label className="space-y-1">
               <span className="text-sm font-medium text-[#374151]">Phone</span>
               <input

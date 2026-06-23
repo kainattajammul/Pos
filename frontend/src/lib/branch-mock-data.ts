@@ -3,6 +3,7 @@ import {
   defaultInvoiceSettings,
   sampleMessageTemplates,
 } from "@/lib/branch-communication-defaults";
+import { clearedWebsiteServices } from "@/lib/branch-website-services";
 
 const DEFAULT_HOURS = {
   monday: "09:00 – 18:00",
@@ -102,6 +103,21 @@ export const DEFAULT_BRANCHES: BranchRecord[] = [
       clickAndCollect: true,
       publishedProducts: 156,
       seoTitle: "Main Branch — Phone Repair London",
+      repair: {
+        storeRepair: true,
+        postalRepair: true,
+        collectMyDevice: false,
+        fixAtMyAddress: false,
+      },
+      sellDevice: {
+        sellInStore: true,
+        postYourDevice: false,
+        collectMyDevice: false,
+      },
+      buyDevice: { buyInStore: true, postMyDevice: false },
+      buyAccessories: { buyInStore: true, postMyDevice: false },
+      unlocking: { buyInStore: true, postMyDevice: false },
+      eSim: { buyInStore: false, postMyDevice: false },
     },
     communication: withCommunicationDefaults({
       emailSender: "main@fonedoctors.com",
@@ -206,6 +222,21 @@ export const DEFAULT_BRANCHES: BranchRecord[] = [
       clickAndCollect: true,
       publishedProducts: 89,
       seoTitle: "Bradford Phone Repair",
+      repair: {
+        storeRepair: true,
+        postalRepair: false,
+        collectMyDevice: false,
+        fixAtMyAddress: false,
+      },
+      sellDevice: {
+        sellInStore: true,
+        postYourDevice: false,
+        collectMyDevice: false,
+      },
+      buyDevice: { buyInStore: false, postMyDevice: false },
+      buyAccessories: { buyInStore: true, postMyDevice: false },
+      unlocking: { buyInStore: false, postMyDevice: false },
+      eSim: { buyInStore: false, postMyDevice: false },
     },
     communication: withCommunicationDefaults({
       emailSender: "bradford@fonedoctors.com",
@@ -298,6 +329,7 @@ export const DEFAULT_BRANCHES: BranchRecord[] = [
       clickAndCollect: false,
       publishedProducts: 0,
       seoTitle: "",
+      ...clearedWebsiteServices(),
     },
     communication: withCommunicationDefaults({
       emailSender: "london@fonedoctors.com",
@@ -394,6 +426,7 @@ export const DEFAULT_BRANCHES: BranchRecord[] = [
       clickAndCollect: false,
       publishedProducts: 0,
       seoTitle: "",
+      ...clearedWebsiteServices(),
     },
     communication: withCommunicationDefaults({
       emailSender: "warehouse@fonedoctors.com",
@@ -487,6 +520,7 @@ export function createDefaultBranchRecord(
       clickAndCollect: false,
       publishedProducts: 0,
       seoTitle: payload.name,
+      ...clearedWebsiteServices(),
     },
     communication: withCommunicationDefaults({
       emailSender: payload.contact.email,

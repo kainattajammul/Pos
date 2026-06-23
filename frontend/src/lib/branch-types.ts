@@ -85,12 +85,44 @@ export interface BranchFinanceSettings {
   endOfDayRequired: boolean;
 }
 
+export interface RepairWebsiteSubcategories {
+  storeRepair: boolean;
+  postalRepair: boolean;
+  collectMyDevice: boolean;
+  fixAtMyAddress: boolean;
+}
+
+export interface SellDeviceWebsiteSubcategories {
+  sellInStore: boolean;
+  postYourDevice: boolean;
+  collectMyDevice: boolean;
+}
+
+export interface BuyStyleWebsiteSubcategories {
+  buyInStore: boolean;
+  postMyDevice: boolean;
+}
+
+export type WebsiteServiceCategoryKey =
+  | "repair"
+  | "sellDevice"
+  | "buyDevice"
+  | "buyAccessories"
+  | "unlocking"
+  | "eSim";
+
 export interface BranchOnlineSettings {
   websiteVisible: boolean;
   marketplaceVisible: boolean;
   clickAndCollect: boolean;
   publishedProducts: number;
   seoTitle: string;
+  repair: RepairWebsiteSubcategories;
+  sellDevice: SellDeviceWebsiteSubcategories;
+  buyDevice: BuyStyleWebsiteSubcategories;
+  buyAccessories: BuyStyleWebsiteSubcategories;
+  unlocking: BuyStyleWebsiteSubcategories;
+  eSim: BuyStyleWebsiteSubcategories;
 }
 
 export interface BranchCommunicationSettings {

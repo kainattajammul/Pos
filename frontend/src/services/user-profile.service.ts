@@ -43,7 +43,9 @@ function buildProfileViewModel(
     extras?.username?.trim() ||
     authUser.email.split("@")[0] ||
     null;
-  const phone = apiUser?.phone ?? extras?.mobileNumber?.trim() || null;
+  const phone =
+    (apiUser?.phone ?? extras?.mobileNumber?.trim()) ||
+    null;
   const roleLabel = formatRoleLabel(authUser.role);
   const isActive = extras?.isActive ?? true;
   const allowLogin = extras?.allowLogin ?? true;

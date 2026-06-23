@@ -67,7 +67,7 @@ export const BRANCH_NAV_ITEMS: BranchNavItem[] = [
     slug: "online",
     label: "Branch Website, Marketplace & Online Visibility",
     shortLabel: "Online",
-    description: "Website, marketplace, click & collect, publishing",
+    description: "Website, marketplace, click & collect, publishing, and website services",
     icon: Globe,
   },
   {

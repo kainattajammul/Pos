@@ -2,7 +2,10 @@
 
 import { Loader2, Save } from "lucide-react";
 import { useEffect, useState } from "react";
+import { BranchCurrencySelect } from "@/components/branches/branch-currency-select";
 import { BranchOpeningHoursDayField } from "@/components/branches/branch-opening-hours-day-field";
+import { BranchTimezoneSelect } from "@/components/branches/branch-timezone-select";
+import { WebsiteServiceCategoryCard } from "@/components/branches/website-service-category-card";
 import { BranchPageHeader } from "@/components/branches/branch-page-header";
 import { BranchInvoiceSettingsCard } from "@/components/branches/branch-invoice-settings-card";
 import { BranchMessageTemplatesCard } from "@/components/branches/branch-message-templates-card";
@@ -16,16 +19,23 @@ import {
   branchTextareaClass,
 } from "@/components/branches/branch-ui-primitives";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { APP_CONFIG } from "@/constants/config";
 import { useBranch, useUpdateBranch, useUpdateBranchStatus } from "@/hooks/use-branches";
 import { getBranchNavItem } from "@/lib/branch-nav-items";
+import { clearedWebsiteServices, countConfiguredWebsiteCategories, isCategoryEnabled, WEBSITE_SERVICE_CATEGORIES } from "@/lib/branch-website-services";
+import { withBranchOnlineDefaults } from "@/lib/branch-api-mapper";
+import { cn } from "@/lib/utils";
 import {
   BRANCH_TYPE_LABELS,
   type BranchCommunicationSettings,
+  type BranchOnlineSettings,
   type BranchRecord,
   type BranchStatus,
   type UpdateBranchPayload,
+  type WebsiteServiceCategoryKey,
 } from "@/lib/branch-types";
 
 interface BranchSectionPageProps {
@@ -42,7 +52,9 @@ export function BranchSectionPage({ branchUuid, sectionSlug }: BranchSectionPage
   const [draft, setDraft] = useState<BranchRecord | null>(null);
 
   useEffect(() => {
-    if (branch) setDraft(branch);
+    if (branch) {
+      setDraft({ ...branch, online: withBranchOnlineDefaults(branch.online) });
+    }
   }, [branch]);
 
   if (isLoading || !branch || !draft || !navItem) {
@@ -273,6 +285,21 @@ function SetupSection({
   );
 }
 
+function RotaEnabledBadge({ enabled }: { enabled: boolean }) {
+  return (
+    <Badge
+      variant="outline"
+      className={
+        enabled
+          ? "border-[#BBF7D0] bg-[#DCFCE7] text-[#166534] hover:bg-[#DCFCE7]"
+          : "border-[#E5E7EB] bg-[#F3F4F6] text-[#6B7280] hover:bg-[#F3F4F6]"
+      }
+    >
+      {enabled ? "Enabled" : "Disabled"}
+    </Badge>
+  );
+}
+
 function StaffSection({
   branch,
   onChange,
@@ -286,17 +313,53 @@ function StaffSection({
     <>
       <div className="grid gap-3 sm:grid-cols-3">
         <BranchStatCard label="Assigned staff" value={branch.staff.assignedStaffCount} />
-        <BranchStatCard label="Rota enabled" value={branch.staff.rotaEnabled ? "Yes" : "No"} />
+        <BranchStatCard
+          label="Rota enabled"
+          value={
+            <span className="inline-flex text-sm font-medium">
+              <RotaEnabledBadge enabled={branch.staff.rotaEnabled} />
+            </span>
+          }
+          hint="Staff shift scheduling"
+        />
         <BranchStatCard label="Roles" value={branch.staff.rolesEnabled.length} />
       </div>
       <BranchSectionCard title="Staff assignment & permissions">
         <BranchFieldGrid
           fields={[
-            { label: "Roles enabled", value: branch.staff.rolesEnabled.join(", ") },
-            { label: "Staff schedule / rota", value: branch.staff.rotaEnabled ? "Enabled" : "Disabled" },
-            { label: "Security rules", value: branch.staff.securityRules, fullWidth: true },
+            {
+              label: "Roles enabled",
+              value:
+                branch.staff.rolesEnabled.length > 0 ? (
+                  branch.staff.rolesEnabled.join(", ")
+                ) : (
+                  <span className="text-[#9CA3AF]">No roles configured</span>
+                ),
+            },
           ]}
         />
+        <div className="mt-4 space-y-3">
+          <h3 className="text-sm font-semibold text-[#111827]">Scheduling</h3>
+          <div className="flex items-center justify-between gap-4 rounded-md border border-[#E5E7EB] px-4 py-3">
+            <div className="space-y-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-sm font-medium text-[#111827]">Staff rota scheduling</p>
+                <RotaEnabledBadge enabled={branch.staff.rotaEnabled} />
+              </div>
+              <p className="text-sm text-[#6B7280]">
+                Turn on to let managers create shifts and weekly schedules for this branch.
+                Turn off if this branch does not use rota scheduling.
+              </p>
+            </div>
+            <Switch
+              checked={branch.staff.rotaEnabled}
+              onCheckedChange={(checked) =>
+                onChange({ ...branch, staff: { ...branch.staff, rotaEnabled: checked } })
+              }
+              aria-label="Enable staff rota scheduling"
+            />
+          </div>
+        </div>
         <div className="mt-4">
           <label className="space-y-1">
             <span className="text-sm font-medium text-[#374151]">Security rules</span>
@@ -442,8 +505,20 @@ function FinanceSection({
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Register ID" value={branch.finance.registerId} onChange={(v) => onChange({ ...branch, finance: { ...branch.finance, registerId: v } })} />
           <Field label="VAT rate" value={branch.finance.vatRate} onChange={(v) => onChange({ ...branch, finance: { ...branch.finance, vatRate: v } })} />
-          <Field label="Currency" value={branch.finance.currency} onChange={(v) => onChange({ ...branch, finance: { ...branch.finance, currency: v } })} />
-          <Field label="Timezone" value={branch.finance.timezone} onChange={(v) => onChange({ ...branch, finance: { ...branch.finance, timezone: v } })} />
+          <label className="space-y-1">
+            <span className="text-sm font-medium text-[#374151]">Currency</span>
+            <BranchCurrencySelect
+              value={branch.finance.currency}
+              onChange={(v) => onChange({ ...branch, finance: { ...branch.finance, currency: v } })}
+            />
+          </label>
+          <label className="space-y-1">
+            <span className="text-sm font-medium text-[#374151]">Timezone</span>
+            <BranchTimezoneSelect
+              value={branch.finance.timezone}
+              onChange={(v) => onChange({ ...branch, finance: { ...branch.finance, timezone: v } })}
+            />
+          </label>
         </div>
         <BranchFieldGrid
           fields={[
@@ -468,10 +543,38 @@ function OnlineSection({
   onChange: (b: BranchRecord) => void;
   onSave: (p: UpdateBranchPayload) => void;
 }) {
+  const websiteServicesEnabled = branch.online.websiteVisible;
+  const configuredCategoryCount = countConfiguredWebsiteCategories(branch.online);
+  const [expandedCategoryKey, setExpandedCategoryKey] = useState<WebsiteServiceCategoryKey | null>(
+    () =>
+      WEBSITE_SERVICE_CATEGORIES.find((category) =>
+        isCategoryEnabled({ ...branch.online[category.key] }),
+      )?.key ?? null,
+  );
+
+  useEffect(() => {
+    if (!websiteServicesEnabled) {
+      setExpandedCategoryKey(null);
+    }
+  }, [websiteServicesEnabled]);
+
   return (
     <BranchSectionCard title="Website, marketplace & online visibility">
       <div className="grid gap-4 sm:grid-cols-2">
-        <ToggleRow label="Website visible" checked={branch.online.websiteVisible} onChange={(v) => onChange({ ...branch, online: { ...branch.online, websiteVisible: v } })} />
+        <ToggleRow
+          label="Website visible"
+          checked={branch.online.websiteVisible}
+          onChange={(v) =>
+            onChange({
+              ...branch,
+              online: {
+                ...branch.online,
+                websiteVisible: v,
+                ...clearedWebsiteServices(),
+              },
+            })
+          }
+        />
         <ToggleRow label="Marketplace visible" checked={branch.online.marketplaceVisible} onChange={(v) => onChange({ ...branch, online: { ...branch.online, marketplaceVisible: v } })} />
         <ToggleRow label="Click & collect" checked={branch.online.clickAndCollect} onChange={(v) => onChange({ ...branch, online: { ...branch.online, clickAndCollect: v } })} />
         <Field label="Published products" value={String(branch.online.publishedProducts)} onChange={(v) => onChange({ ...branch, online: { ...branch.online, publishedProducts: Number(v) || 0 } })} />
@@ -479,6 +582,50 @@ function OnlineSection({
           <span className="text-sm font-medium text-[#374151]">SEO title</span>
           <input value={branch.online.seoTitle} onChange={(e) => onChange({ ...branch, online: { ...branch.online, seoTitle: e.target.value } })} className={branchInputClass} />
         </label>
+      </div>
+      <div
+        className={cn("mt-6 space-y-4", !websiteServicesEnabled && "opacity-90")}
+        aria-disabled={!websiteServicesEnabled}
+      >
+        <div className="flex flex-wrap items-end justify-between gap-2">
+          <div>
+            <h3 className="text-sm font-semibold text-[#111827]">Website services</h3>
+            <p className={`mt-0.5 text-sm ${websiteServicesEnabled ? "text-[#6B7280]" : "text-[#9CA3AF]"}`}>
+              {websiteServicesEnabled
+                ? "Expand a category, then choose one or more options customers can use on your branch website."
+                : "Enable Website visible above to configure which services appear on your branch website."}
+            </p>
+          </div>
+          {websiteServicesEnabled ? (
+            <p className="text-xs font-medium text-[#6B7280]">
+              {configuredCategoryCount} of {WEBSITE_SERVICE_CATEGORIES.length} categories configured
+            </p>
+          ) : null}
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {WEBSITE_SERVICE_CATEGORIES.map((category) => (
+            <WebsiteServiceCategoryCard
+              key={category.key}
+              label={category.label}
+              subcategories={category.subcategories}
+              values={{ ...branch.online[category.key] }}
+              expanded={expandedCategoryKey === category.key}
+              disabled={!websiteServicesEnabled}
+              onExpandedChange={(nextExpanded) =>
+                setExpandedCategoryKey(nextExpanded ? category.key : null)
+              }
+              onChange={(next) =>
+                onChange({
+                  ...branch,
+                  online: {
+                    ...branch.online,
+                    [category.key]: next as unknown as BranchOnlineSettings[typeof category.key],
+                  },
+                })
+              }
+            />
+          ))}
+        </div>
       </div>
       <Button type="button" className="mt-4 border-0 bg-(--repair-primary) text-(--repair-on-primary)" onClick={() => onSave({ online: branch.online })}>
         Save online settings
@@ -649,15 +796,25 @@ function ToggleRow({
   label,
   checked,
   onChange,
+  disabled = false,
 }: {
   label: string;
   checked: boolean;
   onChange: (v: boolean) => void;
+  disabled?: boolean;
 }) {
   return (
-    <label className="flex items-center justify-between rounded-md border border-[#E5E7EB] px-3 py-2.5">
-      <span className="text-sm font-medium text-[#374151]">{label}</span>
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="size-4 rounded border-[#D1D5DB]" />
+    <label
+      className={`flex items-center justify-between rounded-md border border-[#E5E7EB] px-3 py-2.5 ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
+    >
+      <span className={`text-sm font-medium ${disabled ? "text-[#9CA3AF]" : "text-[#374151]"}`}>{label}</span>
+      <input
+        type="checkbox"
+        checked={checked ?? false}
+        disabled={disabled}
+        onChange={(e) => onChange(e.target.checked)}
+        className="size-4 rounded border-[#D1D5DB]"
+      />
     </label>
   );
 }
