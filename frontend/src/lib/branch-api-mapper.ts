@@ -39,17 +39,6 @@ const EMPTY_HOURS: BranchOpeningHours = {
   sunday: "Closed",
 };
 
-function emptyAddress() {
-  return {
-    line1: "",
-    line2: "",
-    city: "",
-    county: "",
-    postcode: "",
-    country: "United Kingdom",
-  };
-}
-
 function emptyContact() {
   return {
     phone: "",

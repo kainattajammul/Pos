@@ -146,8 +146,7 @@ export function RepairsWorkspaceDeviceData({
       prev.parts === parts &&
       prev.problemsLoading === problemsLoading &&
       prev.partsLoading === partsLoading &&
-      prev.problemsError === problemsError &&
-      prev.partsError === partsError &&
+      prev.problemsError === partsError &&
       prev.problemsQueryError === problemsQueryError &&
       prev.partsQueryError === partsQueryError &&
       prev.issueMutationPending === issueMutationPending &&
@@ -183,6 +182,7 @@ export function RepairsWorkspaceDeviceData({
       updatePart,
       deletePart,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     problems,
     parts,

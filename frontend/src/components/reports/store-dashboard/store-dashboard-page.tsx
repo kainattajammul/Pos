@@ -51,18 +51,18 @@ export function StoreDashboardPage() {
 
   const filteredSales = useMemo(
     () => filterDailySales(MOCK_DAILY_SALES, appliedFilters, periodRange),
-    [appliedFilters, periodRange, reloadKey],
+    [appliedFilters, periodRange],
   );
 
   const todaySales = useMemo(
     () =>
       filterDailySales(MOCK_DAILY_SALES, appliedFilters, getDateRangeForTab("TODAY")),
-    [appliedFilters, reloadKey],
+    [appliedFilters],
   );
 
   const filteredTickets = useMemo(
     () => filterRepairTickets(MOCK_REPAIR_TICKETS, appliedFilters),
-    [appliedFilters, reloadKey],
+    [appliedFilters],
   );
 
   const kpi = useMemo(() => computeKpiFromSales(todaySales), [todaySales]);

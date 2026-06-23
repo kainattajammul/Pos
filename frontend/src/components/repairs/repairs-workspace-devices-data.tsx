@@ -143,6 +143,7 @@ export function RepairsWorkspaceDevicesData({
       updateDeviceSeries,
       deleteDeviceSeries,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     devices,
     devicesLoading,

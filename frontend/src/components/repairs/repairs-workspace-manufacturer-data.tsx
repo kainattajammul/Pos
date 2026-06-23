@@ -100,6 +100,7 @@ export function RepairsWorkspaceManufacturerData({
       updateManufacturer,
       deleteManufacturer,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     manufacturers,
     manufacturersLoadingOrFetching,
