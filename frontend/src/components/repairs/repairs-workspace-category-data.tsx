@@ -76,6 +76,7 @@ export function RepairsWorkspaceCategoryData({
       updateCategory,
       deleteCategory,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categories, categoriesLoading, categoriesError, mutationPending]);
 
   return null;

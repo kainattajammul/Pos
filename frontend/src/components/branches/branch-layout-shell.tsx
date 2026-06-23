@@ -2,6 +2,7 @@
 
 import { Loader2, Menu } from "lucide-react";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { RepairsTopNav } from "@/components/repairs/repairs-top-nav";
 import { BranchSidebar } from "@/components/branches/branch-sidebar";
@@ -44,9 +45,9 @@ export function BranchDetailLayoutShell({ branchUuid, children }: BranchDetailLa
           <div className="flex flex-1 items-center justify-center bg-[#F9FAFB] p-6 text-center">
             <p className="text-sm text-[#6B7280]">
               Invalid branch link. Open the branch from{" "}
-              <a href="/branches" className="text-(--repair-primary) underline">
+              <Link href="/branches" className="text-(--repair-primary) underline">
                 Branch Management
-              </a>
+              </Link>
               .
             </p>
           </div>

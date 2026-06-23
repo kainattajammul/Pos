@@ -43,7 +43,6 @@ export function StoreDashboardPage() {
   const [activeDateTab, setActiveDateTab] = useState<StoreDashboardDateTab>("TODAY");
   const [periodRange, setPeriodRange] = useState(DEFAULT_PERIOD);
   const [isFavourite, setIsFavourite] = useState(false);
-  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     setIsFavourite(loadReportFavourites().has(REPORT_ID));
@@ -72,7 +71,6 @@ export function StoreDashboardPage() {
     setPeriodRange(
       activeDateTab === "TODAY" ? DEFAULT_PERIOD : getDateRangeForTab(activeDateTab),
     );
-    setReloadKey((k) => k + 1);
   }, [activeDateTab, draftFilters]);
 
   const handleRefresh = useCallback(() => {
@@ -80,13 +78,11 @@ export function StoreDashboardPage() {
     setAppliedFilters(DEFAULT_STORE_DASHBOARD_FILTERS);
     setActiveDateTab("TODAY");
     setPeriodRange(DEFAULT_PERIOD);
-    setReloadKey((k) => k + 1);
   }, []);
 
   const handleDateTabChange = useCallback((tab: StoreDashboardDateTab) => {
     setActiveDateTab(tab);
     setPeriodRange(tab === "TODAY" ? DEFAULT_PERIOD : getDateRangeForTab(tab));
-    setReloadKey((k) => k + 1);
   }, []);
 
   const toggleFavourite = () => {
